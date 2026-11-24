@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCADD Partner Studio</title>
+<meta name="description" content="منصة سكاد للشركاء: محتوى مشترك وتخطيط مالي للمشاريع والدورات">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2232%22 fill=%22%230e5a63%22/%3E%3Ctext x=%2232%22 y=%2240%22 font-size=%2222%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22700%22%3ES%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+/* VOICE: institutional, calm, exact — a working tool for a clinical training partner.
+   IDEA: a print studio's job ticket — each design moves from draft to approved like a proof on the press.
+   PICTURE: the live canvas of the post itself, large, beside the controls.
+   COLOUR and TYPE: deep teal #0e5a63 dominant, warm paper #f6f3ee support, coral #e8644a accent; IBM Plex Sans Arabic.
+   LAYOUT: right-side navigation (RTL), one task per screen, studio = form + live proof. */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f3ee,#121718);--panel:light-dark(#ffffff,#1b2223);--ink:light-dark(#14262a,#e9eeee);--sub:light-dark(#5b6b6e,#a3b1b3);
+--line:light-dark(#e2ddd4,#2c3637);--line2:light-dark(#c9c2b6,#435052);--teal:#0e5a63;--teal-ink:light-dark(#0e5a63,#7fc6cd);
+--tint:light-dark(#e7f1f1,#1d3437);--coral:#e8644a;--ok:light-dark(#1d7a55,#5cc897);--warn:light-dark(#a8580f,#f0b061);--bad:light-dark(#b8382b,#ff8a7c)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{line-height:1.25;margin:0;text-wrap:balance}
+h1{font-size:clamp(24px,3vw,32px);font-weight:700}h2{font-size:20px;font-weight:700}h3{font-size:16px;font-weight:700}
+p{margin:0}
+.muted{color:var(--sub)}.small{font-size:13px}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+.side{background:var(--teal);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
+.brandmark{display:flex;gap:10px;align-items:center}
+.brandmark b{font-size:18px;letter-spacing:.02em}.brandmark span{display:block;font-size:12px;opacity:.8}
+.mark{height:34px;padding:0 10px;border-radius:99px;background:#fff;color:var(--teal);display:grid;place-items:center;font-weight:700;font-size:12px;letter-spacing:.04em;flex:none;direction:ltr}
+nav{display:flex;flex-direction:column;gap:4px}
+nav a{color:#fff;text-decoration:none;padding:10px 12px;border-radius:10px;opacity:.86;display:flex;justify-content:space-between;align-items:center;min-height:44px}
+nav a:hover{background:rgb(255 255 255/.08);opacity:1}
+nav a[aria-current=page]{background:#fff;color:var(--teal);opacity:1;font-weight:600}
+.count{font-size:12px;background:var(--coral);color:#fff;border-radius:99px;padding:0 8px;line-height:20px}
+.who{margin-top:auto;font-size:13px;border-top:1px solid rgb(255 255 255/.2);padding-top:14px;display:grid;gap:8px}
+.sync{font-size:12px;opacity:.85}.sync.err{color:#ffd2c9;opacity:1;font-weight:600}
+.projsel{display:grid;gap:4px;font-size:12px;background:rgb(255 255 255/.08);border-radius:10px;padding:8px 10px}.projsel span{opacity:.8}.projsel b{font-size:14px}
+.projsel select{background:#fff;color:var(--teal);border:0;font-weight:600;min-height:38px;padding:6px 8px;border-radius:8px}
+.it select{width:auto;min-width:150px}.dash td{vertical-align:middle;white-space:nowrap}.dash td:first-child{white-space:normal;min-width:200px}
+.who button{background:transparent;border:1px solid rgb(255 255 255/.45);color:#fff;border-radius:8px;padding:8px;cursor:pointer;min-height:40px}
+main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1320px;width:100%}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.head p{margin-top:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.btn{border:1px solid var(--line2);background:var(--panel);border-radius:10px;padding:9px 16px;min-height:44px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;color:var(--ink)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.coral{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--teal-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--coral);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label.f{display:grid;gap:5px;font-size:14px;font-weight:600}
+label.f .hint{font-weight:400;font-size:12px;color:var(--sub)}
+input[type=text],input[type=number],input[type=date],input:not([type]),select,textarea{width:100%;background:light-dark(#fff,#111617);border:1.5px solid var(--line2);border-radius:9px;padding:9px 12px;font-size:16px;min-height:44px}
+textarea{min-height:110px;resize:vertical;line-height:1.6}
+input[type=number]{text-align:left;direction:ltr}
+.tag{display:inline-block;font-size:12px;font-weight:600;border-radius:99px;padding:2px 10px;white-space:nowrap}
+.st-draft{background:light-dark(#efece6,#2a3233);color:var(--sub)}
+.st-pending{background:light-dark(#fff1dc,#3a2e1c);color:var(--warn)}
+.st-approved{background:light-dark(#e1f3ea,#183528);color:var(--ok)}
+.st-returned{background:light-dark(#fde6e2,#3a201d);color:var(--bad)}
+.toast{position:fixed;inset-inline-start:50%;bottom:22px;transform:translateX(50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:10px;font-size:14px;z-index:50;max-width:min(92vw,520px);box-shadow:0 10px 30px rgb(0 0 0/.25)}
+.toast[hidden]{display:none}
+.note{font-size:12px;color:var(--sub);margin-top:14px}
+/* login */
+.login{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.login .hero{background:var(--teal);color:#fff;padding:clamp(28px,5vw,72px);display:flex;flex-direction:column;justify-content:space-between;gap:28px;position:relative;overflow:hidden}
+.login .hero h1{font-size:clamp(30px,4vw,46px);line-height:1.15;max-width:560px}
+.login .hero p{opacity:.9;max-width:520px;margin-top:14px;font-size:17px}
+.login .stack{position:relative;height:300px;max-width:520px}
+.login .stack div{position:absolute;border-radius:14px;box-shadow:0 18px 40px rgb(0 0 0/.25)}
+.login .pick{padding:clamp(24px,5vw,64px);display:flex;flex-direction:column;justify-content:center;gap:14px;max-width:620px}
+.acct{display:flex;gap:14px;align-items:center;text-align:start;width:100%;background:var(--panel);border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;min-height:76px}
+.acct:hover{border-color:var(--teal)}
+.acct .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none}
+.acct b{display:block}.acct span{font-size:13px;color:var(--sub)}
+/* home */
+.stat{display:grid;gap:4px}.stat b{font-size:30px;line-height:1.1}.stat span{font-size:13px;color:var(--sub)}
+.list{display:grid}.list .it{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.list .it:last-child{border-bottom:0}
+.thumb{width:54px;height:68px;border-radius:6px;background:var(--tint);flex:none;object-fit:cover;border:1px solid var(--line)}
+.seatbar{height:10px;border-radius:99px;background:var(--tint);overflow:hidden;margin:10px 0 6px}.seatbar i{display:block;height:100%;background:var(--teal)}
+/* studio */
+.studio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:20px;align-items:start}
+.steps{display:grid;gap:14px}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.choice{border:1.5px solid var(--line);background:var(--panel);border-radius:12px;padding:12px;text-align:start;cursor:pointer;display:grid;gap:4px;min-height:44px}
+.choice b{font-size:14px}.choice span{font-size:12px;color:var(--sub);line-height:1.45}
+.choice[aria-pressed=true]{border-color:var(--teal);background:var(--tint);box-shadow:inset 0 0 0 1px var(--teal)}
+.fmt{display:flex;gap:8px;flex-wrap:wrap}
+.fmt .choice{flex:1 1 120px;grid-template-columns:auto 1fr;align-items:center;column-gap:10px}
+.fmt .shape{grid-row:span 2;border:2px solid currentColor;border-radius:3px;color:var(--teal-ink)}
+.fields{display:grid;gap:12px}
+.slides-edit{display:grid;gap:10px}
+.slide-ed{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:8px}
+.slide-ed .bar{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600}
+.slide-ed .bar .row{gap:4px}.slide-ed .btn{min-height:36px;padding:4px 10px;font-size:13px}
+.slide-ed textarea{min-height:80px}
+.preview{position:sticky;top:16px;display:grid;gap:12px}
+.proof{background:light-dark(#e9e5dd,#0c1011);border-radius:14px;padding:16px;display:grid;gap:12px}
+.canvas-wrap{display:grid;place-items:center}
+.canvas-wrap canvas{max-width:100%;max-height:68vh;height:auto;width:auto;box-shadow:0 12px 30px rgb(0 0 0/.18);border-radius:4px;background:#fff}
+.slidenav{display:flex;justify-content:center;align-items:center;gap:10px}
+.slidenav .btn{min-width:44px;padding:6px}
+.dots{display:flex;gap:6px}.dots i{width:8px;height:8px;border-radius:50%;background:var(--line2)}.dots i.on{background:var(--teal)}
+.checks{display:grid;gap:8px;font-size:13px}
+.chk{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:9px;background:var(--panel);border:1px solid var(--line)}
+.chk b{flex:none;font-size:12px;border-radius:99px;padding:0 8px;line-height:20px}
+.chk.ok b{background:light-dark(#e1f3ea,#183528);color:var(--ok)}
+.chk.warn b{background:light-dark(#fff1dc,#3a2e1c);color:var(--warn)}
+.chk.bad b{background:light-dark(#fde6e2,#3a201d);color:var(--bad)}
+.caption{white-space:pre-wrap;font-size:14px;background:var(--panel);border:1px dashed var(--line2);border-radius:10px;padding:12px;max-height:220px;overflow:auto}
+.toggle{display:flex;gap:8px;align-items:center;font-size:13px;min-height:36px}
+.toggle input{width:18px;height:18px}
+.chk span,.list .it span{overflow-wrap:anywhere}.it.act{flex-wrap:wrap;align-items:flex-start;gap:4px 16px}.it.act .act-t{flex:1 1 220px}
+.comment{border-inline-start:3px solid var(--coral);padding:8px 12px;background:var(--panel);border-radius:6px;font-size:14px}
+/* brand */
+.logo-box{border:1.5px dashed var(--line2);border-radius:12px;min-height:140px;display:grid;place-items:center;padding:14px;background:light-dark(#fff,#111617)}
+.logo-box img{max-height:110px;max-width:100%}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:40px;height:40px;border-radius:10px;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line2);cursor:pointer}
+.sw[aria-pressed=true]{box-shadow:0 0 0 3px var(--coral)}
+/* finance */
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.tile{background:var(--tint);border-radius:12px;padding:14px;display:grid;gap:2px}
+.tile span{font-size:12px;color:var(--sub);font-weight:600}.tile b{font-size:22px;line-height:1.3;unicode-bidi:plaintext;text-align:right}.tile small{font-size:12px;color:var(--sub)}
+.tile.pos b{color:var(--ok)}.tile.neg b{color:var(--bad)}
+fieldset{border:0;border-top:1px solid var(--line);margin:18px 0 0;padding:16px 0 0}
+legend{font-weight:700;padding:0;margin-bottom:10px}
+.vrow{display:grid;grid-template-columns:120px minmax(0,1.2fr) minmax(0,.9fr) minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.calc{background:var(--tint);border-radius:9px;padding:8px 12px;min-height:44px;display:grid;align-content:center;border-inline-start:3px solid var(--teal)}
+.calc b{direction:ltr;text-align:right;font-size:16px}.calc small{font-size:11px;color:var(--sub)}
+.impact{position:sticky;bottom:10px;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:10px 14px;margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:14px;box-shadow:0 8px 20px rgb(0 0 0/.08);z-index:2}
+.impact b{direction:ltr;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;direction:ltr}
+th:first-child,td:first-child{text-align:right;direction:rtl;white-space:normal}
+thead th{color:var(--sub);font-size:12px}thead th:not(:first-child){direction:rtl;text-align:left}
+tr.em{background:var(--tint);font-weight:700}
+.scroll{overflow-x:auto}
+.dlg{position:fixed;inset:0;background:rgb(0 0 0/.45);display:grid;place-items:center;z-index:40;padding:16px}
+.dlg[hidden]{display:none}
+.dlg .card{max-width:520px;width:100%;display:grid;gap:14px}
+@media (max-width:1100px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:980px){.studio{grid-template-columns:1fr}.preview{position:sticky;top:104px;z-index:3;order:-1;background:var(--bg);padding-bottom:8px}.preview .ex-card{display:none}
+.canvas-wrap canvas{max-height:34vh}.proof{padding:10px;gap:8px}.preview .checks,.preview .cap-card{display:none}.mobile-only{display:grid!important}}
+@media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}
+.side{position:sticky;top:0;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:8px 12px 6px;gap:6px 10px;z-index:10}
+.brandmark span{display:none}.brandmark b{font-size:15px}.mark{height:30px;padding:0 8px;font-size:11px}
+nav{flex-direction:row;overflow-x:auto;scrollbar-width:none;order:3;flex:1 0 100%}nav a{white-space:nowrap;padding:8px 10px;font-size:14px;min-height:40px;flex:none}
+.who{margin:0;border:0;padding:0;order:2;display:flex;gap:8px;align-items:center}.who .sync{display:none}.projsel{order:4;flex:1 0 100%;grid-template-columns:auto 1fr;align-items:center;padding:4px 8px}.who .nm{display:none}.who button{padding:6px 10px;font-size:13px}
+.login{grid-template-columns:1fr}.login .stack{display:none}
+.g3,.g2{grid-template-columns:minmax(0,1fr)}
+.vrow{grid-template-columns:repeat(2,minmax(0,1fr))}.vrow>.vname{grid-column:1/-1}.vrow .sp{display:none}}
+@media (max-width:600px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles .tile:first-child{grid-column:1/-1}.g4{grid-template-columns:1fr 1fr}main{padding-top:18px}}
+.mobile-only{display:none!important}
+@media (prefers-reduced-motion:no-preference){.canvas-wrap canvas{transition:opacity .2s}}
+</style>
+</head>
+<body>
+<div id="root"><p style="padding:40px;text-align:center">جارٍ التحميل…</p></div>
+<noscript><p style="padding:40px;text-align:center">تحتاج المنصة إلى تفعيل JavaScript في المتصفح.</p></noscript>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="dlg" id="dlg" hidden><div class="card" role="dialog" aria-modal="true" aria-labelledby="dlg-t"><h2 id="dlg-t"></h2><div id="dlg-b"></div><div class="row" id="dlg-a"></div></div></div>
+<script src="config.js"></script>
+<script src="vendor/supabase.js"></script>
+<script>
+{
+/* ---------- utilities ---------- */
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-8xxx-xxxxxxxxxxxx'.replace(/x/g, () => (Math.random()*16|0).toString(16)));
+const usdF = new Intl.NumberFormat('en-US', {style:'currency', currency:'USD', minimumFractionDigits:2, maximumFractionDigits:2});
+const usd = v => v == null || !Number.isFinite(v) ? '—' : usdF.format(v);
+const n0 = v => v == null || !Number.isFinite(v) ? '—' : new Intl.NumberFormat('ar-EG-u-nu-latn').format(v);
+const dateAr = d => { if (!d) return ''; try { return new Intl.DateTimeFormat('ar-EG-u-nu-latn', {day:'numeric', month:'long', year:'numeric'}).format(new Date(d + 'T12:00:00')); } catch { return d; } };
+const arN = (n, one, two, few, many) => n === 1 ? one : n === 2 ? two : (n % 100 >= 3 && n % 100 <= 10) ? n0(n) + ' ' + few : n0(n) + ' ' + many;
+const nowAr = () => new Intl.DateTimeFormat('ar-EG-u-nu-latn', {dateStyle:'medium', timeStyle:'short'}).format(new Date());
+let toastTimer;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3600); }
+function dialog(title, bodyHtml, actions){
+  $('#dlg-t').textContent = title; $('#dlg-b').innerHTML = bodyHtml;
+  const a = $('#dlg-a'); a.innerHTML = '';
+  actions.forEach(([label, cls, fn]) => { const b = document.createElement('button'); b.className = 'btn ' + (cls || ''); b.textContent = label; b.onclick = () => { if (fn() !== false) $('#dlg').hidden = true; }; a.append(b); });
+  $('#dlg').hidden = false; a.querySelector('button')?.focus();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#dlg').hidden = true; });
+
+/* ---------- data ---------- */
+const KEY = 'scadd-partner-studio-v1';
+const PALETTE = ['#0e5a63','#1f4e8c','#6b3fa0','#9a2c4f','#b5541b','#2d6a3e','#3c3c3c'];
+const USERS = {
+  admin:   {role:'admin',   name:'إدارة سكاد',          title:'مسؤول المحتوى والاعتماد في سكاد', color:'#0e5a63'},
+  partner: {role:'partner', name:'فريق بيت العلاج',      title:'الجهة الشريكة — تُنشئ المحتوى وتعدّله', color:'#9a2c4f', partnerId:'cure'},
+  finance: {role:'finance', name:'مدير المالية',         title:'التخطيط المالي للدورات فقط', color:'#1f4e8c'}
+};
+const seed = () => ({
+  user: null, scaddLogo: null,
+  partners: [{id:'cure', name:'بيت العلاج', nameEn:'Cure House', logo:null, color:'#9a2c4f'}],
+  course: {id:'bgd-1', partnerId:'cure', title:'دورة تحليل السلوك التطبيقي للعاملين مع الأطفال ذوي التوحّد', city:'بغداد', start:'2027-01-10',
+    capacity:25, trainees:15, fee:500, days:11, staff:1, nights:11, hotel:100, travel:400, transport:200, supplies:5,
+    roomRate:null, venueDays:null, hospRate:null, hospDays:null, reserveMode:0, reserveAmount:300, reservePct:10},
+  designs: [
+    {id:uid(), partnerId:'cure', template:'course', format:'post45', theme:'scadd', status:'approved', version:2, updated:'2026-11-20',
+     fields:{eyebrow:'دورة تدريبية معتمدة', title:'أساسيات تحليل السلوك التطبيقي', subtitle:'برنامج تطبيقي للعاملين مع الأطفال ذوي التوحّد، يقدّمه معهد سكاد بالشراكة مع بيت العلاج.', date:'2027-01-10', place:'بغداد — مقر بيت العلاج', cta:'سجّل الآن — المقاعد محدودة', contact:'للتسجيل: واتساب 0770 000 0000'},
+     slides:[], comments:[{by:'إدارة سكاد', at:'20 نوفمبر', text:'معتمد. تم تعديل العنوان ليتطابق مع اسم البرنامج الرسمي.'}]},
+    {id:uid(), partnerId:'cure', template:'myth', format:'carousel', theme:'light', status:'pending', version:1, updated:'2026-11-23',
+     fields:{eyebrow:'خرافة وحقيقة', title:'خمس معلومات خاطئة عن التوحّد', subtitle:'وما تقوله الأدلة العلمية', cta:'تابعونا لمعلومات موثوقة', contact:'بيت العلاج × سكاد', source:'مراجع علمية محكّمة'},
+     slides:['خرافة: التوحّد سببه أسلوب التربية.\nحقيقة: التوحّد اضطراب نمائي عصبي، ولا تسببه طريقة تربية الأهل.',
+             'خرافة: الأطفال ذوو التوحّد لا يرغبون في التواصل.\nحقيقة: كثير منهم يرغبون في التواصل لكن بطرق مختلفة يمكن دعمها وتعليمها.',
+             'خرافة: التدخل المبكر لا يصنع فرقاً.\nحقيقة: التدخل المبكر القائم على الأدلة يرتبط بتحسّن مهارات التواصل والتعلّم.'],
+     comments:[]}
+  ]
+});
+const CFG = window.SCADD_CONFIG || {};
+const ONLINE = !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
+const sb = ONLINE ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'pkce'}}) : null;
+const COURSE_DEFAULT = seed().course;
+let S;
+if (ONLINE) S = {user:null, scaddLogo:null, partners:[], projects:[], memberships:[], profiles:[], archive:[], activity:[], pid:null, course:{...COURSE_DEFAULT, id:null}, designs:[]};
+else { try { S = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch { S = seed(); } }
+const save = () => { if (ONLINE) return scheduleSync(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} };
+const partnerOf = id => S.partners.find(p => p.id === id) || S.partners[0];
+const myDesigns = () => ONLINE ? S.designs.filter(d => d.projectId === S.pid) : S.user?.role === 'partner' ? S.designs.filter(d => d.partnerId === S.user.partnerId) : S.designs;
+
+/* ---------- templates & formats ---------- */
+const FORMATS = {
+  post45:   {name:'منشور إنستغرام', size:'1080×1350 · 4:5', w:1080, h:1350},
+  post34:   {name:'منشور طويل',     size:'1080×1440 · 3:4', w:1080, h:1440},
+  carousel: {name:'كاروسيل',        size:'شرائح 1080×1350', w:1080, h:1350},
+  story:    {name:'قصة / ريلز',     size:'1080×1920 · 9:16', w:1080, h:1920},
+  fb:       {name:'فيسبوك أفقي',    size:'1200×630', w:1200, h:630}
+};
+const F = (k, label, type = 'text', hint = '') => ({k, label, type, hint});
+const TEMPLATES = {
+  course:  {name:'إعلان دورة', desc:'العنوان والتاريخ والمكان ودعوة للتسجيل',
+    fields:[F('eyebrow','الوسم العلوي'),F('title','عنوان الدورة'),F('subtitle','وصف قصير','area','جملة أو جملتان'),F('date','تاريخ البدء','date'),F('place','المكان'),F('cta','دعوة للتسجيل'),F('contact','طريقة التواصل')]},
+  seats:   {name:'المقاعد المتبقية', desc:'يسحب عدد المقاعد من بيانات الدورة تلقائياً',
+    fields:[F('eyebrow','الوسم العلوي'),F('title','العنوان'),F('date','تاريخ البدء','date'),F('cta','دعوة للتسجيل'),F('contact','طريقة التواصل')]},
+  fact:    {name:'معلومة علمية', desc:'معلومة موثّقة مع مرجعها',
+    fields:[F('eyebrow','الوسم العلوي'),F('title','العنوان'),F('body','نص المعلومة','area','في الكاروسيل: افصل بين الشرائح بسطر فارغ'),F('source','المرجع','text','اسم المصدر أو الدراسة'),F('contact','سطر التذييل')]},
+  myth:    {name:'خرافة وحقيقة', desc:'تصحيح معلومة شائعة بلغة علمية',
+    fields:[F('eyebrow','الوسم العلوي'),F('title','العنوان'),F('subtitle','سطر فرعي'),F('body','الخرافة والحقيقة','area','اكتب «خرافة:» في سطر و«حقيقة:» في السطر التالي'),F('source','المرجع'),F('cta','سطر الختام'),F('contact','سطر التذييل')]},
+  trainer: {name:'تعريف بالمدرّب', desc:'الاسم والصفة ونبذة وصورة بموافقة',
+    fields:[F('eyebrow','الوسم العلوي'),F('title','اسم المدرّب'),F('subtitle','الصفة المهنية'),F('body','نبذة','area'),F('cta','سطر الدعوة'),F('contact','طريقة التواصل')]}
+};
+const DEFAULTS = {
+  course:{eyebrow:'دورة تدريبية', title:'', subtitle:'', date:'', place:'', cta:'سجّل الآن', contact:''},
+  seats:{eyebrow:'آخر فرصة للتسجيل', title:'مقاعد محدودة في الدورة', date:'', cta:'احجز مقعدك الآن', contact:''},
+  fact:{eyebrow:'معلومة علمية', title:'', body:'', source:'', contact:''},
+  myth:{eyebrow:'خرافة وحقيقة', title:'', subtitle:'', body:'', source:'', cta:'شاركوا المعلومة الصحيحة', contact:''},
+  trainer:{eyebrow:'تعرّف على مدرّبك', title:'', subtitle:'', body:'', cta:'', contact:''}
+};
+const THEMES = {
+  scadd:   {name:'هوية سكاد', bg:'#0e5a63', ink:'#ffffff', sub:'rgba(255,255,255,.82)', accent:'#f2a541', panel:'rgba(255,255,255,.1)'},
+  partner: {name:'هوية الشريك'},
+  light:   {name:'فاتح', bg:'#f6f3ee', ink:'#14262a', sub:'#4c5d60', accent:'#e8644a', panel:'#ffffff'}
+};
+function lum(hex){ const h = hex.replace('#',''); const c = [0,2,4].map(i => parseInt(h.slice(i,i+2),16)/255).map(v => v <= .03928 ? v/12.92 : ((v+.055)/1.055)**2.4); return .2126*c[0]+.7152*c[1]+.0722*c[2]; }
+const contrast = (a,b) => { const [x,y] = [lum(a),lum(b)].sort((p,q)=>q-p); return (x+.05)/(y+.05); };
+function themeOf(d){
+  if (d.theme !== 'partner') return THEMES[d.theme] || THEMES.scadd;
+  const c = partnerOf(d.partnerId).color || '#9a2c4f'; const dark = contrast(c,'#ffffff') >= contrast(c,'#14262a');
+  return {bg:c, ink: dark ? '#ffffff' : '#14262a', sub: dark ? 'rgba(255,255,255,.84)' : 'rgba(20,38,42,.78)', accent: dark ? '#ffffff' : '#14262a', panel: dark ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.5)'};
+}
+
+/* ---------- slide model ---------- */
+function splitBody(text){ return String(text || '').split(/\n\s*\n/).map(s => s.trim()).filter(Boolean); }
+function seatsLeft(){ return Math.max(0, S.course.capacity - S.course.trainees); }
+function buildSlides(d){
+  const f = d.fields;
+  if (d.format !== 'carousel') return [{kind:'single'}];
+  const content = (d.slides && d.slides.length ? d.slides : splitBody(f.body)).map(t => ({kind:'content', text:t}));
+  return [{kind:'cover'}, ...content, {kind:'end'}];
+}
+
+/* ---------- canvas renderer ---------- */
+const FONT = '"IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif';
+const imgCache = {};
+function img(src){ if (!src) return null; if (!imgCache[src]) { const i = new Image(); if (/^https?:/.test(src)) i.crossOrigin = 'anonymous'; i.onload = () => window.dispatchEvent(new Event('imgload')); i.src = src; imgCache[src] = i; } const i = imgCache[src]; return i.complete && i.naturalWidth ? i : null; }
+function wrap(ctx, text, maxW){
+  const out = [];
+  String(text || '').split('\n').forEach(par => {
+    const words = par.split(/\s+/).filter(Boolean); let line = '';
+    if (!words.length) { out.push(''); return; }
+    words.forEach(w => { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width <= maxW || !line) line = t; else { out.push(line); line = w; } });
+    out.push(line);
+  });
+  return out;
+}
+function rr(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+function drawScaddLogo(ctx, x, y, h, T){ // x = right edge
+  const logo = img(S.scaddLogo);
+  if (logo) { const w = h * logo.naturalWidth / logo.naturalHeight; ctx.drawImage(logo, x - w, y, w, h); return w; }
+  ctx.save(); const r = h/2; ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(x - r, y + r, r, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = T.bg; ctx.font = `700 ${h*.2}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.direction = 'ltr'; ctx.fillText('SCADD', x - r, y + r + 1);
+  ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = T.ink;
+  ctx.font = `700 ${h*.3}px ${FONT}`; ctx.fillText('سكاد', x - h - 16, y + h*.45);
+  ctx.font = `400 ${h*.19}px ${FONT}`; ctx.fillStyle = T.sub; ctx.fillText('المركز العلمي للتوحّد والاضطرابات النمائية', x - h - 16, y + h*.82);
+  const w = h + 16 + Math.max(ctx.measureText('المركز العلمي للتوحّد والاضطرابات النمائية').width, 0);
+  ctx.restore(); return w;
+}
+function drawPartnerLogo(ctx, x, y, h, T, p, preview){ // x = left edge
+  const logo = img(p.logo);
+  if (logo) {
+    const w = Math.min(h * 2.6, h * logo.naturalWidth / logo.naturalHeight), hh = w * logo.naturalHeight / logo.naturalWidth;
+    ctx.save(); rr(ctx, x - 10, y - 10 + (h-hh)/2, w + 20, hh + 20, 12); ctx.fillStyle = '#ffffff'; ctx.globalAlpha = T.bg === '#ffffff' || T.bg === '#f6f3ee' ? 0 : .96; ctx.fill(); ctx.restore();
+    ctx.drawImage(logo, x, y + (h-hh)/2, w, hh); return;
+  }
+  ctx.save(); ctx.font = `700 ${h*.34}px ${FONT}`; ctx.direction = 'rtl'; ctx.textAlign = 'left'; ctx.fillStyle = T.ink;
+  const w = ctx.measureText(p.name).width + 40;
+  rr(ctx, x, y + h*.12, w, h*.76, 14); ctx.strokeStyle = T.sub; ctx.lineWidth = 2; if (preview) ctx.setLineDash([8,6]); ctx.stroke();
+  ctx.fillText(p.name, x + 20, y + h*.62); ctx.restore();
+}
+function render(canvas, d, idx, opts = {}){
+  const fm = FORMATS[d.format], W = fm.w, H = fm.h; canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d'), T = themeOf(d), f = d.fields, p = partnerOf(d.partnerId);
+  const slides = buildSlides(d), sl = slides[Math.min(idx, slides.length - 1)];
+  const story = d.format === 'story', wide = d.format === 'fb';
+  const M = wide ? 64 : 90, top = story ? 250 : (wide ? 40 : 70), bottom = story ? 290 : (wide ? 40 : 70);
+  ctx.fillStyle = T.bg; ctx.fillRect(0, 0, W, H);
+  // quiet geometry
+  ctx.save(); ctx.globalAlpha = .07; ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(-W*.08, H*.9, W*.45, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = .1; ctx.fillStyle = T.accent; ctx.beginPath(); ctx.arc(W*1.02, H*.06, W*.2, 0, Math.PI*2); ctx.fill(); ctx.restore();
+  // header logos
+  const LH = wide ? 70 : 92;
+  drawScaddLogo(ctx, W - M, top, LH, T);
+  drawPartnerLogo(ctx, M, top, LH, T, p, opts.preview);
+  ctx.save(); ctx.strokeStyle = T.sub; ctx.globalAlpha = .35; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(M, top + LH + 34); ctx.lineTo(W - M, top + LH + 34); ctx.stroke(); ctx.restore();
+  const y0 = top + LH + 70, y1 = H - bottom - (wide ? 40 : 70), X = W - M, CW = W - 2*M;
+  // footer
+  ctx.save(); ctx.direction = 'rtl'; ctx.textAlign = 'right'; ctx.font = `500 ${wide?24:28}px ${FONT}`; ctx.fillStyle = T.sub;
+  ctx.fillText(f.contact || 'بالشراكة بين سكاد و' + p.name, X, H - bottom);
+  if (slides.length > 1) { ctx.textAlign = 'left'; ctx.direction = 'ltr'; ctx.fillText(`${idx+1} / ${slides.length}`, M, H - bottom); }
+  ctx.restore();
+  // blocks
+  const blocks = blocksFor(d, sl);
+  let s = 1, fit;
+  for (; s >= .55; s -= .05) { fit = layout(ctx, blocks, s, CW, T); if (fit.h <= y1 - y0) break; }
+  const overflow = fit.h > y1 - y0;
+  let y = y0 + Math.max(0, (y1 - y0 - fit.h) * .3);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, y0 - 10, W, y1 - y0 + 20); ctx.clip();
+  fit.items.forEach(it => { it.draw(ctx, X, y, CW, T, M); y += it.h; });
+  ctx.restore();
+  if (opts.watermark) { ctx.save(); ctx.translate(W/2, H/2); ctx.rotate(-Math.PI/7); ctx.font = `700 ${W*.09}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = T.ink; ctx.globalAlpha = .14; ctx.fillText('مسودة — غير معتمد', 0, 0); ctx.restore(); }
+  if (opts.safe) {
+    ctx.save(); ctx.setLineDash([14,10]); ctx.lineWidth = 3; ctx.strokeStyle = '#e8644a';
+    if (d.format === 'post45' || d.format === 'carousel') { const cut = (W - H*3/4)/2; ctx.strokeRect(cut, 2, W - 2*cut, H - 4); }
+    if (story) { ctx.fillStyle = 'rgba(232,100,74,.12)'; ctx.fillRect(0,0,W,220); ctx.fillRect(0,H-260,W,260); }
+    ctx.restore();
+  }
+  return {overflow, scale: s, slides: slides.length};
+}
+function textBlock(text, size, weight, color, lh = 1.45, gap = 0){
+  return (ctx, s, CW) => { ctx.font = `${weight} ${size*s}px ${FONT}`; const lines = wrap(ctx, text, CW); const h = lines.length * size*s*lh + gap*s;
+    return {h, draw:(c, X, y, _cw, T) => { c.save(); c.direction='rtl'; c.textAlign='right'; c.font = `${weight} ${size*s}px ${FONT}`; c.fillStyle = color(T);
+      lines.forEach((l,i) => c.fillText(l, X, y + size*s*(i+1)*lh - size*s*(lh-1)/2 - size*s*.18)); c.restore(); }}; };
+}
+function eyebrow(text){ return (ctx, s) => { const fs = 30*s; ctx.font = `700 ${fs}px ${FONT}`; const w = ctx.measureText(text).width + 44*s, h = fs*1.9;
+  return {h: h + 34*s, draw:(c, X, y, _cw, T) => { c.save(); rr(c, X - w, y, w, h, h/2); c.fillStyle = T.accent; c.fill(); c.direction='rtl'; c.textAlign='right'; c.font = `700 ${fs}px ${FONT}`;
+    c.fillStyle = contrast(T.accent.startsWith('#') ? T.accent : '#ffffff', '#14262a') > 7 ? '#14262a' : '#ffffff'; c.fillText(text, X - 22*s, y + h*.66); c.restore(); }}; }; }
+function ctaBlock(text){ return (ctx, s, CW) => { const fs = 36*s; ctx.font = `700 ${fs}px ${FONT}`; const w = Math.min(CW, ctx.measureText(text).width + 70*s), h = fs*2.3;
+  return {h: h + 20*s, draw:(c, X, y, _cw, T) => { c.save(); rr(c, X - w, y + 20*s, w, h, 14*s); c.fillStyle = T.ink; c.fill(); c.direction='rtl'; c.textAlign='center'; c.font = `700 ${fs}px ${FONT}`; c.fillStyle = T.bg; c.fillText(text, X - w/2, y + 20*s + h*.64); c.restore(); }}; }; }
+function infoBlock(rows){ return (ctx, s, CW) => { const fs = 34*s, lh = fs*1.9; const r = rows.filter(x => x[1]);
+  return {h: r.length * lh + 16*s, draw:(c, X, y, _cw, T) => { c.save(); c.direction='rtl'; c.textAlign='right';
+    r.forEach(([k,v],i) => { const yy = y + 8*s + lh*(i+.72); c.font = `500 ${fs*.82}px ${FONT}`; c.fillStyle = T.sub; c.fillText(k, X, yy); c.font = `600 ${fs}px ${FONT}`; c.fillStyle = T.ink; c.fillText(v, X - 170*s, yy); }); c.restore(); }}; }; }
+function pairBlock(text){ return (ctx, s, CW) => {
+  const parts = String(text).split('\n').map(t => t.trim()).filter(Boolean).map(t => { const m = t.match(/^(خرافة|حقيقة)\s*[:：]\s*(.*)$/); return m ? {k:m[1], v:m[2]} : {k:'', v:t}; });
+  const fs = 40*s, pad = 34*s; ctx.font = `500 ${fs}px ${FONT}`;
+  const boxes = parts.map(pt => { const lines = wrap(ctx, pt.v, CW - 2*pad); return {...pt, lines, h: (pt.k ? fs*1.4 : 0) + lines.length*fs*1.5 + 2*pad}; });
+  const h = boxes.reduce((a,b) => a + b.h + 22*s, 0);
+  return {h, draw:(c, X, y, CWd, T) => { let yy = y; boxes.forEach(b => { c.save(); rr(c, X - CWd, yy, CWd, b.h, 18*s);
+    c.fillStyle = b.k === 'حقيقة' ? T.panel : 'transparent'; c.fill(); c.strokeStyle = b.k === 'حقيقة' ? 'transparent' : T.sub; c.lineWidth = 2; c.setLineDash(b.k === 'خرافة' ? [10,8] : []); c.stroke(); c.setLineDash([]);
+    c.direction='rtl'; c.textAlign='right'; let ty = yy + pad;
+    if (b.k) { c.font = `700 ${fs*.78}px ${FONT}`; c.fillStyle = b.k === 'حقيقة' ? T.accent : T.sub; c.fillText(b.k === 'خرافة' ? '✕  خرافة' : '✓  حقيقة', X - pad, ty + fs*.8); ty += fs*1.4; }
+    c.font = `${b.k === 'حقيقة' ? 600 : 500} ${fs}px ${FONT}`; c.fillStyle = T.ink; b.lines.forEach((l,i) => c.fillText(l, X - pad, ty + fs*1.5*(i+1) - fs*.42));
+    c.restore(); yy += b.h + 22*s; }); }}; }; }
+function bigNumber(num, label){ return (ctx, s) => { const fs = 300*s;
+  return {h: fs*1.05 + 60*s, draw:(c, X, y, _cw, T) => { c.save(); c.direction='rtl'; c.textAlign='right'; c.font = `700 ${fs}px ${FONT}`; c.fillStyle = T.accent; c.fillText(num, X, y + fs*.9);
+    const w = c.measureText(num).width; c.font = `600 ${56*s}px ${FONT}`; c.fillStyle = T.ink; c.fillText(label, X - w - 30*s, y + fs*.86); c.restore(); }}; }; }
+function photoBlock(src){ return (ctx, s) => { const d = 300*s; return {h: d + 40*s, draw:(c, X, y, _cw, T) => { const i = img(src); c.save(); c.beginPath(); c.arc(X - d/2, y + d/2, d/2, 0, Math.PI*2); c.closePath();
+  if (i) { c.clip(); const r = Math.max(d/i.naturalWidth, d/i.naturalHeight); c.drawImage(i, X - d/2 - i.naturalWidth*r/2, y + d/2 - i.naturalHeight*r/2, i.naturalWidth*r, i.naturalHeight*r); }
+  else { c.fillStyle = T.panel; c.fill(); c.font = `500 ${30*s}px ${FONT}`; c.textAlign='center'; c.fillStyle = T.sub; c.fillText('صورة المدرّب', X - d/2, y + d/2 + 10*s); }
+  c.restore(); }}; }; }
+function blocksFor(d, sl){
+  const f = d.fields, ink = T => T.ink, sub = T => T.sub, B = [];
+  const add = (cond, b) => { if (cond) B.push(b); };
+  const tpl = d.template;
+  if (sl.kind === 'content') {
+    if (tpl === 'myth') { B.push(pairBlock(sl.text)); }
+    else B.push(textBlock(sl.text, 50, 500, ink, 1.55));
+    return B;
+  }
+  if (sl.kind === 'end') {
+    add(f.cta, textBlock(f.cta, 64, 700, ink, 1.3, 30));
+    add(tpl === 'course' || tpl === 'seats', infoBlock([['التاريخ', dateAr(f.date)], ['المكان', f.place]]));
+    add(f.source, textBlock('المرجع: ' + f.source, 30, 400, sub, 1.5, 20));
+    B.push(textBlock('بالشراكة بين معهد سكاد للتعليم والتدريب السريري و' + partnerOf(d.partnerId).name, 32, 500, sub, 1.5));
+    return B;
+  }
+  const cover = sl.kind === 'cover';
+  add(f.eyebrow, eyebrow(f.eyebrow));
+  if (tpl === 'seats' && !cover) { const k = seatsLeft(); B.push(bigNumber(n0(k), k === 1 ? 'مقعد متبقٍ' : k === 2 ? 'مقعدان متبقيان' : (k % 100 >= 3 && k % 100 <= 10) ? 'مقاعد متبقية' : 'مقعداً متبقياً')); }
+  if (tpl === 'trainer') add(true, photoBlock(f.photo));
+  add(f.title, textBlock(f.title, d.format === 'fb' ? 64 : 82, 700, ink, 1.22, 26));
+  add(f.subtitle, textBlock(f.subtitle, 42, 500, sub, 1.5, 24));
+  if (cover) { B.push(textBlock('اسحب لليسار ←', 30, 600, T => T.accent, 1.5, 10)); return B; }
+  if (tpl === 'fact') { add(f.body, textBlock(splitBody(f.body)[0] || '', 46, 500, ink, 1.55, 24)); add(f.source, textBlock('المرجع: ' + f.source, 28, 400, sub, 1.5)); }
+  if (tpl === 'myth') { add(f.body || d.slides[0], pairBlock(splitBody(f.body)[0] || d.slides[0] || '')); }
+  if (tpl === 'trainer') add(f.body, textBlock(f.body, 40, 400, ink, 1.55, 20));
+  if (tpl === 'course' || tpl === 'seats') B.push(infoBlock([['يبدأ في', dateAr(f.date)], ['المكان', f.place || (tpl === 'seats' ? S.course.city : '')]]));
+  add(f.cta, ctaBlock(f.cta));
+  return B;
+}
+function layout(ctx, blocks, s, CW, T){ const items = blocks.map(b => b(ctx, s, CW, T)); return {items, h: items.reduce((a,b) => a + b.h, 0)}; }
+
+/* ---------- checks: language, consent, overflow, contrast ---------- */
+const RISKY = [
+  [/علاج\s*(نهائي|جذري)|(يعالج|علاج|تعالج)\s*(ال)?توح/u, 'تجنّب وصف التوحّد بأنه يُعالَج نهائياً. صياغة مقترحة: «تدخّل قائم على الأدلة لدعم مهارات الطفل».'],
+  [/شفاء|يشفى|يُشفى|الشفاء|يشفي/u, 'كلمة «الشفاء» لا تناسب التوحّد. صياغة مقترحة: «تحسّن ملحوظ في المهارات».'],
+  [/مضمون|مضمونة|نضمن|100\s*[%٪]/u, 'تجنّب وعود النتائج المضمونة. صياغة مقترحة: «نتائج تُقاس وتُتابع دورياً».'],
+  [/التخلص\s*من\s*(ال)?توح|يختفي\s*(ال)?توح|معاناة|مريض\s*(ال)?توح|مرضى\s*(ال)?توح/u, 'استخدم لغة تحترم الطفل: «الأطفال ذوو التوحّد» بدل «مرضى التوحّد» أو «المعاناة».']
+];
+function checksFor(d, res){
+  const text = Object.values(d.fields).filter(v => typeof v === 'string').join(' ') + ' ' + (d.slides || []).join(' ');
+  const out = [];
+  RISKY.forEach(([re, msg]) => { if (re.test(text)) out.push(['bad', 'اللغة العلمية', msg]); });
+  if (!RISKY.some(([re]) => re.test(text))) out.push(['ok', 'اللغة العلمية', 'لا توجد عبارات علاجية مبالغ فيها.']);
+  if (res.overflowSlides.length) out.push(['bad', 'مساحة النص', 'النص أطول من المساحة في ' + (res.overflowSlides.length > 1 ? 'الشرائح ' : 'الشريحة ') + res.overflowSlides.join('، ') + '. اختصره أو وزّعه على شرائح.']);
+  else if (res.minScale < .8) out.push(['warn', 'مساحة النص', 'صُغّر الخط ليتسع النص. النص الأقصر أوضح على الهاتف.']);
+  else out.push(['ok', 'مساحة النص', 'النص داخل المنطقة الآمنة بحجم مقروء.']);
+  if (d.template === 'trainer' && d.fields.photo && !d.fields.consent) out.push(['bad', 'موافقة الصورة', 'لا يمكن اعتماد التصميم قبل تأكيد وجود موافقة موثّقة على استخدام الصورة.']);
+  if (d.theme === 'partner') { const c = contrast(themeOf(d).bg, themeOf(d).ink); out.push([c >= 4.5 ? 'ok' : 'warn', 'التباين', c >= 4.5 ? 'تباين النص مع لون الشريك مناسب.' : 'لون الشريك يضعف قراءة النص. اختر هوية سكاد أو الفاتحة.']); }
+  if (/[a-z]{3,}/i.test(d.fields.title || '')) out.push(['warn', 'الاتجاه', 'العنوان يحتوي كلمات لاتينية؛ راجع ترتيبها في المعاينة.']);
+  if (d.template === 'fact' && !d.fields.source) out.push(['warn', 'المرجع', 'المعلومة العلمية تحتاج إلى مرجع.']);
+  return out;
+}
+function analyse(d){ const c = document.createElement('canvas'); const n = buildSlides(d).length; const ov = []; let minScale = 1;
+  for (let i = 0; i < n; i++) { const r = render(c, d, i); if (r.overflow) ov.push(i+1); minScale = Math.min(minScale, r.scale); }
+  return {overflowSlides: ov, minScale}; }
+const blocking = checks => checks.some(c => c[0] === 'bad');
+
+/* ---------- caption ---------- */
+function captionFor(d){
+  const f = d.fields, p = partnerOf(d.partnerId), lines = [];
+  if (f.title) lines.push(f.title);
+  if (f.subtitle) lines.push(f.subtitle);
+  if (d.template === 'seats') lines.push(`تبقّى ${arN(seatsLeft(), 'مقعد واحد', 'مقعدان', 'مقاعد', 'مقعداً')} فقط في ${S.course.title}.`);
+  if (d.format === 'carousel') (d.slides.length ? d.slides : splitBody(f.body)).forEach((t,i) => lines.push(`${i+1}. ${t.replace(/\n/g,' — ')}`));
+  else if (f.body) lines.push(f.body);
+  if (f.date) lines.push('📅 ' + dateAr(f.date) + (f.place ? ' · ' + f.place : ''));
+  if (f.cta) lines.push(f.cta);
+  if (f.contact) lines.push(f.contact);
+  if (f.source) lines.push('المرجع: ' + f.source);
+  lines.push('', `بالشراكة بين معهد سكاد للتعليم والتدريب السريري و${p.name}.`, '', '#سكاد #التوحد #تحليل_السلوك_التطبيقي #' + (S.course.city || 'بغداد').replace(/\s+/g,'_') + ' #' + p.name.replace(/\s+/g,'_'));
+  const alt = `نص بديل: تصميم ${TEMPLATES[d.template].name} بهوية مشتركة بين سكاد و${p.name}${f.title ? '، بعنوان «' + f.title + '»' : ''}.`;
+  return lines.join('\n') + '\n\n' + alt;
+}
+
+/* ---------- export ---------- */
+let downloads = null;
+(async () => { try { downloads = await window.claude?.use?.('downloads'); } catch { downloads = null; } })();
+async function saveFile(name, blob){
+  if (downloads) {
+    try { await downloads.save({filename:name, data:blob}); toast('تم حفظ الملف: ' + name); return true; }
+    catch (e) { toast(e?.code === 'declined' ? 'أُلغي الحفظ.' : 'تعذّر الحفظ في هذه النافذة. افتح الصفحة في claude.ai.'); return false; }
+  }
+  try { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('بدأ تنزيل الملف: ' + name); return true; }
+  catch { toast('التنزيل غير متاح في هذه النافذة.'); return false; }
+}
+const toBlob = c => new Promise(r => c.toBlob(r, 'image/png'));
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = b => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+async function zip(files){ // [{name, data:Uint8Array}] store-only
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  for (const f of files) {
+    const name = enc.encode(f.name), crc = crc32(f.data), h = new DataView(new ArrayBuffer(30));
+    [[0,0x04034b50,4],[4,20,2],[6,0x0800,2],[8,0,2],[10,0,2],[12,0x21,2],[14,crc,4],[18,f.data.length,4],[22,f.data.length,4],[26,name.length,2],[28,0,2]].forEach(([o,v,s]) => s === 4 ? h.setUint32(o,v,true) : h.setUint16(o,v,true));
+    parts.push(new Uint8Array(h.buffer), name, f.data);
+    const c = new DataView(new ArrayBuffer(46));
+    [[0,0x02014b50,4],[4,20,2],[6,20,2],[8,0x0800,2],[10,0,2],[12,0,2],[14,0x21,2],[16,crc,4],[20,f.data.length,4],[24,f.data.length,4],[28,name.length,2],[30,0,2],[32,0,2],[34,0,2],[36,0,2],[38,0,4],[42,off,4]].forEach(([o,v,s]) => s === 4 ? c.setUint32(o,v,true) : c.setUint16(o,v,true));
+    central.push(new Uint8Array(c.buffer), name); off += 30 + name.length + f.data.length;
+  }
+  const size = central.reduce((a,b) => a + b.length, 0), e = new DataView(new ArrayBuffer(22));
+  [[0,0x06054b50,4],[8,files.length,2],[10,files.length,2],[12,size,4],[16,off,4]].forEach(([o,v,s]) => s === 4 ? e.setUint32(o,v,true) : e.setUint16(o,v,true));
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], {type:'application/zip'});
+}
+async function exportDesign(d){
+  const draft = d.status !== 'approved', n = buildSlides(d).length, c = document.createElement('canvas');
+  const base = `scadd-${d.partnerId}-${d.template}-${d.format}-v${d.version}${draft ? '-draft' : ''}`;
+  try { await document.fonts.load(`700 40px ${FONT}`); } catch {}
+  if (n === 1) { render(c, d, 0, {watermark: draft}); return saveFile(base + '.png', await toBlob(c)); }
+  const files = [];
+  for (let i = 0; i < n; i++) { render(c, d, i, {watermark: draft}); files.push({name:`slide-${String(i+1).padStart(2,'0')}.png`, data:new Uint8Array(await (await toBlob(c)).arrayBuffer())}); }
+  files.push({name:'caption.txt', data:new TextEncoder().encode(captionFor(d))});
+  return saveFile(base + '.zip', await zip(files));
+}
+
+/* ---------- routing & shell ---------- */
+const NAV = [
+  ['dashboard','لوحة المدير', c => ONLINE && c.staff],
+  ['home','الرئيسية', c => c.edit || (ONLINE && c.view && !c.finance)],
+  ['studio','استوديو المحتوى', c => c.edit],
+  ['library','التصاميم', c => c.edit || (ONLINE && c.role === 'viewer')],
+  ['review','المراجعة والاعتماد', c => c.review],
+  ['archive','الأرشيف', c => ONLINE && c.view],
+  ['finance','التخطيط المالي', c => c.finance],
+  ['team','فريق المشروع', c => ONLINE && c.manage],
+  ['brand','الهوية والشعارات', c => c.edit],
+  ['projects','المشاريع', c => ONLINE && c.staff],
+  ['users','المستخدمون', c => ONLINE && c.staff]
+];
+let editing = null, slideIdx = 0, showSafe = true;
+function route(){
+  if (!S.user) return renderLogin();
+  const C = caps(), allowed = NAV.filter(n => n[2](C)).map(n => n[0]);
+  let v = location.hash.slice(1); if (!allowed.includes(v)) v = allowed[0];
+  const pending = (ONLINE && !C.staff ? myDesigns() : S.designs).filter(d => d.status === 'pending').length;
+  $('#root').innerHTML = `<div class="app"><aside class="side"><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>معهد سكاد للتعليم والتدريب السريري</span></div></div>
+    ${ONLINE && S.projects.length > 1 ? `<label class="projsel"><span>المشروع</span><select id="psel">${S.projects.map(p => `<option value="${p.id}" ${p.id === S.pid ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>` : ONLINE && currentProject() ? `<div class="projsel"><span>المشروع</span><b>${esc(currentProject().name)}</b></div>` : ''}
+    <nav aria-label="الأقسام">${NAV.filter(n => n[2](C)).map(([id,label]) => `<a href="#${id}" ${id===v?'aria-current="page"':''}>${label}${id==='review'&&pending?`<span class="count">${pending}</span>`:''}</a>`).join('')}</nav>
+    <div class="who"><div class="nm"><b>${esc(S.user.name)}</b><br><span style="opacity:.8">${esc(S.user.title)}</span></div><span class="sync" id="sync" role="status">${ONLINE ? 'متصل · محفوظ' : 'وضع تجريبي · محفوظ في هذا المتصفح'}</span><button id="logout">${ONLINE ? 'تسجيل الخروج' : 'تبديل الحساب'}</button></div></aside><main id="main"></main></div>`;
+  $('#logout').onclick = async () => { if (ONLINE) { await flushSync(); await sb.auth.signOut(); S.user = null; S.designs = []; S.partners = []; S.projects = []; history.replaceState(null, '', location.pathname); route(); return; } S.user = null; save(); location.hash = ''; route(); };
+  $('#psel') && ($('#psel').onchange = e => switchProject(e.target.value));
+  ({home:renderHome, studio:renderStudio, library:renderLibrary, review:renderReview, brand:renderBrand, finance:renderFinance, dashboard:renderDashboard, projects:renderProjects, team:renderTeam, users:renderUsers, archive:renderArchive})[v]();
+  if (ONLINE) refreshIfStale();
+  document.title = 'SCADD Partner Studio — ' + NAV.find(n => n[0] === v)[1];
+}
+window.addEventListener('hashchange', route);
+
+/* ---------- login ---------- */
+function renderLogin(){
+  if (ONLINE) return renderOnlineLogin();
+  $('#root').innerHTML = `<div class="login"><section class="hero"><div><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>منصة الشركاء</span></div></div></div>
+  <div><h1>محتوى مشترك بهوية واحدة، وتخطيط مالي للدورات في مكان واحد</h1><p>تُنشئ الجهة الشريكة منشوراتها وإعلاناتها بشعارها وشعار سكاد، وتُرسلها للاعتماد، ثم تصدّرها بمقاسات إنستغرام وفيسبوك.</p></div>
+  <div class="stack" aria-hidden="true"><div style="width:190px;height:238px;background:#f6f3ee;inset-inline-start:0;top:40px;transform:rotate(-6deg)"></div><div style="width:190px;height:238px;background:#e8644a;inset-inline-start:150px;top:10px;transform:rotate(3deg)"></div><div style="width:190px;height:238px;background:#ffffff;inset-inline-start:300px;top:50px;transform:rotate(-2deg)"></div></div></section>
+  <section class="pick"><h2>اختر حساباً تجريبياً للدخول</h2><p class="muted small">في هذا النموذج الدخول محاكاة، والبيانات محفوظة في هذا المتصفح فقط. في النسخة الفعلية يدخل كل مستخدم ببريده وكلمة مروره، ويرى بيانات جهته فقط.</p>
+  ${Object.entries(USERS).map(([k,u]) => `<button class="acct" data-u="${k}"><span class="av" style="background:${u.color}">${esc(u.name.split(' ').pop().slice(0,2))}</span><span><b>${esc(u.name)}</b><span>${esc(u.title)}</span></span></button>`).join('')}
+  </section></div>`;
+  document.querySelectorAll('.acct').forEach(b => b.onclick = () => { S.user = USERS[b.dataset.u]; save(); location.hash = S.user.role === 'finance' ? 'finance' : 'home'; route(); });
+}
+
+/* ---------- home ---------- */
+function statusTag(s){ return `<span class="tag st-${s}">${({draft:'مسودة',pending:'بانتظار الاعتماد',approved:'معتمد',returned:'أُعيد للتعديل'})[s]}</span>`; }
+function thumbURL(d){ const c = document.createElement('canvas'); render(c, d, 0); const t = document.createElement('canvas'); t.width = 108; t.height = Math.round(108 * c.height / c.width); t.getContext('2d').drawImage(c, 0, 0, t.width, t.height); return t.toDataURL(); }
+function designItem(d, actions){
+  return `<div class="it"><div class="row" style="flex-wrap:nowrap"><img class="thumb" alt="" src="${thumbURL(d)}"><div><b>${esc(d.fields.title || TEMPLATES[d.template].name)}</b><div class="small muted">${TEMPLATES[d.template].name} · ${FORMATS[d.format].name} · الإصدار ${d.version}${ONLINE ? (caps().staff ? ' · ' + esc(S.projects.find(p => p.id === d.projectId)?.name || '') : '') : S.user.role==='admin'?' · '+esc(partnerOf(d.partnerId).name):''}</div></div></div><div class="row">${statusTag(d.status)}${actions}</div></div>`;
+}
+function renderHome(){
+  const ds = myDesigns(), c = S.course, left = seatsLeft();
+  const by = s => ds.filter(d => d.status === s).length;
+  $('#main').innerHTML = `<div class="head"><div><h1>أهلاً، ${esc(S.user.name)}</h1><p class="muted">${S.user.role==='admin'?'تابع محتوى الشركاء واعتمده، وأدر الهوية المشتركة.':'أنشئ محتوى الدورة، وأرسله للاعتماد، ثم صدّره للنشر.'}</p></div><button class="btn primary" id="new">تصميم جديد</button></div>
+  <div class="grid g4" style="margin-bottom:16px">${[['draft','مسودات'],['pending','بانتظار الاعتماد'],['approved','معتمدة'],['returned','أُعيدت للتعديل']].map(([s,l]) => `<div class="card stat"><b>${n0(by(s))}</b><span>${l}</span></div>`).join('')}</div>
+  <div class="grid g2"><div class="card"><div class="row" style="justify-content:space-between"><h2>الدورة القادمة</h2><span class="tag st-approved">${esc(c.city)}</span></div>
+    <p style="margin-top:10px;font-weight:600">${esc(c.title)}</p><p class="small muted">تبدأ ${dateAr(c.start)} · ${arN(c.days, 'يوم تدريبي واحد', 'يومان تدريبيان', 'أيام تدريبية', 'يوماً تدريبياً')}</p>
+    <div class="seatbar" role="img" aria-label="المسجّلون ${c.trainees} من ${c.capacity}"><i style="width:${Math.min(100, c.trainees / Math.max(1,c.capacity) * 100)}%"></i></div>
+    <p class="small">المسجّلون <b>${n0(c.trainees)}</b> من أصل <b>${n0(c.capacity)}</b> مقعداً · المتبقي <b>${arN(left, 'مقعد واحد', 'مقعدان', 'مقاعد', 'مقعداً')}</b></p>
+    <div class="grid g2" style="margin-top:14px"><label class="f">عدد المسجّلين<input type="number" min="0" id="h-tr" value="${c.trainees}"></label><label class="f">السعة<input type="number" min="0" id="h-cap" value="${c.capacity}"></label></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="seats-ad">إنشاء إعلان «المقاعد المتبقية»</button></div>
+    <p class="note">يتحدّث قالب المقاعد المتبقية تلقائياً عند تغيير هذين الرقمين، ويستخدمهما التخطيط المالي.</p></div>
+  <div class="card"><h2>آخر التصاميم</h2><div class="list" style="margin-top:8px">${ds.slice().sort((a,b) => b.updated.localeCompare(a.updated)).slice(0,4).map(d => designItem(d, `<button class="btn ghost" data-open="${d.id}">فتح</button>`)).join('') || '<p class="muted">لا توجد تصاميم بعد.</p>'}</div></div></div>
+  <p class="note">بيانات تجريبية: الدورة والأرقام والتصاميم أمثلة لعرض الوظائف.</p>`;
+  $('#new').onclick = () => { editing = null; location.hash = 'studio'; };
+  $('#seats-ad').onclick = () => { editing = newDesign('seats'); editing.fields.date = c.start; location.hash = 'studio'; route(); };
+  const upd = () => { c.trainees = Math.max(0, Math.floor(+$('#h-tr').value || 0)); c.capacity = Math.max(0, Math.floor(+$('#h-cap').value || 0)); save(); renderHome(); };
+  $('#h-tr').onchange = upd; $('#h-cap').onchange = upd;
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openDesign(b.dataset.open));
+  if (!caps().edit) { $('#new').remove(); $('#seats-ad').remove(); $('#h-tr').disabled = $('#h-cap').disabled = true; }
+}
+function newDesign(tpl){ const pid = S.user.partnerId || S.partners[0].id; return {id:uid(), projectId:S.pid, partnerId:pid, template:tpl, format:tpl === 'myth' ? 'carousel' : 'post45', theme:'scadd', status:'draft', version:1, updated:new Date().toISOString().slice(0,10), fields:{...DEFAULTS[tpl]}, slides:[], comments:[], isNew:true}; }
+function openDesign(id){ const d = S.designs.find(x => x.id === id); if (!d) return; if (ONLINE && d.projectId !== S.pid) applyProject(d.projectId); editing = JSON.parse(JSON.stringify(d)); slideIdx = 0; location.hash = 'studio'; route(); }
+
+/* ---------- studio ---------- */
+function renderStudio(){
+  if (!editing) editing = newDesign('course');
+  const d = editing, T = TEMPLATES[d.template], locked = d.status === 'pending' && !caps().review;
+  const fieldHtml = T.fields.map(fl => { const v = d.fields[fl.k] ?? ''; const id = 'fld-' + fl.k;
+    if (fl.k === 'body' && d.format === 'carousel') return '';
+    const input = fl.type === 'area' ? `<textarea id="${id}" data-k="${fl.k}">${esc(v)}</textarea>` : `<input id="${id}" data-k="${fl.k}" type="${fl.type === 'date' ? 'date' : 'text'}" value="${esc(v)}">`;
+    return `<label class="f" for="${id}">${fl.label}${fl.hint ? `<span class="hint">${fl.hint}</span>` : ''}${input}</label>`; }).join('');
+  const carouselEd = d.format === 'carousel' ? `<div class="card"><div class="row" style="justify-content:space-between"><h3>شرائح المحتوى</h3><span class="small muted">الغلاف والختام يُبنيان تلقائياً</span></div>
+    <label class="f" style="margin-top:10px">ألصق نصاً طويلاً لتوزيعه<span class="hint">افصل بين الشرائح بسطر فارغ${d.template==='myth'?'، وفي كل شريحة سطر «خرافة:» وسطر «حقيقة:»':''}</span><textarea id="bulk" placeholder="الفقرة الأولى…&#10;&#10;الفقرة الثانية…">${esc(d.fields.body || '')}</textarea></label>
+    <div class="row" style="margin:10px 0"><button class="btn" id="distribute">توزيع النص على الشرائح</button></div>
+    <div class="slides-edit">${d.slides.map((t,i) => `<div class="slide-ed"><div class="bar"><span>الشريحة ${i+2}</span><div class="row"><button class="btn" data-up="${i}" aria-label="تحريك الشريحة ${i+2} للأعلى" ${i===0?'disabled':''}>↑</button><button class="btn" data-down="${i}" aria-label="تحريك الشريحة ${i+2} للأسفل" ${i===d.slides.length-1?'disabled':''}>↓</button><button class="btn" data-del="${i}">حذف</button></div></div><textarea data-slide="${i}" aria-label="نص الشريحة ${i+2}">${esc(t)}</textarea></div>`).join('')}</div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="add-slide">إضافة شريحة</button><span class="small muted">${arN(d.slides.length + 2, 'شريحة', 'شريحتان', 'شرائح', 'شريحة')} مع الغلاف والختام (الحد 10)</span></div></div>` : '';
+  const photoEd = d.template === 'trainer' ? `<div class="card fields"><h3>صورة المدرّب</h3><input type="file" id="photo" accept="image/*" aria-label="رفع صورة المدرّب"><label class="toggle"><input type="checkbox" id="consent" ${d.fields.consent?'checked':''}> لديّ موافقة موثّقة من صاحب الصورة على نشرها</label></div>` : '';
+  const comments = d.comments.length ? `<div class="card"><h3>ملاحظات المراجعة</h3><div class="grid" style="margin-top:10px">${d.comments.map(c => `<div class="comment"><b>${esc(c.by)}</b> <span class="small muted">${esc(c.at)}</span><br>${esc(c.text)}</div>`).join('')}</div></div>` : '';
+  $('#main').innerHTML = `<div class="head"><div><h1>${d.isNew ? 'تصميم جديد' : esc(d.fields.title || T.name)}</h1><p class="muted">${statusTag(d.status)} <span class="small">الإصدار ${d.version}${S.user.role==='admin'?' · '+esc(partnerOf(d.partnerId).name):''}</span></p></div>
+    <div class="row">${caps().edit ? '<button class="btn" id="save">حفظ المسودة</button>' : ''}${!caps().edit ? '' : !caps().review?`<button class="btn primary" id="submit" ${locked?'disabled':''}>إرسال للاعتماد</button>`:`<button class="btn primary" id="approve">اعتماد</button>`}</div></div>
+  ${locked ? '<div class="comment" style="margin-bottom:16px">هذا التصميم بانتظار اعتماد سكاد. أي تعديل الآن يُعيده مسودة ويرفع رقم الإصدار.</div>' : ''}
+  <div class="studio"><div class="steps">
+    <div class="card"><h3>١. نوع المحتوى</h3><div class="choices" style="margin-top:10px">${Object.entries(TEMPLATES).map(([k,t]) => `<button class="choice" data-tpl="${k}" aria-pressed="${k===d.template}"><b>${t.name}</b><span>${t.desc}</span></button>`).join('')}</div></div>
+    <div class="card"><h3>٢. المقاس</h3><div class="fmt" style="margin-top:10px">${Object.entries(FORMATS).map(([k,f]) => { const r = f.h/f.w; return `<button class="choice" data-fmt="${k}" aria-pressed="${k===d.format}"><i class="shape" style="width:${r>1?18/r*1.2:26}px;height:${r>1?26:26*r}px"></i><b>${f.name}</b><span>${f.size}</span></button>`; }).join('')}</div>
+      <div class="row" style="margin-top:14px"><span class="small" style="font-weight:600">الألوان:</span>${Object.entries(THEMES).map(([k,t]) => `<button class="choice" style="padding:8px 12px" data-theme-k="${k}" aria-pressed="${k===d.theme}"><b>${t.name}</b></button>`).join('')}</div></div>
+    <div class="card fields"><h3>٣. المحتوى المكتوب</h3>${fieldHtml}${d.template==='seats'?`<p class="small muted">العدد في التصميم: <b>${arN(seatsLeft(), 'مقعد واحد', 'مقعدان', 'مقاعد', 'مقعداً')}</b> متبقية، من بيانات الدورة في الرئيسية.</p>`:''}</div>
+    ${carouselEd}${photoEd}${comments}
+  </div>
+  <div class="preview"><div class="proof"><div class="row" style="justify-content:space-between"><b class="small">المعاينة · ${FORMATS[d.format].size}</b><label class="toggle"><input type="checkbox" id="safe" ${showSafe?'checked':''}> المنطقة الآمنة</label></div>
+    <div class="canvas-wrap"><canvas id="cv" role="img" aria-label="معاينة التصميم"></canvas></div><div class="slidenav" id="snav"></div></div>
+    <div class="checks" id="checks" aria-live="polite"></div>
+    <div class="card cap-card"><div class="row" style="justify-content:space-between"><h3>نص المنشور والنص البديل</h3><button class="btn" id="copy">نسخ</button></div><div class="caption" id="cap" style="margin-top:10px"></div></div>
+    <div class="card ex-card"><div class="row"><button class="btn coral" id="export" style="flex:1">تصدير ${d.format==='carousel'?'الشرائح (ZIP)':'الصورة (PNG)'}</button></div><p class="note" id="exnote"></p></div>
+  </div></div>
+  <div class="mobile-only checks" id="checks-m" style="margin-top:16px"></div><div class="mobile-only card" style="margin-top:12px;gap:8px"><button class="btn coral" id="export-m">تصدير ${d.format==='carousel'?'الشرائح (ZIP)':'الصورة (PNG)'}</button><p class="note" id="exnote-m"></p></div>`;
+  bindStudio();
+  if (!caps().edit) document.querySelectorAll('.steps input, .steps textarea, .steps button, .steps select').forEach(e => e.disabled = true);
+  draw();
+}
+function touch(){ const d = editing; if (d.status !== 'draft' && !d.isNew) { d.status = 'draft'; d.version += 1; d.bumped = true; } }
+function bindStudio(){
+  const d = editing;
+  document.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => { if (b.dataset.tpl === d.template) return; const keep = {title:d.fields.title, date:d.fields.date, place:d.fields.place, contact:d.fields.contact};
+    d.template = b.dataset.tpl; d.fields = {...DEFAULTS[d.template], ...Object.fromEntries(Object.entries(keep).filter(([,v]) => v))}; d.slides = []; if (d.template === 'myth' && d.format !== 'carousel') { d.format = 'carousel'; toast('اختير الكاروسيل لأن هذا القالب يعرض عدة خرافات. يمكنك تغيير المقاس.'); } touch(); slideIdx = 0; renderStudio(); });
+  document.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => { d.format = b.dataset.fmt; if (d.format === 'carousel' && !d.slides.length) d.slides = splitBody(d.fields.body).slice(0,8); touch(); slideIdx = 0; renderStudio(); });
+  document.querySelectorAll('[data-theme-k]').forEach(b => b.onclick = () => { d.theme = b.dataset.themeK; touch(); renderStudio(); });
+  document.querySelectorAll('[data-k]').forEach(i => i.oninput = () => { d.fields[i.dataset.k] = i.value; touch(); draw(); });
+  document.querySelectorAll('[data-slide]').forEach(t => t.oninput = () => { d.slides[+t.dataset.slide] = t.value; touch(); slideIdx = +t.dataset.slide + 1; draw(); });
+  document.querySelectorAll('[data-slide]').forEach(t => t.onfocus = () => { slideIdx = +t.dataset.slide + 1; draw(); });
+  const mv = (i, j) => { const s = d.slides; [s[i], s[j]] = [s[j], s[i]]; touch(); slideIdx = j + 1; renderStudio(); };
+  document.querySelectorAll('[data-up]').forEach(b => b.onclick = () => mv(+b.dataset.up, +b.dataset.up - 1));
+  document.querySelectorAll('[data-down]').forEach(b => b.onclick = () => mv(+b.dataset.down, +b.dataset.down + 1));
+  document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { d.slides.splice(+b.dataset.del, 1); touch(); slideIdx = 0; renderStudio(); });
+  $('#add-slide') && ($('#add-slide').onclick = () => { if (d.slides.length >= 8) return toast('الحد الأقصى 10 شرائح مع الغلاف والختام.'); d.slides.push(d.template === 'myth' ? 'خرافة: \nحقيقة: ' : ''); touch(); slideIdx = d.slides.length; renderStudio(); document.querySelector(`[data-slide="${d.slides.length-1}"]`)?.focus(); });
+  $('#bulk') && ($('#bulk').oninput = () => { d.fields.body = $('#bulk').value; });
+  $('#distribute') && ($('#distribute').onclick = () => { const parts = splitBody(d.fields.body); if (!parts.length) return toast('ألصق نصاً أولاً، وافصل بين الفقرات بسطر فارغ.'); d.slides = parts.slice(0,8); touch(); slideIdx = 1; renderStudio(); toast(`وُزّع النص على ${arN(d.slides.length, 'شريحة واحدة', 'شريحتين', 'شرائح', 'شريحة')}${parts.length > 8 ? '؛ اختُصرت الزيادة عن 8' : ''}.`); });
+  $('#photo') && ($('#photo').onchange = async e => { const file = e.target.files[0]; if (!file) return; if (file.size > 5e6) return toast('حجم الصورة أكبر من 5 ميغابايت.');
+    if (ONLINE) { const r = await uploadImage('photos', d.projectId, file); if (!r) return; d.fields.photoPath = r.path; d.fields.photo = r.url; touch(); draw(); return; }
+    const r = new FileReader(); r.onload = () => { d.fields.photo = r.result; touch(); draw(); }; r.readAsDataURL(file); });
+  $('#consent') && ($('#consent').onchange = e => { d.fields.consent = e.target.checked; draw(); });
+  $('#safe').onchange = e => { showSafe = e.target.checked; draw(); };
+  if ($('#save')) $('#save').onclick = () => { const bumped = d.bumped; persist(); toast('حُفظت المسودة' + (bumped ? ` — الإصدار ${d.version}. يلزم إرساله للاعتماد من جديد` : '') + '.'); renderStudio(); };
+  $('#submit') && ($('#submit').onclick = () => { const ch = checksFor(d, analyse(d)); if (blocking(ch)) return toast('عالج الملاحظات الحمراء قبل الإرسال للاعتماد.'); d.status = 'pending'; persist(); toast('أُرسل التصميم لاعتماد سكاد.'); renderStudio(); });
+  $('#approve') && ($('#approve').onclick = () => { const ch = checksFor(d, analyse(d)); if (blocking(ch)) return toast('لا يمكن الاعتماد مع وجود ملاحظات حمراء.'); d.status = 'approved'; d.comments.push({by:S.user.name, at:nowAr(), text:'معتمد للنشر.'}); if (ONLINE) d.archiveOnSync = true; persist(); toast('اعتُمد التصميم ويمكن تصديره بلا علامة المسودة.'); renderStudio(); });
+  $('#copy').onclick = async () => { try { await navigator.clipboard.writeText(captionFor(d)); toast('نُسخ نص المنشور.'); } catch { const r = document.createRange(); r.selectNodeContents($('#cap')); getSelection().removeAllRanges(); getSelection().addRange(r); toast('حدّد النص وانسخه يدوياً.'); } };
+  $('#export-m').onclick = () => $('#export').click();
+  $('#export').onclick = async () => { const b = $('#export'); b.disabled = true; b.textContent = 'جارٍ التجهيز…'; persist(); await exportDesign(d); renderStudio(); };
+}
+function persist(){ const d = editing; d.updated = new Date().toISOString().slice(0,10); delete d.isNew; delete d.bumped; const i = S.designs.findIndex(x => x.id === d.id); const copy = JSON.parse(JSON.stringify(d)); if (i >= 0) { copy.rev = S.designs[i].rev; S.designs[i] = copy; } else S.designs.unshift(copy); save(); }
+function draw(){
+  const d = editing, cv = $('#cv'); if (!cv) return;
+  const n = buildSlides(d).length; slideIdx = Math.min(slideIdx, n - 1);
+  render(cv, d, slideIdx, {preview:true, safe:showSafe, watermark:d.status !== 'approved'});
+  const snav = $('#snav');
+  snav.innerHTML = n > 1 ? `<button class="btn" id="prev" aria-label="الشريحة السابقة" ${slideIdx===0?'disabled':''}>→</button><div class="dots">${Array.from({length:n}, (_,i) => `<i class="${i===slideIdx?'on':''}"></i>`).join('')}</div><span class="small">${slideIdx+1} / ${n}</span><button class="btn" id="next" aria-label="الشريحة التالية" ${slideIdx===n-1?'disabled':''}>←</button>` : '';
+  if (n > 1) { $('#prev').onclick = () => { slideIdx--; draw(); }; $('#next').onclick = () => { slideIdx++; draw(); }; }
+  const ch = checksFor(d, analyse(d)), html = ch.map(([lv, k, m]) => `<div class="chk ${lv}"><b>${lv==='ok'?'سليم':lv==='warn'?'تنبيه':'يلزم تعديل'}</b><span><strong>${k}:</strong> ${esc(m)}</span></div>`).join('');
+  $('#checks').innerHTML = html; $('#checks-m').innerHTML = '<h3>فحوص الجودة</h3>' + html;
+  $('#cap').textContent = captionFor(d);
+  $('#exnote-m').textContent = $('#exnote').textContent = d.status === 'approved' ? 'التصميم معتمد: يُصدَّر بلا علامة مسودة.' + (d.format==='carousel' ? ' يتضمن الملف الشرائح مرقّمة ونص المنشور.' : '') : 'التصميم غير معتمد بعد: يُصدَّر بعلامة «مسودة» للمراجعة الداخلية فقط.';
+}
+window.addEventListener('imgload', () => { if ($('#cv')) draw(); });
+document.addEventListener('keydown', e => { if (!$('#cv') || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return; const n = buildSlides(editing).length;
+  if (e.key === 'ArrowLeft' && slideIdx < n-1) { slideIdx++; draw(); } if (e.key === 'ArrowRight' && slideIdx > 0) { slideIdx--; draw(); } });
+
+/* ---------- library ---------- */
+function renderLibrary(){
+  const ds = myDesigns().slice().sort((a,b) => b.updated.localeCompare(a.updated));
+  $('#main').innerHTML = `<div class="head"><div><h1>تصاميمي</h1><p class="muted">كل تصميم محفوظ قابل للتعديل وإعادة التصدير. التعديل على تصميم معتمد يعيده مسودة بإصدار جديد.</p></div><button class="btn primary" id="new">تصميم جديد</button></div>
+  <div class="card"><div class="row" style="margin-bottom:6px"><label class="f" style="flex:1">بحث<input id="q" placeholder="ابحث بالعنوان"></label><label class="f">الحالة<select id="fs"><option value="">الكل</option><option value="draft">مسودة</option><option value="pending">بانتظار الاعتماد</option><option value="approved">معتمد</option><option value="returned">أُعيد للتعديل</option></select></label></div><div class="list" id="lst"></div></div>`;
+  const paint = () => { const q = $('#q').value.trim(), s = $('#fs').value; const r = ds.filter(d => (!s || d.status === s) && (!q || (d.fields.title || '').includes(q)));
+    $('#lst').innerHTML = r.map(d => designItem(d, caps().edit ? `<button class="btn" data-open="${d.id}">تعديل</button><button class="btn ghost" data-dup="${d.id}">نسخة</button>` : `<button class="btn" data-open="${d.id}">عرض وتصدير</button>`)).join('') || '<p class="muted" style="padding:16px 0">لا توجد نتائج. غيّر البحث أو أنشئ تصميماً جديداً.</p>';
+    document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openDesign(b.dataset.open));
+    document.querySelectorAll('[data-dup]').forEach(b => b.onclick = () => { const o = S.designs.find(x => x.id === b.dataset.dup); const c = JSON.parse(JSON.stringify(o)); Object.assign(c, {id:uid(), status:'draft', version:1, comments:[], updated:new Date().toISOString().slice(0,10)}); delete c.rev; c.fields.title = (c.fields.title || '') + ' (نسخة)'; S.designs.unshift(c); save(); toast('أُنشئت نسخة جديدة كمسودة.'); renderLibrary(); }); };
+  $('#q').oninput = paint; $('#fs').onchange = paint; $('#new').onclick = () => { editing = null; location.hash = 'studio'; }; if (!caps().edit) $('#new').remove(); paint();
+}
+
+/* ---------- review ---------- */
+function renderReview(){
+  const ds = (ONLINE && !caps().staff ? myDesigns() : S.designs).filter(d => d.status === 'pending');
+  $('#main').innerHTML = `<div class="head"><div><h1>المراجعة والاعتماد</h1><p class="muted">تصاميم الشركاء التي تنتظر قرار سكاد. افتح التصميم لمراجعة كل شريحة، ثم اعتمده أو أعده بملاحظة محددة.</p></div></div>
+  <div class="card"><div class="list">${ds.map(d => designItem(d, `<button class="btn" data-open="${d.id}">مراجعة</button><button class="btn primary" data-ok="${d.id}">اعتماد</button><button class="btn" data-ret="${d.id}">إعادة بملاحظة</button>`)).join('') || '<p class="muted" style="padding:16px 0">لا توجد تصاميم بانتظار الاعتماد.</p>'}</div></div>`;
+  document.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openDesign(b.dataset.open));
+  document.querySelectorAll('[data-ok]').forEach(b => b.onclick = () => { const d = S.designs.find(x => x.id === b.dataset.ok); const ch = checksFor(d, analyse(d)); if (blocking(ch)) return toast('في التصميم ملاحظات حمراء؛ افتحه للمراجعة.'); d.status = 'approved'; d.comments.push({by:S.user.name, at:nowAr(), text:'معتمد للنشر.'}); if (ONLINE) d.archiveOnSync = true; save(); toast('اعتُمد التصميم.'); route(); });
+  document.querySelectorAll('[data-ret]').forEach(b => b.onclick = () => dialog('إعادة التصميم بملاحظة', '<label class="f">ما المطلوب تعديله؟<textarea id="rt" placeholder="مثال: الشريحة 3 — يُرجى إضافة المرجع العلمي."></textarea></label>', [
+    ['إعادة للشريك', 'primary', () => { const t = $('#rt').value.trim(); if (!t) { toast('اكتب الملاحظة أولاً.'); return false; } const d = S.designs.find(x => x.id === b.dataset.ret); d.status = 'returned'; d.comments.push({by:S.user.name, at:nowAr(), text:t}); save(); toast('أُعيد التصميم مع الملاحظة.'); route(); }], ['إلغاء', '', () => {}]]));
+}
+
+/* ---------- brand ---------- */
+function renderBrand(){
+  const admin = ONLINE ? caps().staff : S.user.role === 'admin', parts = admin ? S.partners : S.partners.filter(p => p.id === S.user.partnerId);
+  $('#main').innerHTML = `<div class="head"><div><h1>الهوية والشعارات</h1><p class="muted">شعار سكاد ثابت في كل التصاميم ويُدار من سكاد فقط. لكل جهة شريكة شعارها ولونها، ويوضع الشعاران وفق قاعدة واحدة.</p></div>${admin?'<button class="btn" id="addp">إضافة جهة شريكة</button>':''}</div>
+  <div class="grid g2"><div class="card fields"><h2>شعار سكاد</h2><div class="logo-box">${S.scaddLogo?`<img src="${S.scaddLogo}" alt="شعار سكاد">`:'<span class="muted small">يُستخدم شعار نصّي مؤقت حتى يُرفع الشعار الرسمي.</span>'}</div>
+    ${admin?'<label class="f">رفع الشعار الرسمي<span class="hint">PNG بخلفية شفافة، بعرض 600 بكسل على الأقل</span><input type="file" id="slogo" accept="image/png,image/svg+xml,image/jpeg"></label>':'<p class="small muted">لا يملك الشريك صلاحية تعديل شعار سكاد.</p>'}</div>
+  ${parts.map(p => `<div class="card fields"><h2>${esc(p.name)}</h2><div class="logo-box">${p.logo?`<img src="${p.logo}" alt="شعار ${esc(p.name)}">`:'<span class="muted small">لم يُرفع الشعار بعد. يظهر اسم الجهة مكانه في التصاميم.</span>'}</div>
+    <label class="f">شعار الجهة<span class="hint">يُوضع في الطرف الأيسر من رأس التصميم</span><input type="file" data-plogo="${p.id}" accept="image/png,image/svg+xml,image/jpeg"></label>
+    <label class="f">اسم الجهة كما يظهر في التصاميم<input data-pname="${p.id}" value="${esc(p.name)}"></label>
+    <div><span class="small" style="font-weight:600">لون الجهة</span><div class="swatches" style="margin-top:6px">${PALETTE.map(c => `<button class="sw" style="background:${c}" data-pc="${p.id}" data-c="${c}" aria-label="اللون ${c}" aria-pressed="${c===p.color}"></button>`).join('')}</div><p class="small muted" style="margin-top:6px">يُستخدم في قالب «هوية الشريك»، ويُفحص تباينه مع النص تلقائياً.</p></div></div>`).join('')}</div>`;
+  const read = (file, fn, folder) => { if (!file) return; if (file.size > 3e6) return toast('حجم الملف أكبر من 3 ميغابايت.'); if (ONLINE) return uploadImage('brand', folder, file).then(r => r && fn(r.url)); const r = new FileReader(); r.onload = () => fn(r.result); r.readAsDataURL(file); };
+  $('#slogo') && ($('#slogo').onchange = e => read(e.target.files[0], async v => { S.scaddLogo = v; if (ONLINE) { const {error} = await sb.from('settings').upsert({key:'scadd_logo', value:{url:v}}); if (error) return toast('تعذّر حفظ الشعار: ' + arErr(error)); } else save(); toast('حُدّث شعار سكاد في كل التصاميم.'); renderBrand(); }, 'scadd'));
+  document.querySelectorAll('[data-plogo]').forEach(i => i.onchange = e => read(e.target.files[0], v => { partnerOf(i.dataset.plogo).logo = v; save(); toast('رُفع شعار الجهة.'); renderBrand(); }, 'partners/' + i.dataset.plogo));
+  document.querySelectorAll('[data-pname]').forEach(i => i.onchange = () => { partnerOf(i.dataset.pname).name = i.value.trim() || 'الجهة الشريكة'; save(); toast('حُفظ الاسم.'); });
+  document.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { partnerOf(b.dataset.pc).color = b.dataset.c; save(); renderBrand(); });
+  $('#addp') && ($('#addp').onclick = () => dialog('إضافة جهة شريكة', '<label class="f">اسم الجهة<input id="np"></label><p class="small muted">في النسخة الفعلية يُرسل للجهة رابط دعوة لإنشاء حسابها.</p>', [
+    ['إضافة', 'primary', () => { const v = $('#np').value.trim(); if (!v) { toast('اكتب اسم الجهة.'); return false; } S.partners.push({id:uid(), name:v, logo:null, color:PALETTE[S.partners.length % PALETTE.length]}); save(); renderBrand(); }], ['إلغاء','',()=>{}]]));
+}
+
+/* ---------- finance ---------- */
+function calc(c, n = c.trainees){
+  const vd = c.venueDays ?? c.days, hd = c.hospDays ?? c.days;
+  const room = (c.roomRate ?? 0) * vd, hosp = (c.hospRate ?? 0) * hd;
+  const logistics = c.staff*c.nights*c.hotel + c.staff*c.travel + c.staff*c.transport + room + hosp + n*c.supplies;
+  const reserve = c.reserveMode === 1 ? logistics*c.reservePct/100 : c.reserveAmount;
+  const revenue = n*c.fee, cost = logistics + reserve, per = v => n > 0 ? v/n : null;
+  return {n, vd, hd, room, hosp, logistics, reserve, revenue, cost, profit: revenue - cost, perT: per(cost), roomT: c.roomRate == null ? null : per(room), hospT: c.hospRate == null ? null : per(hosp), venue: room + hosp, venueT: c.roomRate == null && c.hospRate == null ? null : per(room + hosp), budget: logistics + reserve + revenue};
+}
+function breakEven(c){ for (let n = 0; n <= 2000; n++) if (calc(c, n).profit >= 0) return n; return null; }
+function renderFinance(){
+  const c = S.course;
+  const num = (k, label, unit, opt = false, whole = false, ph = '') => `<label class="f">${label}<span class="hint">${unit}</span><input type="number" min="0" step="${whole?1:0.01}" data-fk="${k}" data-opt="${opt?1:''}" data-whole="${whole?1:''}" value="${c[k] ?? ''}" placeholder="${ph || (opt ? 'أدخل السعر' : '')}"></label>`;
+  $('#main').innerHTML = `<div class="head"><div><h1>التخطيط المالي للدورة</h1><p class="muted">${esc(c.title)} · ${esc(c.city)} · جميع المبالغ بالدولار الأمريكي</p></div></div>
+  <div class="card" style="margin-bottom:16px"><h2>الملخص المالي</h2><div class="tiles" id="tiles" style="margin-top:12px" aria-live="polite"></div>
+    <p class="note">الإيراد = 500 دولار × عدد المتدربين. إجمالي الكلفة = اللوجستيات + الاحتياطي. الربح = الإيراد − إجمالي الكلفة. نقطة التعادل = أقل عدد متدربين يغطي فيه الإيراد الكلفة.</p></div>
+  <div class="card"><h2>الفرضيات</h2>
+    <fieldset><legend>الدورة والتسجيل</legend><div class="grid g4">${num('trainees','عدد المتدربين','متدرب',false,true)}${num('capacity','السعة','مقعد',false,true)}${num('days','أيام التدريب','يوم',false,true)}${num('staff','فريق سكاد المسافر','شخص',false,true)}</div></fieldset>
+    <fieldset id="venue"><legend>القاعة والضيافة</legend><p class="small muted" style="margin-bottom:8px">أدخل سعر حجز القاعة الكامل لأربع ساعات في اليوم، وإجمالي ضيافة جميع المتدربين في اليوم.</p>
+      <div class="vrow"><b class="vname">القاعة</b>${num('roomRate','سعر الحجز','دولار لكل حجز 4 ساعات (حجز يومياً)',true)}${num('venueDays','أيام الحجز','فارغ = كل أيام التدريب',true,true,'الكل ('+c.days+')')}<div class="calc" id="c-room"></div><div class="calc" id="c-roomT"></div></div>
+      <div class="vrow"><b class="vname">الضيافة</b>${num('hospRate','الضيافة اليومية','دولار لكل يوم لجميع المتدربين',true)}${num('hospDays','أيام الضيافة','فارغ = كل أيام التدريب',true,true,'الكل ('+c.days+')')}<div class="calc" id="c-hosp"></div><div class="calc" id="c-hospT"></div></div>
+      <div class="vrow"><b class="vname">المجموع</b><span class="sp"></span><span class="sp"></span><div class="calc" id="c-venue"></div><div class="calc" id="c-venueT"></div></div>
+      <div class="impact" id="impact" aria-live="polite"></div></fieldset>
+    <fieldset><legend>السفر والمستلزمات والاحتياطي</legend><div class="grid g4">${num('nights','ليالي الفندق','ليلة لكل شخص',false,true)}${num('hotel','الفندق','دولار لكل شخص لكل ليلة')}${num('travel','الطيران والتأشيرة','دولار لكل شخص')}${num('transport','النقل المحلي','دولار لكل شخص')}${num('supplies','المستلزمات','دولار لكل متدرب')}
+      <label class="f">طريقة الاحتياطي<span class="hint">مبلغ ثابت أو نسبة</span><select id="rmode"><option value="0" ${c.reserveMode===0?'selected':''}>مبلغ ثابت</option><option value="1" ${c.reserveMode===1?'selected':''}>نسبة من اللوجستيات</option></select></label>
+      ${c.reserveMode===1?num('reservePct','نسبة الاحتياطي','٪ من اللوجستيات'):num('reserveAmount','مبلغ الاحتياطي','دولار للدورة')}</div></fieldset></div>
+  <div class="card" style="margin-top:16px"><h2>مقارنة أحجام الدفعة</h2><div class="scroll" style="margin-top:10px"><table id="scen"></table></div>
+    <p class="note">النسخة الكاملة من لوحة بغداد، بالرسوم البيانية وتوزيع اللوجستيات، متاحة ملفاً مستقلاً، وتُدمج في النسخة الفعلية.</p></div>`;
+  document.querySelectorAll('[data-fk]').forEach(i => i.oninput = () => { const k = i.dataset.fk; if (i.dataset.opt && i.value === '') c[k] = null; else { let v = Math.max(0, Number(i.value)); if (!Number.isFinite(v)) return; c[k] = i.dataset.whole ? Math.floor(v) : v; } save(); paintFinance(); });
+  $('#rmode').onchange = e => { c.reserveMode = +e.target.value; save(); renderFinance(); };
+  paintFinance();
+}
+function paintFinance(){
+  const c = S.course, r = calc(c), be = breakEven(c), pl = (n, a, b) => n === 1 ? '1 ' + a : arN(n, '1 ' + a, '2 ' + a, b === 'متدرباً' ? 'متدربين' : b === 'متدرباً إضافياً' ? 'متدربين إضافيين' : b === 'أيام' ? 'أيام' : b, b === 'أيام' ? 'يوماً' : b);
+  const beTxt = be == null ? 'غير متحققة' : pl(be, 'متدرب', 'متدرباً');
+  $('#tiles').innerHTML = [
+    ['الإيراد', usd(r.revenue), `${pl(c.trainees,'متدرب','متدرباً')} × ${usd(c.fee)}`, ''],
+    ['إجمالي كلفة الدورة', usd(r.cost), 'اللوجستيات والاحتياطي', ''],
+    ['ربح الدورة', usd(r.profit), r.revenue > 0 ? `هامش ${(r.profit / r.revenue * 100).toFixed(1)}٪ من الإيراد` : 'لا إيراد عند صفر متدربين', r.profit < 0 ? 'neg' : 'pos'],
+    ['نقطة التعادل', beTxt, be == null ? 'الكلفة تتجاوز الإيراد' : c.trainees >= be ? 'متحققة عند العدد الحالي' : `يلزم ${pl(be - c.trainees,'متدرب إضافي','متدرباً إضافياً')}`, be != null && c.trainees >= be ? 'pos' : 'neg'],
+    ['كلفة المتدرب', usd(r.perT), c.trainees > 0 ? 'إجمالي الكلفة ÷ عدد المتدربين' : 'أضف متدربين للحساب', '']
+  ].map(([k,v,s,t]) => `<div class="tile ${t}"><span>${k}</span><b>${esc(v)}</b><small>${esc(s)}</small></div>`).join('');
+  const cl = (id, v, u) => { $('#' + id).innerHTML = `<b>${esc(v)}</b><small>${esc(u)}</small>`; };
+  cl('c-room', c.roomRate == null ? '—' : usd(r.room), c.roomRate == null ? 'أدخل السعر' : `إجمالي ${pl(r.vd,'يوم','أيام')}`);
+  cl('c-roomT', c.roomRate == null ? '—' : usd(r.roomT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+  cl('c-hosp', c.hospRate == null ? '—' : usd(r.hosp), c.hospRate == null ? 'أدخل السعر' : `إجمالي ${pl(r.hd,'يوم','أيام')}`);
+  cl('c-hospT', c.hospRate == null ? '—' : usd(r.hospT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+  cl('c-venue', c.roomRate == null && c.hospRate == null ? '—' : usd(r.venue), 'القاعة والضيافة');
+  cl('c-venueT', usd(r.venueT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+  $('#impact').innerHTML = `<b style="direction:rtl">الأثر على الدورة:</b><span>إجمالي الكلفة <b>${usd(r.cost)}</b></span><span>كلفة المتدرب <b>${usd(r.perT)}</b></span><span>الربح <b style="color:var(${r.profit<0?'--bad':'--ok'})">${usd(r.profit)}</b></span><span>التعادل <b style="direction:rtl">${beTxt}</b></span>`;
+  const sizes = [...new Set([15, 20, 25, c.capacity].filter(x => x > 0))].sort((a,b) => a-b), sc = sizes.map(n => calc(c, n));
+  $('#scen').innerHTML = `<thead><tr><th>البند (دولار)</th>${sizes.map(n => `<th>${arN(n, 'متدرب', 'متدربان', 'متدربين', 'متدرباً')}${n===c.capacity?' (السعة)':''}</th>`).join('')}</tr></thead><tbody>${[
+    ['الإيراد','revenue'],['لوجستيات بيت العلاج','logistics'],['الاحتياطي','reserve'],['إجمالي كلفة الدورة','cost'],['ربح الدورة','profit',1],['كلفة المتدرب','perT'],['القاعة لكل متدرب','roomT'],['الضيافة لكل متدرب','hospT'],['إجمالي ميزانية بيت العلاج','budget']
+  ].map(([l,k,em]) => `<tr class="${em?'em':''}"><td>${l}</td>${sc.map(x => `<td style="${k==='profit'&&x.profit<0?'color:var(--bad)':''}">${usd(x[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+}
+
+/* ---------- online layer (Supabase) — active only when config.js holds a project URL and key ---------- */
+const ROLE_LABEL = {owner:'مالك المنصة', admin:'إدارة سكاد', manager:'مدير المشروع', reviewer:'مراجع المحتوى', editor:'محرر المحتوى', finance:'المالية', viewer:'اطلاع فقط'};
+const ROLE_HINT = {manager:'يدير المشروع ومحتواه وماليته وفريقه', reviewer:'يعتمد المحتوى أو يعيده بملاحظة', editor:'يُنشئ المحتوى ويعدّله ويرسله للاعتماد', finance:'يرى التخطيط المالي ويعدّله فقط', viewer:'يرى المحتوى المعتمد والأرشيف فقط'};
+const STATUS_LABEL = {planning:'قيد التخطيط', active:'نشط', completed:'مكتمل', archived:'مؤرشف'};
+const snap = {designs:new Map(), partners:new Map(), courses:new Map()};
+let syncTimer = null, syncChain = Promise.resolve(), lastLoad = 0, sessionStarting = false, dirty = false;
+const fmtAt = iso => { try { return new Intl.DateTimeFormat('ar-EG-u-nu-latn', {dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); } catch { return iso; } };
+const ERR_AR = [[/appoint a project manager|change a project manager/i, 'تعيين مدير المشروع أو تغييره من صلاحيات سكاد.'], [/Reviewers are appointed by SCADD/i, 'اعتماد المحتوى في هذا المشروع لدى سكاد، فلا يُعيَّن مراجع من الفريق.'],
+  [/approve or return/i, 'الاعتماد من صلاحية المراجع المعتمد فقط.'], [/global roles/i, 'منح صلاحيات الإدارة العامة للمالك فقط.'], [/Editors can update enrolment only/i, 'يستطيع المحرر تحديث أعداد التسجيل فقط.'],
+  [/Only managers can change project details/i, 'تعديل بيانات المشروع لمدير المشروع.'], [/partner, approval rule or archive/i, 'تغيير الجهة أو قاعدة الاعتماد أو مجلد الأرشيف من صلاحيات سكاد.'],
+  [/row-level security|permission denied|42501/i, 'لا تملك صلاحية هذا الإجراء.'], [/Failed to fetch|NetworkError/i, 'تعذّر الاتصال بالخادم. تحقق من الإنترنت.']];
+const arErr = e => { const m = String(e?.message || e || ''); const hit = ERR_AR.find(([re]) => re.test(m)); return hit ? hit[1] : m; };
+function setSync(state, msg){ const el = document.getElementById('sync'); if (!el) return; el.classList.toggle('err', state === 'error');
+  el.textContent = state === 'saving' ? 'جارٍ الحفظ…' : state === 'error' ? 'تعذّر الحفظ — ' + (msg || 'تحقق من الاتصال') : 'متصل · محفوظ'; }
+
+/* project context & capabilities */
+const currentProject = () => (S.projects || []).find(p => p.id === S.pid) || null;
+function myProjectRole(pid){ return (S.memberships || []).find(m => m.project_id === pid && m.user_id === S.user?.id)?.role || null; }
+function caps(){
+  if (!ONLINE) { const r = S.user?.role; return {staff:r === 'admin', edit:r === 'admin' || r === 'partner', review:r === 'admin', finance:r === 'admin' || r === 'finance', manage:r === 'admin', view:true, role:r}; }
+  const r = myProjectRole(S.pid), staff = !!S.user?.staff, p = currentProject(), delegated = p?.approval_mode === 'project';
+  return {staff, role: staff ? 'staff' : r, view: staff || !!r, edit: staff || ['manager','reviewer','editor'].includes(r),
+    review: staff || (delegated && ['manager','reviewer'].includes(r)), finance: staff || ['manager','finance'].includes(r), manage: staff || r === 'manager'};
+}
+function applyProject(pid){
+  S.pid = pid; try { localStorage.setItem('scadd-active-project', pid); } catch {}
+  const p = currentProject();
+  S.course = p ? {...COURSE_DEFAULT, ...p.course, id:p.id, partnerId:p.partner_id, title:p.course?.title || p.name, city:p.city || p.course?.city || '', start:p.start_date || p.course?.start || ''} : {...COURSE_DEFAULT, id:null};
+  const c = caps();
+  S.user.role = c.staff || c.manage || c.review ? 'admin' : c.edit ? 'partner' : c.finance ? 'finance' : 'viewer';
+  S.user.partnerId = p?.partner_id;
+  S.user.title = c.staff ? ROLE_LABEL[S.user.globalRole] : (ROLE_LABEL[c.role] || '') + (p ? ' · ' + p.name : '');
+}
+
+/* rows */
+const designRow = d => { const fields = {...d.fields}; delete fields.photo; return {id:d.id, project_id:d.projectId, template:d.template, format:d.format, theme:d.theme, status:d.status, version:d.version, fields, slides:d.slides || []}; };
+const partnerRow = p => ({id:p.id, name:p.name, name_en:p.nameEn || null, color:p.color, logo_url:p.logo || null});
+const courseOf = c => { const {id, partnerId, title, city, start, ...rest} = c; return {...rest, title}; };
+function fromDesign(r, comments){ return {id:r.id, projectId:r.project_id, partnerId:r.partner_id, template:r.template, format:r.format, theme:r.theme, status:r.status, version:r.version, rev:r.rev,
+  fields:r.fields || {}, slides:r.slides || [], updated:(r.updated_at || '').slice(0,10), updatedAt:r.updated_at,
+  comments:comments.filter(c => c.design_id === r.id).map(c => ({id:c.id, by:c.author_name, at:fmtAt(c.created_at), text:c.body}))}; }
+async function signPhotos(list){
+  await Promise.all(list.filter(d => d.fields.photoPath).map(async d => { const {data} = await sb.storage.from('photos').createSignedUrl(d.fields.photoPath, 3600); if (data) d.fields.photo = data.signedUrl; }));
+}
+function takeSnapshot(){
+  snap.designs = new Map(S.designs.map(d => [d.id, JSON.stringify(designRow(d))]));
+  snap.partners = new Map(S.partners.map(p => [p.id, JSON.stringify(partnerRow(p))]));
+  snap.courses = new Map(S.projects.map(p => [p.id, JSON.stringify(p.course || {})]));
+}
+async function loadAll(){
+  const none = {data:[], error:null};
+  const [pa, pr, me, d, cm, st, pf, af, ac] = await Promise.all([
+    sb.from('partners').select('*').order('created_at'),
+    sb.from('projects').select('*').order('created_at'),
+    sb.from('project_members').select('*'),
+    sb.from('designs').select('*').order('updated_at', {ascending:false}),
+    sb.from('design_comments').select('*').order('created_at'),
+    sb.from('settings').select('*'),
+    sb.from('profiles').select('*').order('created_at'),
+    sb.from('archive_files').select('*').order('created_at', {ascending:false}),
+    sb.from('activity_log').select('*').order('created_at', {ascending:false}).limit(60)
+  ]);
+  const err = [pa, pr, me, d, cm, st, pf, af, ac].find(r => r.error); if (err) throw err.error;
+  S.partners = pa.data.map(r => ({id:r.id, name:r.name, nameEn:r.name_en, color:r.color, logo:r.logo_url}));
+  S.projects = pr.data; S.memberships = me.data; S.profiles = pf.data; S.archive = af.data; S.activity = ac.data;
+  S.designs = d.data.map(r => fromDesign(r, cm.data));
+  S.scaddLogo = st.data.find(x => x.key === 'scadd_logo')?.value?.url || null;
+  await signPhotos(S.designs);
+  let pid = S.pid; try { pid = pid || localStorage.getItem('scadd-active-project'); } catch {}
+  if (!S.projects.some(p => p.id === pid)) pid = S.projects[0]?.id || null;
+  applyProject(pid);
+  takeSnapshot(); lastLoad = Date.now(); dirty = false;
+}
+
+/* sync */
+function scheduleSync(){ dirty = true; clearTimeout(syncTimer); setSync('saving'); syncTimer = setTimeout(() => { syncChain = syncChain.then(syncNow); }, 450); }
+async function flushSync(){ if (syncTimer) { clearTimeout(syncTimer); syncTimer = null; syncChain = syncChain.then(syncNow); } await syncChain; }
+async function syncNow(){
+  syncTimer = null;
+  if (!S.user) return;
+  try {
+    for (const d of S.designs) {
+      const row = designRow(d), key = JSON.stringify(row), prev = snap.designs.get(d.id);
+      if (prev !== key) {
+        let res;
+        if (prev === undefined && d.rev == null) res = await sb.from('designs').insert(row).select().single();
+        else {
+          const q = await sb.from('designs').update(row).eq('id', d.id).eq('rev', d.rev ?? 0).select();
+          if (q.error) throw q.error;
+          if (!q.data.length) { await reloadDesign(d.id); toast('عدّل مستخدم آخر هذا التصميم قبل حفظك. حُمّلت أحدث نسخة منه؛ راجعها ثم أعد التعديل.'); continue; }
+          res = {data:q.data[0]};
+        }
+        if (res.error) throw res.error;
+        const was = d.status;
+        Object.assign(d, {rev:res.data.rev, version:res.data.version, status:res.data.status, partnerId:res.data.partner_id, updated:res.data.updated_at.slice(0,10), updatedAt:res.data.updated_at});
+        if (editing && editing.id === d.id) Object.assign(editing, {rev:d.rev, version:d.version, status:d.status});
+        snap.designs.set(d.id, JSON.stringify(designRow(d)));
+        if (d.status === 'approved' && d.archiveOnSync) { delete d.archiveOnSync; archiveApproved(d); }
+      }
+      for (const c of d.comments) if (!c.id) {
+        const r = await sb.from('design_comments').insert({design_id:d.id, author_name:c.by, body:c.text}).select().single();
+        if (r.error) throw r.error; c.id = r.data.id;
+        if (editing && editing.id === d.id) { const ec = editing.comments.find(x => !x.id && x.text === c.text); if (ec) ec.id = c.id; }
+      }
+    }
+    for (const p of S.partners) {
+      const row = partnerRow(p), key = JSON.stringify(row), prev = snap.partners.get(p.id);
+      if (prev === key) continue;
+      const r = prev === undefined ? await sb.from('partners').insert(row).select().single() : await sb.from('partners').update(row).eq('id', p.id).select().single();
+      if (r.error) throw r.error; snap.partners.set(p.id, key);
+    }
+    const p = currentProject();
+    if (p) {
+      const course = courseOf(S.course), ck = JSON.stringify(course);
+      if (ck !== snap.courses.get(p.id) && JSON.stringify(p.course || {}) !== ck) {
+        const r = await sb.from('projects').update({course}).eq('id', p.id).select();
+        if (r.error) throw r.error; if (!r.data.length) throw new Error('permission denied');
+        p.course = course; snap.courses.set(p.id, ck);
+      }
+    }
+    dirty = false; setSync('saved');
+  } catch (e) {
+    setSync('error', /permission|security|42501|Only|Editors/i.test(e.message || '') ? 'لا تملك الصلاحية' : '');
+    toast('لم يُحفظ التغيير: ' + arErr(e));
+    if (/42501|row-level|permission|Only|Editors/i.test((e.code || '') + (e.message || ''))) { await loadAll().catch(() => {}); route(); }
+  }
+}
+async function reloadDesign(id){
+  const [{data:r}, {data:cm}] = await Promise.all([sb.from('designs').select('*').eq('id', id).maybeSingle(), sb.from('design_comments').select('*').eq('design_id', id).order('created_at')]);
+  const i = S.designs.findIndex(x => x.id === id); if (!r) { if (i >= 0) S.designs.splice(i, 1); return; }
+  const d = fromDesign(r, cm || []); await signPhotos([d]);
+  if (i >= 0) S.designs[i] = d; else S.designs.unshift(d);
+  snap.designs.set(id, JSON.stringify(designRow(d)));
+  if (editing && editing.id === id) { editing = JSON.parse(JSON.stringify(d)); if (location.hash === '#studio') renderStudio(); }
+}
+async function refreshIfStale(){
+  if (!S.user || dirty || Date.now() - lastLoad < 45000) return;
+  try { await loadAll(); const v = location.hash.slice(1); if (v !== 'studio') route(); } catch {}
+}
+async function uploadImage(bucket, folder, file){
+  const ext = (file.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '') || 'png';
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  toast('جارٍ رفع الملف…');
+  const {error} = await sb.storage.from(bucket).upload(path, file, {contentType:file.type, upsert:false});
+  if (error) { toast('تعذّر رفع الملف: ' + arErr(error)); return null; }
+  if (bucket === 'brand') return {path, url:sb.storage.from('brand').getPublicUrl(path).data.publicUrl};
+  const {data, error:e2} = await sb.storage.from(bucket).createSignedUrl(path, 3600);
+  if (e2) { toast('رُفع الملف لكن تعذّر عرضه: ' + e2.message); return null; }
+  return {path, url:data.signedUrl};
+}
+
+/* server functions (Edge Functions) */
+async function callFn(name, body, asBlob = false){
+  const {data:{session}} = await sb.auth.getSession();
+  const r = await fetch(`${CFG.supabaseUrl}/functions/v1/${name}`, {method:'POST', headers:{'Content-Type':'application/json', apikey:CFG.supabaseAnonKey, Authorization:'Bearer ' + (session?.access_token || '')}, body:JSON.stringify(body)});
+  if (asBlob && r.ok) return {blob: await r.blob(), name: decodeURIComponent((r.headers.get('Content-Disposition') || '').split("''")[1] || 'file')};
+  let data = null; try { data = await r.json(); } catch {}
+  if (!r.ok || data?.ok === false) throw new Error(data?.error || ('HTTP ' + r.status));
+  return data;
+}
+const blobToB64 = blob => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1]); fr.onerror = rej; fr.readAsDataURL(blob); });
+
+/* sign-in and session */
+function renderOnlineLogin(msg){
+  $('#root').innerHTML = `<div class="login"><section class="hero"><div><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>منصة الشركاء · media.scadd.jo</span></div></div></div>
+  <div><h1>محتوى مشترك بهوية واحدة، وتخطيط مالي للدورات في مكان واحد</h1><p>لكل مشروع مساحة مستقلة لفريقه: المحتوى والاعتماد والمالية والأرشيف، بحسب صلاحية كل عضو.</p></div>
+  <div class="stack" aria-hidden="true"><div style="width:190px;height:238px;background:#f6f3ee;inset-inline-start:0;top:40px;transform:rotate(-6deg)"></div><div style="width:190px;height:238px;background:#e8644a;inset-inline-start:150px;top:10px;transform:rotate(3deg)"></div><div style="width:190px;height:238px;background:#ffffff;inset-inline-start:300px;top:50px;transform:rotate(-2deg)"></div></div></section>
+  <section class="pick"><h2>تسجيل الدخول</h2><p class="muted small">أدخل بريدك المسجّل لدى سكاد، وسيصلك رابط دخول آمن صالح لمرة واحدة. لا حاجة إلى كلمة مرور.</p>
+  <form id="lf" class="grid" novalidate><label class="f" for="em">البريد الإلكتروني<input id="em" type="email" inputmode="email" autocomplete="email" dir="ltr" required placeholder="name@organization.org"></label>
+  <button class="btn primary" id="lb" type="submit">إرسال رابط الدخول</button></form>
+  <div id="lmsg" role="status" class="small" style="min-height:24px">${msg ? esc(msg) : ''}</div>
+  <p class="note">الحسابات تُنشأ بدعوة من إدارة سكاد أو من مدير المشروع. إن لم تصلك رسالة خلال دقائق، فتحقق من مجلد الرسائل غير المرغوب فيها.</p></section></div>`;
+  $('#lf').onsubmit = async e => { e.preventDefault(); const email = $('#em').value.trim().toLowerCase(), m = $('#lmsg'), b = $('#lb');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { m.textContent = 'اكتب بريداً إلكترونياً صحيحاً.'; $('#em').focus(); return; }
+    b.disabled = true; b.textContent = 'جارٍ الإرسال…';
+    const {error} = await sb.auth.signInWithOtp({email, options:{shouldCreateUser:false, emailRedirectTo:location.origin + location.pathname}});
+    b.disabled = false; b.textContent = 'إرسال رابط الدخول';
+    if (error) m.textContent = /signup|not allowed|not found|Signups/i.test(error.message) ? 'هذا البريد غير مسجّل في المنصة. اطلب دعوة من إدارة سكاد أو من مدير مشروعك.' : /rate|seconds/i.test(error.message) ? 'طلبات كثيرة خلال وقت قصير. انتظر دقيقة ثم أعد المحاولة.' : 'تعذّر الإرسال: ' + error.message;
+    else m.innerHTML = `أُرسل رابط الدخول إلى <b dir="ltr">${esc(email)}</b>. افتح الرابط من هذا الجهاز.`; };
+}
+function renderStatus(title, body, withLogout = true){
+  $('#root').innerHTML = `<main style="max-width:560px;margin:10vh auto;padding:24px"><div class="card grid"><div class="brandmark"><div class="mark">SCADD</div><b style="color:var(--teal-ink)">Partner Studio</b></div><h1>${esc(title)}</h1><p class="muted">${body}</p>${withLogout ? '<div class="row"><button class="btn" id="so">تسجيل الخروج</button><button class="btn ghost" id="rl">إعادة المحاولة</button></div>' : ''}</div></main>`;
+  if (withLogout) { $('#so').onclick = async () => { await sb.auth.signOut(); S.user = null; route(); }; $('#rl').onclick = () => location.reload(); }
+}
+async function startSession(session){
+  if (sessionStarting || S.user) return; sessionStarting = true;
+  try {
+    const {data:prof, error} = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+    if (error) throw error;
+    if (!prof) throw new Error('لم يُعثر على ملف الحساب');
+    if (!prof.active) { renderStatus('الحساب موقوف', 'أُوقف هذا الحساب من إدارة سكاد. تواصل معها إذا كان ذلك عن طريق الخطأ.'); return; }
+    S.user = {id:prof.id, email:prof.email || session.user.email, name:prof.full_name || session.user.email, globalRole:prof.global_role, staff:['owner','admin'].includes(prof.global_role), owner:prof.global_role === 'owner'};
+    await loadAll();
+    if (!S.user.staff && !S.projects.length) { const em = S.user.email; S.user = null; renderStatus('حسابك بانتظار التفعيل', `سُجّل دخولك بالبريد <b dir="ltr">${esc(em)}</b>، ولم تُضَف بعد إلى أي مشروع. سيضيفك مدير المشروع أو إدارة سكاد، ثم أعد تحميل الصفحة.`); return; }
+    if (location.search.includes('code=')) history.replaceState(null, '', location.pathname + location.hash);
+    if (!location.hash) location.hash = S.user.staff ? 'dashboard' : caps().edit || caps().view && !caps().finance ? 'home' : 'finance';
+    route();
+  } catch (e) { S.user = null; renderStatus('تعذّر تحميل بياناتك', esc(arErr(e) || 'تحقق من الاتصال ثم أعد المحاولة.')); }
+  finally { sessionStarting = false; }
+}
+async function boot(){
+  if (!ONLINE) { route(); return; }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session && !S.user) setTimeout(() => startSession(session), 0);
+    if (event === 'SIGNED_OUT') { S.user = null; route(); }
+  });
+  const {data:{session}, error} = await sb.auth.getSession();
+  if (error) return renderOnlineLogin('انتهت صلاحية رابط الدخول أو استُخدم من قبل. اطلب رابطاً جديداً.');
+  if (session) await startSession(session); else route();
+  window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+}
+
+/* ---------- platform screens: manager dashboard, projects, team, users, archive (online only) ---------- */
+const courseFor = p => ({...COURSE_DEFAULT, ...(p.course || {})});
+const memberCount = pid => (S.memberships || []).filter(m => m.project_id === pid).length;
+const pendingOf = pid => S.designs.filter(d => d.projectId === pid && d.status === 'pending');
+const partnerName = id => S.partners.find(p => p.id === id)?.name || '—';
+const profileOf = id => (S.profiles || []).find(p => p.id === id);
+const ageDays = iso => iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 864e5) : 0;
+const fileSize = b => b == null ? '' : b > 1048576 ? (b / 1048576).toFixed(1) + ' م.ب' : Math.max(1, Math.round(b / 1024)) + ' ك.ب';
+function roleOptions(selected, allowManager, allowReviewer){
+  return Object.entries(ROLE_HINT).filter(([k]) => (k !== 'manager' || allowManager || selected === 'manager') && (k !== 'reviewer' || allowReviewer || selected === 'reviewer'))
+    .map(([k]) => `<option value="${k}" ${k === selected ? 'selected' : ''}>${ROLE_LABEL[k]}</option>`).join('');
+}
+function activityText(a){
+  const d = a.detail || {}, t = d.title ? `«${esc(d.title)}»` : 'تصميماً';
+  const map = {project_created:`أنشأ مشروع «${esc(d.name)}»`, project_status:`غيّر حالة المشروع إلى ${STATUS_LABEL[d.to] || d.to}`, member_added:`أضاف <span dir="ltr">${esc(d.email)}</span> بصفة ${ROLE_LABEL[d.role] || d.role}`,
+    member_removed:`أزال <span dir="ltr">${esc(d.email)}</span> من الفريق`, member_role:`غيّر دور <span dir="ltr">${esc(d.email)}</span> إلى ${ROLE_LABEL[d.role] || d.role}`, user_invited:`دعا <span dir="ltr">${esc(d.email)}</span>`, user_attached:`أضاف حساباً قائماً <span dir="ltr">${esc(d.email)}</span>`,
+    user_deactivated:`أوقف حساب <span dir="ltr">${esc(d.email)}</span>`, user_reactivated:`أعاد تفعيل <span dir="ltr">${esc(d.email)}</span>`, global_role:`غيّر الصلاحية العامة لـ <span dir="ltr">${esc(d.email)}</span>`,
+    design_created:`أنشأ ${t}`, design_pending:`أرسل ${t} للاعتماد`, design_approved:`اعتمد ${t} (الإصدار ${esc(d.version)})`, design_returned:`أعاد ${t} بملاحظة`, design_draft:`أعاد ${t} مسودة`,
+    archive_upload:`أرشف <bdi>${esc(d.name)}</bdi>`, archive_folder_created:'أنشأ مجلد الأرشيف في Google Drive'};
+  return map[a.action] || esc(a.action);
+}
+async function switchProject(pid){ await flushSync(); editing = null; applyProject(pid); route(); }
+
+/* manager dashboard */
+function renderDashboard(){
+  const ps = S.projects, live = ps.filter(p => p.status !== 'archived');
+  const rows = live.map(p => { const c = courseFor(p), r = calc(c), be = breakEven(c); return {p, c, r, be, pend:pendingOf(p.id), members:memberCount(p.id), files:(S.archive || []).filter(f => f.project_id === p.id).length}; });
+  const sum = k => rows.reduce((a, x) => a + (x.r[k] || 0), 0);
+  const trainees = rows.reduce((a, x) => a + (x.c.trainees || 0), 0), capacity = rows.reduce((a, x) => a + (x.c.capacity || 0), 0);
+  const pending = S.designs.filter(d => d.status === 'pending'), activeUsers = (S.profiles || []).filter(u => u.active).length;
+  const alerts = [];
+  rows.forEach(x => { if (x.be != null && x.c.trainees < x.be) alerts.push(['warn', `${esc(x.p.name)}: التسجيل ${n0(x.c.trainees)} أقل من نقطة التعادل (${n0(x.be)}).`, x.p.id, 'finance']); });
+  pending.filter(d => ageDays(d.updatedAt) >= 2).forEach(d => alerts.push(['warn', `«${esc(d.fields.title || TEMPLATES[d.template].name)}» بانتظار الاعتماد منذ ${n0(ageDays(d.updatedAt))} أيام.`, d.projectId, 'review']));
+  (S.memberships || []).filter(m => m.drive_status === 'failed').forEach(m => alerts.push(['bad', `وصول Drive لم يُمنح لـ <span dir="ltr">${esc(profileOf(m.user_id)?.email || '')}</span> في ${esc(S.projects.find(p => p.id === m.project_id)?.name || '')}: ${esc(m.drive_error || '')}`, m.project_id, 'team']));
+  live.filter(p => !p.drive_folder_id).forEach(p => alerts.push(['warn', `${esc(p.name)}: لم يُنشأ مجلد الأرشيف بعد.`, p.id, 'archive']));
+  (S.profiles || []).filter(u => u.active && !u.global_role && !(S.memberships || []).some(m => m.user_id === u.id)).forEach(u => alerts.push(['warn', `<span dir="ltr">${esc(u.email)}</span> سجّل دخوله ولم يُضَف إلى أي مشروع.`, null, 'users']));
+  $('#main').innerHTML = `<div class="head"><div><h1>لوحة المدير</h1><p class="muted">كل المشاريع في مكان واحد · ${esc(new Intl.DateTimeFormat('ar-EG-u-nu-latn', {dateStyle:'full'}).format(new Date()))}</p></div>${S.user.staff ? '<a class="btn primary" href="#projects">مشروع جديد</a>' : ''}</div>
+  <div class="tiles" style="margin-bottom:16px">
+    <div class="tile"><span>المشاريع الجارية</span><b>${n0(live.length)}</b><small>من أصل ${n0(ps.length)} مشروعاً مسجلاً</small></div>
+    <div class="tile"><span>المتدربون المسجّلون</span><b>${n0(trainees)}</b><small>من سعة ${n0(capacity)} مقعداً</small></div>
+    <div class="tile"><span>الإيراد المتوقع</span><b>${usd(sum('revenue'))}</b><small>كل المشاريع الجارية</small></div>
+    <div class="tile ${sum('profit') < 0 ? 'neg' : 'pos'}"><span>الربح المتوقع</span><b>${usd(sum('profit'))}</b><small>الإيراد − كلفة الدورات</small></div>
+    <div class="tile ${pending.length ? 'neg' : ''}"><span>بانتظار الاعتماد</span><b>${n0(pending.length)}</b><small>${n0(activeUsers)} مستخدماً نشطاً</small></div>
+  </div>
+  <div class="card" style="margin-bottom:16px"><h2>المشاريع</h2><div class="scroll" style="margin-top:10px"><table class="dash"><thead><tr><th>المشروع</th><th>الحالة</th><th>التسجيل</th><th>الربح المتوقع</th><th>التعادل</th><th>بانتظار الاعتماد</th><th>الفريق</th><th>الأرشيف</th><th></th></tr></thead><tbody>
+    ${rows.map(x => `<tr><td><b>${esc(x.p.name)}</b><div class="small muted">${esc(partnerName(x.p.partner_id))} · ${esc(x.p.city || '')}${x.p.start_date ? ' · ' + dateAr(x.p.start_date) : ''}</div></td>
+      <td><span class="tag st-${x.p.status === 'active' ? 'approved' : x.p.status === 'planning' ? 'pending' : 'draft'}">${STATUS_LABEL[x.p.status]}</span></td>
+      <td><div class="seatbar" style="margin:0 0 4px;min-width:90px"><i style="width:${Math.min(100, x.c.trainees / Math.max(1, x.c.capacity) * 100)}%"></i></div><span class="small">${n0(x.c.trainees)} / ${n0(x.c.capacity)}</span></td>
+      <td style="color:var(${x.r.profit < 0 ? '--bad' : '--ok'});font-weight:600">${usd(x.r.profit)}</td>
+      <td>${x.be == null ? 'غير متحققة' : x.c.trainees >= x.be ? '<span class="tag st-approved">متحققة</span>' : `<span class="tag st-returned">ينقص ${n0(x.be - x.c.trainees)}</span>`}</td>
+      <td>${x.pend.length ? `<b>${n0(x.pend.length)}</b>` : '—'}</td><td>${n0(x.members)}</td>
+      <td>${x.p.drive_folder_url ? `<a href="${esc(x.p.drive_folder_url)}" target="_blank" rel="noopener">${n0(x.files)} ملف</a>` : '<span class="muted small">لا مجلد</span>'}</td>
+      <td><button class="btn" data-go="${x.p.id}">فتح</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">لا توجد مشاريع جارية.</td></tr>'}
+  </tbody></table></div></div>
+  <div class="grid g2"><div class="card"><h2>تنبيهات تحتاج قراراً</h2><div class="checks" style="margin-top:10px">${alerts.map(([lv, t, pid, view]) => `<div class="chk ${lv}"><b>${lv === 'bad' ? 'عاجل' : 'تنبيه'}</b><span style="flex:1">${t}</span>${view ? `<button class="btn ghost" style="min-height:32px;padding:2px 8px" data-alert="${pid || ''}" data-view="${view}">عرض</button>` : ''}</div>`).join('') || '<div class="chk ok"><b>سليم</b><span>لا توجد تنبيهات حالياً.</span></div>'}</div></div>
+  <div class="card"><h2>آخر النشاط</h2><div class="list" style="margin-top:6px">${(S.activity || []).slice(0, 14).map(a => `<div class="it act"><span class="act-t"><b>${esc(a.actor_name || 'النظام')}</b> ${activityText(a)}<div class="small muted">${esc(S.projects.find(p => p.id === a.project_id)?.name || 'المنصة')}</div></span><span class="small muted" style="white-space:nowrap">${esc(fmtAt(a.created_at))}</span></div>`).join('') || '<p class="muted">لا يوجد نشاط بعد.</p>'}</div></div></div>`;
+  document.querySelectorAll('[data-go]').forEach(b => b.onclick = async () => { await switchProject(b.dataset.go); location.hash = 'home'; });
+  document.querySelectorAll('[data-alert]').forEach(b => b.onclick = async () => { if (b.dataset.alert) { await flushSync(); editing = null; applyProject(b.dataset.alert); } location.hash = b.dataset.view; route(); });
+}
+
+/* projects (staff) */
+function renderProjects(){
+  $('#main').innerHTML = `<div class="head"><div><h1>المشاريع</h1><p class="muted">لكل مشروع مساحة مستقلة: فريقه وصلاحياته ومحتواه وماليته وأرشيفه. من يُضاف إلى مشروع واحد لا يرى غيره.</p></div><button class="btn primary" id="newp">مشروع جديد</button></div>
+  <div class="grid">${S.projects.map(p => `<div class="card"><div class="row" style="justify-content:space-between"><div><h2>${esc(p.name)}</h2><p class="small muted">${esc(partnerName(p.partner_id))} · ${esc(p.city || '')}${p.start_date ? ' · يبدأ ' + dateAr(p.start_date) : ''} · ${n0(memberCount(p.id))} أعضاء</p></div>
+    <div class="row"><label class="f" style="font-weight:400">الحالة<select data-pstatus="${p.id}">${Object.entries(STATUS_LABEL).map(([k, l]) => `<option value="${k}" ${p.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="f" style="font-weight:400">الاعتماد النهائي للمحتوى<select data-papproval="${p.id}"><option value="scadd" ${p.approval_mode === 'scadd' ? 'selected' : ''}>سكاد فقط</option><option value="project" ${p.approval_mode === 'project' ? 'selected' : ''}>مدير المشروع أيضاً</option></select></label>
+    <button class="btn" data-pteam="${p.id}">الفريق</button><button class="btn" data-go="${p.id}">فتح</button></div></div>
+    <p class="small" style="margin-top:8px">${p.drive_folder_url ? `الأرشيف: <a href="${esc(p.drive_folder_url)}" target="_blank" rel="noopener">مجلد Google Drive</a>` : `<span class="muted">لا يوجد مجلد أرشيف.</span> <button class="btn ghost" data-folder="${p.id}">إنشاء المجلد</button>`}</p></div>`).join('') || '<div class="card muted">لا توجد مشاريع بعد.</div>'}</div>`;
+  document.querySelectorAll('[data-go]').forEach(b => b.onclick = async () => { await switchProject(b.dataset.go); location.hash = 'home'; });
+  document.querySelectorAll('[data-pteam]').forEach(b => b.onclick = async () => { await switchProject(b.dataset.pteam); location.hash = 'team'; });
+  const upd = async (id, patch, okMsg) => { const {error} = await sb.from('projects').update(patch).eq('id', id); if (error) return toast(arErr(error)); Object.assign(S.projects.find(p => p.id === id), patch); if (id === S.pid) applyProject(id); toast(okMsg); };
+  document.querySelectorAll('[data-pstatus]').forEach(s => s.onchange = () => upd(s.dataset.pstatus, {status:s.value}, 'حُدّثت حالة المشروع.'));
+  document.querySelectorAll('[data-papproval]').forEach(s => s.onchange = () => upd(s.dataset.papproval, {approval_mode:s.value}, s.value === 'project' ? 'أصبح لمدير المشروع حق الاعتماد النهائي للمحتوى.' : 'عاد الاعتماد النهائي إلى سكاد.'));
+  document.querySelectorAll('[data-folder]').forEach(b => b.onclick = async () => { b.disabled = true; try { await callFn('drive', {action:'ensure_folder', project_id:b.dataset.folder}); await loadAll(); renderProjects(); toast('أُنشئ مجلد الأرشيف ومُنح الفريق الوصول.'); } catch (e) { b.disabled = false; toast('تعذّر إنشاء المجلد: ' + arErr(e)); } });
+  $('#newp').onclick = () => dialog('مشروع جديد', `<div class="grid"><label class="f">اسم المشروع<input id="np-name" placeholder="مثال: تدريب عمّان — بيت العلاج"></label>
+    <label class="f">الجهة الشريكة<select id="np-partner">${S.partners.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}<option value="__new">جهة جديدة…</option></select></label>
+    <label class="f" id="np-pnew-l" hidden>اسم الجهة الجديدة<input id="np-pnew"></label>
+    <div class="grid g2"><label class="f">المدينة<input id="np-city"></label><label class="f">تاريخ البدء<input id="np-start" type="date"></label></div>
+    <div class="grid g2"><label class="f">السعة<input id="np-cap" type="number" min="0" value="25"></label><label class="f">الاعتماد النهائي<select id="np-appr"><option value="scadd">سكاد فقط</option><option value="project">مدير المشروع أيضاً</option></select></label></div>
+    <p class="small muted">يُنشأ للمشروع مجلد أرشيف في Google Drive تلقائياً.</p></div>`, [
+    ['إنشاء المشروع', 'primary', () => { createProject(); return false; }], ['إلغاء', '', () => {}]]);
+  $('#np-partner') && ($('#np-partner').onchange = e => { $('#np-pnew-l').hidden = e.target.value !== '__new'; });
+}
+async function createProject(){
+  const name = $('#np-name').value.trim(); if (!name) return toast('اكتب اسم المشروع.');
+  let partner = $('#np-partner').value;
+  if (partner === '__new') { const pn = $('#np-pnew').value.trim(); if (!pn) return toast('اكتب اسم الجهة الجديدة.');
+    const {data, error} = await sb.from('partners').insert({name:pn, color:PALETTE[S.partners.length % PALETTE.length]}).select().single(); if (error) return toast(arErr(error)); partner = data.id; }
+  const course = {...courseOf({...COURSE_DEFAULT}), title:name, capacity:Math.max(0, Math.floor(+$('#np-cap').value || 0)), trainees:0};
+  const {data:p, error} = await sb.from('projects').insert({name, partner_id:partner, city:$('#np-city').value.trim() || null, start_date:$('#np-start').value || null, approval_mode:$('#np-appr').value, status:'planning', course}).select().single();
+  if (error) return toast(arErr(error));
+  $('#dlg').hidden = true; toast('أُنشئ المشروع. جارٍ إنشاء مجلد الأرشيف…');
+  try { await callFn('drive', {action:'ensure_folder', project_id:p.id}); toast('أُنشئ المشروع ومجلد أرشيفه.'); } catch (e) { toast('أُنشئ المشروع، وتعذّر إنشاء مجلد الأرشيف الآن: ' + arErr(e)); }
+  await loadAll(); await switchProject(p.id); location.hash = 'team';
+}
+
+/* team of the active project (staff and project managers) */
+function renderTeam(){
+  const p = currentProject(); if (!p) { $('#main').innerHTML = '<div class="card muted">اختر مشروعاً أولاً.</div>'; return; }
+  const c = caps(), allowReviewer = c.staff || p.approval_mode === 'project';
+  const ms = (S.memberships || []).filter(m => m.project_id === p.id).map(m => ({...m, prof:profileOf(m.user_id) || {}}));
+  const dStat = m => m.drive_status === 'granted' ? '<span class="tag st-approved">مفعّل في Drive</span>' : m.drive_status === 'failed' ? `<span class="tag st-returned" title="${esc(m.drive_error || '')}">دون Drive</span>` : '<span class="tag st-draft">قيد المزامنة</span>';
+  $('#main').innerHTML = `<div class="head"><div><h1>فريق المشروع</h1><p class="muted">${esc(p.name)} · الاعتماد النهائي للمحتوى: <b>${p.approval_mode === 'project' ? 'مدير المشروع وسكاد' : 'سكاد فقط'}</b></p></div><button class="btn primary" id="addm">إضافة عضو</button></div>
+  <div class="card"><div class="list">${ms.map(m => `<div class="it" style="flex-wrap:wrap"><div><b>${esc(m.prof.full_name || m.prof.email || '')}</b>${m.prof.active === false ? ' <span class="tag st-returned">موقوف</span>' : ''}<div class="small muted" dir="ltr" style="text-align:right">${esc(m.prof.email || '')}</div>${m.drive_status === 'failed' ? `<div class="small" style="color:var(--warn)">${esc(m.drive_error || '')}</div>` : ''}</div>
+    <div class="row">${dStat(m)}<select data-mrole="${m.user_id}" aria-label="دور ${esc(m.prof.email || '')}" ${!c.staff && m.role === 'manager' ? 'disabled' : ''}>${roleOptions(m.role, c.staff, allowReviewer)}</select>
+    <button class="btn" data-mdel="${m.user_id}" ${!c.staff && m.role === 'manager' ? 'disabled' : ''}>إزالة</button></div></div>`).join('') || '<p class="muted">لا يوجد أعضاء بعد. أضف مدير المشروع أولاً.</p>'}</div>
+  <div class="grid g2" style="margin-top:14px">${Object.entries(ROLE_HINT).map(([k, h]) => `<p class="small"><b>${ROLE_LABEL[k]}:</b> <span class="muted">${h}</span></p>`).join('')}</div>
+  <p class="note">يُمنح كل عضو وصولاً إلى مجلد المشروع في Google Drive بحسب دوره، ويُسحب الوصول عند إزالته أو إيقاف حسابه. من لا يملك حساب Google يصل إلى الملفات من صفحة الأرشيف داخل المنصة.</p></div>`;
+  const after = async (msg) => { try { await callFn('drive', {action:'sync', project_id:p.id}); } catch {} await loadAll(); renderTeam(); toast(msg); };
+  document.querySelectorAll('[data-mrole]').forEach(s => s.onchange = async () => { const {error} = await sb.from('project_members').update({role:s.value}).eq('project_id', p.id).eq('user_id', s.dataset.mrole); if (error) { toast(arErr(error)); return renderTeam(); } after('حُدّث الدور ووصول Drive.'); });
+  document.querySelectorAll('[data-mdel]').forEach(b => b.onclick = () => dialog('إزالة العضو', '<p>سيفقد هذا العضو الوصول إلى المشروع وإلى مجلد أرشيفه في Google Drive. يبقى حسابه قائماً لمشاريعه الأخرى.</p>', [
+    ['إزالة', 'primary', () => { (async () => { const {error} = await sb.from('project_members').delete().eq('project_id', p.id).eq('user_id', b.dataset.mdel); if (error) return toast(arErr(error)); after('أُزيل العضو وسُحب وصوله.'); })(); }], ['إلغاء', '', () => {}]]));
+  $('#addm').onclick = () => dialog('إضافة عضو إلى ' + p.name, `<div class="grid"><label class="f">البريد الإلكتروني<input id="am-email" type="email" dir="ltr" placeholder="name@organization.org"></label>
+    <label class="f">الاسم<input id="am-name"></label><label class="f">الدور<select id="am-role">${roleOptions('editor', c.staff, allowReviewer)}</select></label>
+    <p class="small muted">إن لم يكن له حساب، تصله دعوة بالبريد. يُفضَّل بريد مرتبط بحساب Google ليصل إلى مجلد الأرشيف مباشرة.</p></div>`, [
+    ['إضافة وإرسال الدعوة', 'primary', () => { (async () => { const email = $('#am-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('اكتب بريداً صحيحاً.');
+      try { const r = await callFn('admin-users', {action:'invite', email, full_name:$('#am-name').value.trim(), project_id:p.id, role:$('#am-role').value}); $('#dlg').hidden = true; after(r.invited ? 'أُرسلت الدعوة وأضيف العضو.' : 'أضيف صاحب الحساب القائم إلى المشروع.'); }
+      catch (e) { toast(arErr(e)); } })(); return false; }], ['إلغاء', '', () => {}]]);
+}
+
+/* users (staff) */
+function renderUsers(){
+  const owner = S.user.owner;
+  const projectsOf = uid => (S.memberships || []).filter(m => m.user_id === uid).map(m => `<span class="tag st-draft">${esc(S.projects.find(p => p.id === m.project_id)?.name || '')} · ${ROLE_LABEL[m.role]}</span>`).join(' ');
+  $('#main').innerHTML = `<div class="head"><div><h1>المستخدمون والصلاحيات</h1><p class="muted">الصلاحية العامة لموظفي سكاد فقط، وكل وصول آخر يأتي من عضوية المشاريع. ${owner ? '' : 'منح صلاحيات الإدارة العامة للمالك وحده.'}</p></div><button class="btn primary" id="invu">دعوة مستخدم</button></div>
+  <div class="card"><div class="row" style="margin-bottom:8px"><label class="f" style="flex:1">بحث<input id="uq" placeholder="الاسم أو البريد"></label><label class="f">الحالة<select id="us"><option value="">الكل</option><option value="active">نشط</option><option value="off">موقوف</option><option value="none">بلا مشروع</option></select></label></div><div class="list" id="ul"></div></div>`;
+  const paint = () => { const q = $('#uq').value.trim().toLowerCase(), st = $('#us').value;
+    const list = (S.profiles || []).filter(u => (!q || (u.email || '').includes(q) || (u.full_name || '').toLowerCase().includes(q)) && (!st || (st === 'active' && u.active) || (st === 'off' && !u.active) || (st === 'none' && !u.global_role && !(S.memberships || []).some(m => m.user_id === u.id))));
+    $('#ul').innerHTML = list.map(u => { const self = u.id === S.user.id, lockedOwner = u.global_role === 'owner';
+      return `<div class="it" style="flex-wrap:wrap;align-items:flex-start"><div style="flex:1;min-width:220px"><b>${esc(u.full_name || '')}</b> ${u.active ? '' : '<span class="tag st-returned">موقوف</span>'}<div class="small muted" dir="ltr" style="text-align:right">${esc(u.email || '')}</div>
+        <div class="small muted">${esc(partnerName(u.partner_id) === '—' ? '' : partnerName(u.partner_id))}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${projectsOf(u.id) || (u.global_role ? '' : '<span class="small muted">لم يُضَف إلى مشروع</span>')}</div></div>
+        <div class="row"><label class="f" style="font-weight:400">الصلاحية العامة<select data-grole="${u.id}" ${!owner || self || lockedOwner ? 'disabled' : ''}><option value="">عضو مشاريع</option><option value="admin" ${u.global_role === 'admin' ? 'selected' : ''}>إدارة سكاد</option>${lockedOwner ? '<option value="owner" selected>مالك المنصة</option>' : ''}</select></label>
+        <button class="btn" data-act="${u.id}" data-on="${u.active ? '0' : '1'}" ${self || lockedOwner ? 'disabled' : ''}>${u.active ? 'إيقاف' : 'إعادة تفعيل'}</button></div></div>`; }).join('') || '<p class="muted" style="padding:12px 0">لا نتائج.</p>';
+    document.querySelectorAll('[data-grole]').forEach(s => s.onchange = async () => { const {error} = await sb.from('profiles').update({global_role:s.value || null}).eq('id', s.dataset.grole); if (error) { toast(arErr(error)); return paint(); } await loadAll(); toast('حُدّثت الصلاحية العامة.'); paint(); });
+    document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => { const on = b.dataset.on === '1';
+      dialog(on ? 'إعادة تفعيل الحساب' : 'إيقاف الحساب', on ? '<p>يستعيد المستخدم الدخول ووصول Drive لمشاريعه.</p>' : '<p>يُمنع المستخدم من الدخول، ويُسحب وصوله إلى مجلدات Drive في كل مشاريعه. يمكن إعادة تفعيله لاحقاً.</p>', [
+        [on ? 'إعادة التفعيل' : 'إيقاف الحساب', 'primary', () => { (async () => { try { await callFn('admin-users', {action:'set_active', user_id:b.dataset.act, active:on}); try { await callFn('drive', {action:'sync'}); } catch {} await loadAll(); paint(); toast(on ? 'أُعيد تفعيل الحساب.' : 'أُوقف الحساب وسُحب وصوله.'); } catch (e) { toast(arErr(e)); } })(); }], ['إلغاء', '', () => {}]]); }); };
+  $('#uq').oninput = paint; $('#us').onchange = paint; paint();
+  $('#invu').onclick = () => dialog('دعوة مستخدم', `<div class="grid"><label class="f">البريد الإلكتروني<input id="iu-email" type="email" dir="ltr"></label><label class="f">الاسم<input id="iu-name"></label>
+    <label class="f">الجهة<select id="iu-partner"><option value="">سكاد</option>${S.partners.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label>
+    ${owner ? '<label class="f">الصلاحية العامة<select id="iu-g"><option value="">عضو مشاريع</option><option value="admin">إدارة سكاد</option></select></label>' : ''}
+    <div class="grid g2"><label class="f">المشروع<select id="iu-p"><option value="">—</option>${S.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label><label class="f">الدور في المشروع<select id="iu-r">${roleOptions('editor', true, true)}</select></label></div></div>`, [
+    ['إرسال الدعوة', 'primary', () => { (async () => { const email = $('#iu-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('اكتب بريداً صحيحاً.');
+      const pid = $('#iu-p').value; try { const r = await callFn('admin-users', {action:'invite', email, full_name:$('#iu-name').value.trim(), partner_id:$('#iu-partner').value || null, global_role:$('#iu-g')?.value || undefined, project_id:pid || undefined, role:pid ? $('#iu-r').value : undefined});
+        $('#dlg').hidden = true; if (pid) { try { await callFn('drive', {action:'sync', project_id:pid}); } catch {} } await loadAll(); paint(); toast(r.invited ? 'أُرسلت الدعوة.' : 'الحساب موجود؛ حُدّثت عضويته.'); } catch (e) { toast(arErr(e)); } })(); return false; }], ['إلغاء', '', () => {}]]);
+}
+
+/* archive (Google Drive) */
+async function renderArchive(){
+  const p = currentProject(), c = caps(); if (!p) { $('#main').innerHTML = '<div class="card muted">اختر مشروعاً أولاً.</div>'; return; }
+  $('#main').innerHTML = `<div class="head"><div><h1>الأرشيف</h1><p class="muted">${esc(p.name)} · ملفات المشروع في Google Drive، ويصل إليها كل عضو بحسب دوره.</p></div><div class="row">${p.drive_folder_url ? `<a class="btn" href="${esc(p.drive_folder_url)}" target="_blank" rel="noopener">فتح المجلد في Drive</a>` : ''}${c.edit ? '<label class="btn primary" for="arch-up">رفع ملف</label><input type="file" id="arch-up" hidden>' : ''}</div></div>
+  <div class="card"><div class="list" id="al"><p class="muted">جارٍ تحميل الملفات من Google Drive…</p></div>
+  <p class="note">تُؤرشف التصاميم المعتمدة هنا تلقائياً لحظة اعتمادها. زر «تنزيل» يعمل لكل أعضاء المشروع حتى دون حساب Google؛ «فتح في Drive» لمن مُنح الوصول بحساب Google.</p></div>`;
+  let files = [], driveOk = true;
+  try { const r = await callFn('drive', {action:'list', project_id:p.id}); files = r.files || []; } catch (e) { driveOk = false; files = []; $('#al').innerHTML = `<div class="chk warn"><b>تنبيه</b><span>تعذّر الاتصال بـ Google Drive: ${esc(arErr(e))}${c.staff && !p.drive_folder_id ? ' — أنشئ مجلد الأرشيف من صفحة المشاريع.' : ''}</span></div>`; }
+  const meta = new Map((S.archive || []).filter(a => a.project_id === p.id).map(a => [a.drive_file_id, a]));
+  if (driveOk) $('#al').innerHTML = files.map(f => { const m = meta.get(f.id); return `<div class="it" style="flex-wrap:wrap"><div style="flex:1;min-width:200px"><b><bdi>${esc(f.name)}</bdi></b> ${m?.kind === 'approved_export' ? '<span class="tag st-approved">تصميم معتمد</span>' : ''}<div class="small muted">${m ? 'رفعه ' + esc(m.uploaded_by_name || '') + ' · ' : 'أُضيف من Drive · '}${esc(fmtAt(f.modifiedTime || m?.created_at))}${f.size ? ' · ' + fileSize(+f.size) : ''}</div></div>
+    <div class="row"><button class="btn" data-dl="${esc(f.id)}" data-name="${esc(f.name)}">تنزيل</button>${f.webViewLink ? `<a class="btn ghost" href="${esc(f.webViewLink)}" target="_blank" rel="noopener">فتح في Drive</a>` : ''}</div></div>`; }).join('') || '<p class="muted" style="padding:12px 0">لا توجد ملفات بعد. ارفع أول ملف، أو اعتمد تصميماً ليُؤرشف تلقائياً.</p>';
+  document.querySelectorAll('[data-dl]').forEach(b => b.onclick = async () => { b.disabled = true; try { const r = await callFn('drive', {action:'download', project_id:p.id, file_id:b.dataset.dl}, true); if (!r.blob) throw new Error('تعذّر التنزيل'); await saveFile(b.dataset.name || r.name, r.blob); } catch (e) { toast(arErr(e)); } b.disabled = false; });
+  $('#arch-up') && ($('#arch-up').onchange = async e => { const f = e.target.files[0]; if (!f) return; if (f.size > 15 * 1048576) return toast('الحد الأقصى للملف 15 ميغابايت.');
+    toast('جارٍ الرفع إلى Google Drive…'); try { await callFn('drive', {action:'upload', project_id:p.id, name:f.name, mime:f.type || 'application/octet-stream', data_base64:await blobToB64(f)}); await loadAll(); renderArchive(); toast('رُفع الملف إلى أرشيف المشروع.'); } catch (err) { toast('تعذّر الرفع: ' + arErr(err)); } });
+}
+async function exportBlob(d){
+  const n = buildSlides(d).length, c = document.createElement('canvas');
+  try { await document.fonts.load(`700 40px ${FONT}`); } catch {}
+  if (n === 1) { render(c, d, 0, {watermark:false}); return {blob:await toBlob(c), ext:'png', mime:'image/png'}; }
+  const files = [];
+  for (let i = 0; i < n; i++) { render(c, d, i, {watermark:false}); files.push({name:`slide-${String(i+1).padStart(2,'0')}.png`, data:new Uint8Array(await (await toBlob(c)).arrayBuffer())}); }
+  files.push({name:'caption.txt', data:new TextEncoder().encode(captionFor(d))});
+  return {blob:await zip(files), ext:'zip', mime:'application/zip'};
+}
+async function archiveApproved(d){
+  if (!ONLINE) return;
+  try {
+    const {blob, ext, mime} = await exportBlob(d);
+    const name = `${(d.fields.title || TEMPLATES[d.template].name).replace(/[\\/:*?"<>|]+/g, '-')} — ${FORMATS[d.format].name} — الإصدار ${d.version}.${ext}`;
+    await callFn('drive', {action:'upload', project_id:d.projectId, design_id:d.id, kind:'approved_export', name, mime, data_base64:await blobToB64(blob)});
+    const {data} = await sb.from('archive_files').select('*').order('created_at', {ascending:false}); if (data) S.archive = data;
+    toast('اعتُمد التصميم وأُرشف في Google Drive.');
+  } catch (e) { toast('اعتُمد التصميم، وتعذّرت أرشفته في Drive: ' + arErr(e)); }
+}
+
+boot();
+}
+</script>
+</body>
+</html>
