@@ -164,7 +164,7 @@ nav{flex-direction:row;overflow-x:auto;scrollbar-width:none;order:3;flex:1 0 100
 .ai-card{gap:10px;display:grid;border-color:light-dark(#bcd9da,#2d5257);background:light-dark(#f7fbfb,#172427)}
 .ai-limit{font-size:13px;background:light-dark(#fff4e5,#3a2e1c);border-inline-start:3px solid var(--warn);border-radius:8px;padding:8px 12px}
 .pchips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.pchip{font-size:12px;border:1px solid var(--line2);border-radius:99px;padding:2px 10px;color:var(--sub)}
-.pchip.on{border-color:var(--ok);color:var(--ok);background:light-dark(#e1f3ea,#183528)}.warn-t{color:var(--warn)}
+.pchip{transition:background .25s,color .25s}.pchip.on{border-color:var(--ok);color:#fff;background:var(--ok);font-weight:600}.warn-t{color:var(--warn)}
 .tries{display:flex;gap:6px;align-items:center}.tries i{width:12px;height:12px;border-radius:50%;border:2px solid var(--teal-ink)}.tries i.on{background:var(--teal-ink)}.tries span{margin-inline-start:6px}
 .ptabs{display:flex;gap:4px;background:var(--tint);border-radius:11px;padding:4px;margin-top:10px;flex-wrap:wrap}.ptabs.sm{margin:0}
 .ptab{border:0;background:transparent;border-radius:8px;padding:8px 14px;min-height:40px;cursor:pointer;font-weight:600;color:var(--sub)}.ptabs.sm .ptab{padding:4px 10px;min-height:34px;font-size:13px}
@@ -191,6 +191,12 @@ fieldset.exf{margin:0;padding:12px 0 0;display:grid;gap:4px}
 .xpl-right canvas{width:100%;height:auto;border-radius:6px;box-shadow:0 10px 26px rgb(0 0 0/.2)}
 .xpl-cap{font-size:15px;min-height:46px}.xpl-bar{height:4px;background:var(--tint);border-radius:99px;overflow:hidden}.xpl-bar i{display:block;height:100%;background:var(--coral);width:0}
 @media (max-width:700px){.xpl-stage{grid-template-columns:1fr}.xpl-right canvas{max-height:36vh;width:auto;max-width:100%;justify-self:center}.choices.two{grid-template-columns:1fr}}
+
+fieldset.sched{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0;display:grid;gap:8px}fieldset.sched legend{font-weight:600;font-size:14px;padding:0 6px}
+fieldset.cta-ed{border:1px solid var(--line);border-radius:10px;padding:10px 12px}fieldset.cta-ed legend{font-weight:600;padding:0 6px}
+.vthumb{width:48px;height:60px;border-radius:6px;flex:none;background:#14262a;color:#fff;display:grid;place-items:center;font-size:20px}
+.seg{display:inline-flex;margin-top:0}.ptab[aria-checked=true]{background:var(--panel);color:var(--teal-ink);box-shadow:0 1px 3px rgb(0 0 0/.12)}
+#tiles{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
 
 @media (prefers-reduced-motion:no-preference){.canvas-wrap canvas{transition:opacity .2s}}
 </style>
@@ -237,7 +243,7 @@ const seed = () => ({
   partners: [{id:'cure', name:'بيت العلاج', nameEn:'Cure House', logo:null, color:'#9a2c4f'}],
   course: {id:'bgd-1', partnerId:'cure', title:'دورة تحليل السلوك التطبيقي للعاملين مع الأطفال ذوي التوحّد', city:'بغداد', start:'2027-01-10',
     capacity:25, trainees:15, fee:500, days:11, staff:1, nights:11, hotel:100, travel:400, transport:200, supplies:5,
-    roomRate:null, venueDays:null, hospRate:null, hospDays:null, reserveMode:0, reserveAmount:300, reservePct:10},
+    roomRate:null, venueDays:null, hospRate:null, hospDays:null, reserveMode:0, reserveAmount:300, reservePct:10, mode:'onsite', dailyHours:4, theoryHours:null, practicalHours:null, trainerMode:'lump', trainerRate:null, trainerExtra:null, onlineCost:null, targetMargin:null},
   designs: [
     {id:uid(), partnerId:'cure', template:'course', format:'post45', theme:'scadd', status:'approved', version:2, updated:'2026-11-20',
      fields:{eyebrow:'دورة تدريبية معتمدة', title:'أساسيات تحليل السلوك التطبيقي', subtitle:'برنامج تطبيقي للعاملين مع الأطفال ذوي التوحّد، يقدّمه معهد سكاد بالشراكة مع بيت العلاج.', date:'2027-01-10', place:'بغداد — مقر بيت العلاج', cta:'سجّل الآن — المقاعد محدودة', contact:'للتسجيل: واتساب 0770 000 0000'},
@@ -277,11 +283,31 @@ const FORMATS = {
   li11:   {pl:'li', name:'صورة مربعة',          size:'1200×1200 · 1:1',   w:1200, h:1200},
   li45:   {pl:'li', name:'صورة عمودية',         size:'1080×1350 · 4:5',   w:1080, h:1350},
   li:     {pl:'li', name:'صورة أفقية',          size:'1200×627 · 1.91:1', w:1200, h:627},
-  lidoc:  {pl:'li', name:'مستند (كاروسيل PDF)', size:'صفحات 1080×1350',  w:1080, h:1350, multi:true, forceMulti:true}
+  lidoc:  {pl:'li', name:'مستند (كاروسيل PDF)', size:'صفحات 1080×1350',  w:1080, h:1350, multi:true, forceMulti:true},
+  igv916: {pl:'ig', video:true, name:'ريلز / قصة',      size:'1080×1920 · 9:16', w:1080, h:1920, multi:true},
+  igv45:  {pl:'ig', video:true, name:'فيديو منشور',      size:'1080×1350 · 4:5',  w:1080, h:1350, multi:true},
+  igv11:  {pl:'ig', video:true, name:'فيديو مربع',       size:'1080×1080 · 1:1',  w:1080, h:1080, multi:true},
+  fbv916: {pl:'fb', video:true, name:'ريلز / قصة',      size:'1080×1920 · 9:16', w:1080, h:1920, multi:true},
+  fbv45:  {pl:'fb', video:true, name:'فيديو منشور',      size:'1080×1350 · 4:5',  w:1080, h:1350, multi:true},
+  fbv169: {pl:'fb', video:true, name:'فيديو أفقي',       size:'1920×1080 · 16:9', w:1920, h:1080, lw:1200, lh:675, multi:true},
+  liv45:  {pl:'li', video:true, name:'فيديو عمودي',      size:'1080×1350 · 4:5',  w:1080, h:1350, multi:true},
+  liv11:  {pl:'li', video:true, name:'فيديو مربع',       size:'1080×1080 · 1:1',  w:1080, h:1080, multi:true},
+  liv169: {pl:'li', video:true, name:'فيديو أفقي',       size:'1920×1080 · 16:9', w:1920, h:1080, lw:1200, lh:675, multi:true}
 };
+const isVideo = d => !!(FORMATS[d.format] || {}).video;
+const VIDEO_TYPE = (() => { try { return ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'].find(t => window.MediaRecorder?.isTypeSupported?.(t)) || null; } catch { return null; } })();
+const CTA_TYPES = {whatsapp:'واتساب', link:'رابط', phone:'اتصال هاتفي', email:'بريد إلكتروني', none:'بدون رابط'};
+function ctaLink(f){ const v = String(f.ctaValue || '').trim(); if (!v || !f.ctaType || f.ctaType === 'none') return '';
+  const digits = v.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d+]/g, '').replace(/^00/, '+');
+  if (f.ctaType === 'whatsapp') return digits.replace(/\D/g, '').length >= 8 ? 'https://wa.me/' + digits.replace(/\D/g, '') : '';
+  if (f.ctaType === 'phone') return digits.replace(/\D/g, '').length >= 6 ? 'tel:' + digits : '';
+  if (f.ctaType === 'email') return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v) ? 'mailto:' + v : '';
+  return /^https?:\/\//i.test(v) ? v : /^[\w-]+(\.[\w-]+)+/.test(v) ? 'https://' + v : ''; }
+const ctaDisplay = f => { const l = ctaLink(f); return !l ? '' : f.ctaType === 'phone' ? l.slice(4) : f.ctaType === 'email' ? l.slice(7) : l; };
 const platformOf = d => (FORMATS[d.format] || FORMATS.post45).pl;
 const isMulti = d => { const f = FORMATS[d.format]; return !!(f && (f.forceMulti || (f.multi && d.fields.multi))); };
-const KINDS = ['إعلان','توعية','معلومة علمية','دورة تدريبية','فعالية','توظيف','إنجاز','تهنئة','قصة نجاح','خرافة وحقيقة','تذكير','تعريف بمدرّب','شكر وتقدير'];
+const KINDS = ['إعلان','توعية','معلومة علمية'];
+const kindsList = () => [...KINDS, ...[...new Set((S.designs || []).map(d => (d.fields?.kind || '').trim()).filter(k => k && !KINDS.includes(k)))]];
 const kindClass = k => /إعلان|فعالية|دورة|توظيف|عرض|خصم|تذكير|تسجيل|ورشة|مؤتمر/.test(k || '') ? 'promo' : /توعية|معلومة|خرافة|نصيحة|دليل|علم/.test(k || '') ? 'edu' : 'general';
 const REC_LEN = {promo:{ig:[60,300], fb:[60,250], li:[150,600]}, edu:{ig:[200,1200], fb:[150,800], li:[500,1500]}, general:{ig:[100,600], fb:[80,500], li:[300,1000]}};
 const LAYOUTS = {
@@ -323,12 +349,14 @@ function normalizeDesign(d){
     if (f.place) det.push('المكان: ' + f.place);
     const text = [f.subtitle, d.fields.multi ? '' : f.body].filter(Boolean).join('\n\n');
     d.fields = {mode:'design', kind:LEGACY_KIND[t] || '', layout: t === 'seats' ? 'stat' : 'classic', eyebrow:f.eyebrow || '', title:f.title || '', text,
-      details:det.join('\n'), cta:f.cta || '', contact:f.contact || '', source:f.source || '', caption:'', hashtags:'', multi:!!d.fields.multi,
+      details:det.join('\n'), cta:f.cta || '', contact:f.contact || '', note:f.source ? 'المرجع: ' + f.source : '', caption:'', hashtags:'', multi:!!d.fields.multi,
       statLive: t === 'seats', photo:f.photo, photoPath:f.photoPath, consent:f.consent};
     if (d.fields.multi && !(d.slides || []).length) d.slides = splitBody(f.body).slice(0, 8);
     d.template = 'free';
   }
   d.fields.mode = d.fields.mode || 'design'; d.fields.layout = d.fields.layout || 'classic';
+  if (d.fields.source && !d.fields.note) d.fields.note = 'المرجع: ' + d.fields.source; delete d.fields.source;
+  if (d.fields.ctaShow === undefined) d.fields.ctaShow = true;
   d.slides = d.slides || []; d.comments = d.comments || [];
   return d;
 }
@@ -342,7 +370,7 @@ function statOf(d){ const f = d.fields;
   if (f.statLive) { const k = seatsLeft(); return {num:n0(k), label: k === 1 ? 'مقعد متبقٍ' : k === 2 ? 'مقعدان متبقيان' : (k % 100 >= 3 && k % 100 <= 10) ? 'مقاعد متبقية' : 'مقعداً متبقياً'}; }
   return f.statNum ? {num:String(f.statNum).trim(), label:String(f.statLabel || '').trim()} : null; }
 function buildSlides(d){
-  if (d.fields.mode === 'upload') { const u = (d.fields.uploads || []); return isMulti(d) ? (u.length ? u.map((_, i) => ({kind:'upload', i})) : [{kind:'upload', i:0}]) : [{kind:'upload', i:0}]; }
+  if (d.fields.mode === 'upload') { const u = (d.fields.uploads || []); return isMulti(d) && !isVideo(d) ? (u.length ? u.map((_, i) => ({kind:'upload', i})) : [{kind:'upload', i:0}]) : [{kind:'upload', i:0}]; }
   if (!isMulti(d)) return [{kind:'single'}];
   return [{kind:'cover'}, ...(d.slides || []).map(t => ({kind:'content', text:t})), {kind:'end'}];
 }
@@ -352,6 +380,11 @@ const parseDetails = s => String(s || '').split('\n').map(l => l.trim()).filter(
 const FONT = '"IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif';
 const imgCache = {};
 function img(src){ if (!src) return null; if (!imgCache[src]) { const i = new Image(); if (/^https?:/.test(src)) i.crossOrigin = 'anonymous'; i.onload = () => window.dispatchEvent(new Event('imgload')); i.src = src; imgCache[src] = i; } const i = imgCache[src]; return i.complete && i.naturalWidth ? i : null; }
+const vidCache = {};
+function vid(src, opts = {}){ if (!src) return null; if (opts.video) return opts.video.readyState >= 2 ? opts.video : null;
+  if (!vidCache[src]) { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.loop = true; v.preload = 'auto'; if (/^https?:/.test(src)) v.crossOrigin = 'anonymous';
+    v.onloadeddata = () => window.dispatchEvent(new Event('imgload')); v.src = src; vidCache[src] = v; }
+  const v = vidCache[src]; return v.readyState >= 2 ? v : null; }
 function wrap(ctx, text, maxW){
   const out = [];
   String(text || '').split('\n').forEach(par => {
@@ -364,7 +397,7 @@ function wrap(ctx, text, maxW){
 }
 function rr(ctx, x, y, w, h, r){ ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
 function cover(ctx, i, x, y, w, h, fit = 'cover'){
-  const r = (fit === 'contain' ? Math.min : Math.max)(w / i.naturalWidth, h / i.naturalHeight), iw = i.naturalWidth * r, ih = i.naturalHeight * r;
+  const nw = i.naturalWidth || i.videoWidth, nh = i.naturalHeight || i.videoHeight, r = (fit === 'contain' ? Math.min : Math.max)(w / nw, h / nh), iw = nw * r, ih = nh * r;
   ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.drawImage(i, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih); ctx.restore();
 }
 function drawScaddLogo(ctx, x, y, h, T){ // x = right edge
@@ -391,9 +424,10 @@ function drawPartnerLogo(ctx, x, y, h, T, p, preview){ // x = left edge
   ctx.fillText(p.name, x + 20, y + h*.62); ctx.restore(); return w;
 }
 function textBlock(text, size, weight, color, lh = 1.45, gap = 0){
-  return (ctx, s, CW) => { ctx.font = `${weight} ${size*s}px ${FONT}`; const lines = wrap(ctx, text, CW); const h = lines.length * size*s*lh + gap*s;
-    return {h, draw:(c, X, y, _cw, T) => { c.save(); c.direction='rtl'; c.textAlign='right'; c.font = `${weight} ${size*s}px ${FONT}`; c.fillStyle = color(T);
-      lines.forEach((l,i) => c.fillText(l, X, y + size*s*(i+1)*lh - size*s*(lh-1)/2 - size*s*.18)); c.restore(); }}; };
+  return (ctx, s, CW) => { ctx.font = `${weight} ${size*s}px ${FONT}`; const lines = wrap(ctx, String(text || '').replace(/\n\s*\n+/g, '\n\n').trim(), CW);
+    const step = l => l === '' ? size*s*.55 : size*s*lh, h = lines.reduce((a, l) => a + step(l), 0) + gap*s;
+    return {h, draw:(c, X, y, _cw, T) => { c.save(); c.direction='rtl'; c.textAlign='right'; c.font = `${weight} ${size*s}px ${FONT}`; c.fillStyle = color(T); let yy = y;
+      lines.forEach(l => { const st = step(l); if (l) c.fillText(l, X, yy + st - size*s*(lh-1)/2 - size*s*.18); yy += st; }); c.restore(); }}; };
 }
 function eyebrow(text){ return (ctx, s) => { const fs = 30*s; ctx.font = `700 ${fs}px ${FONT}`; const w = ctx.measureText(text).width + 44*s, h = fs*1.9;
   return {h: h + 34*s, draw:(c, X, y, _cw, T) => { c.save(); rr(c, X - w, y, w, h, h/2); c.fillStyle = T.accent; c.fill(); c.direction='rtl'; c.textAlign='right'; c.font = `700 ${fs}px ${FONT}`;
@@ -442,10 +476,11 @@ function blocksFor(d, sl, L){
     return B;
   }
   if (sl.kind === 'end') {
-    add('head', f.cta, textBlock(f.cta, L === 'bold' ? 76 : 64, 700, ink, 1.3, 30));
+    add('head', f.cta && f.ctaShow !== false, textBlock(f.cta, L === 'bold' ? 76 : 64, 700, ink, 1.3, 30));
     add('body', st, bigNumber(st?.num, st?.label, 160));
     const det = parseDetails(f.details); add('body', det.length, detailsBlock(det));
-    add('body', f.source, textBlock('المرجع: ' + f.source, 30, 400, sub, 1.5, 20));
+    add('body', f.note, textBlock(f.note, 30, 400, sub, 1.5, 20));
+    add('body', ctaDisplay(f) && f.ctaShow !== false, textBlock(ctaDisplay(f), 30, 600, T => T.accent, 1.4, 16));
     add('body', true, textBlock('بالشراكة بين معهد سكاد للتعليم والتدريب السريري و' + partnerOf(d.partnerId).name, 32, 500, sub, 1.5));
     return B;
   }
@@ -459,13 +494,13 @@ function blocksFor(d, sl, L){
   if (L !== 'stat') add('body', st, bigNumber(st?.num, st?.label, wide ? 120 : 170));
   add('body', f.photo && L !== 'photo', photoRect(f.photo, wide ? .3 : .5));
   const det = parseDetails(f.details); add('body', det.length, detailsBlock(det));
-  add('body', f.source, textBlock('المرجع: ' + f.source, 28, 400, sub, 1.5, 12));
-  add('cta', f.cta, L === 'bold' ? textBlock(f.cta, wide ? 40 : 52, 700, T => T.ink, 1.3) : ctaBlock(f.cta));
+  add('body', f.note, textBlock(f.note, 28, 400, sub, 1.5, 12));
+  add('cta', f.cta && f.ctaShow !== false, L === 'bold' ? textBlock(f.cta, wide ? 40 : 52, 700, T => T.ink, 1.3) : ctaBlock(f.cta));
   return B;
 }
 
 /* ---------- layouts: each returns zones to fill ---------- */
-function geo(d){ const fm = FORMATS[d.format], W = fm.w, H = fm.h, wide = W / H > 1.4, story = H / W > 1.7, sq = Math.abs(W - H) < 10;
+function geo(d){ const fm = FORMATS[d.format], W = fm.lw || fm.w, H = fm.lh || fm.h, wide = W / H > 1.4, story = H / W > 1.7, sq = Math.abs(W - H) < 10;
   return {W, H, wide, story, sq, M: wide ? 60 : 90, top: story ? 250 : (wide ? 38 : 70), bottom: story ? 290 : (wide ? 36 : 66), LH: wide ? 66 : (sq ? 84 : 92)}; }
 function pattern(ctx, G, T){ ctx.save(); ctx.globalAlpha = .07; ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(-G.W*.08, G.H*.9, G.W*.45, 0, Math.PI*2); ctx.fill();
   ctx.globalAlpha = .1; ctx.fillStyle = T.accent; ctx.beginPath(); ctx.arc(G.W*1.02, G.H*.06, G.W*.2, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
@@ -522,13 +557,15 @@ function layoutSpec(L, ctx, G, d, idx, n, opts){
   const r = std(); // classic & stat
   return [{x0:G.M, x1:G.W - G.M, y0:r.y0, y1:r.y1, T, groups:['head','body','cta'], align:.3}];
 }
-function fillZone(ctx, z, blocks){
+function fillZone(ctx, z, blocks, anim){
   const CW = z.x1 - z.x0, avail = z.y1 - z.y0; let s = 1, fit;
   for (; s >= .55; s -= .05) { fit = layoutBlocks(ctx, blocks, s, CW, z.T); if (fit.h <= avail) break; }
   s = Math.max(s, .55); const overflow = fit.h > avail + 1;
   let y = z.y0 + Math.max(0, (avail - fit.h) * z.align);
   ctx.save(); ctx.beginPath(); ctx.rect(z.x0 - 30, z.y0 - 10, CW + 60, avail + 20); ctx.clip();
-  fit.items.forEach(it => { it.draw(ctx, z.x1, y, CW, z.T); y += it.h; }); ctx.restore();
+  fit.items.forEach((it, i) => { if (anim == null) it.draw(ctx, z.x1, y, CW, z.T);
+    else { const p = Math.max(0, Math.min(1, (anim - .2 - i * .28) / .45)), e = 1 - (1 - p) ** 3; if (p > 0) { ctx.save(); ctx.globalAlpha = e; ctx.translate(0, (1 - e) * 40); it.draw(ctx, z.x1, y, CW, z.T); ctx.restore(); } }
+    y += it.h; }); ctx.restore();
   return {overflow, scale: blocks.length ? s : 1};
 }
 function renderUpload(ctx, G, d, sl, opts){
@@ -536,7 +573,7 @@ function renderUpload(ctx, G, d, sl, opts){
   ctx.fillStyle = f.uploadFit === 'contain' ? T.bg : '#ffffff'; ctx.fillRect(0, 0, G.W, G.H);
   const bh = bar === 'none' ? 0 : Math.round(G.LH + (G.wide ? 34 : 56)), sy = G.story && bar !== 'none' ? (bar === 'top' ? 200 : -200) : 0;
   const ay = bar === 'top' ? bh + Math.max(0, sy) : 0, ah = G.H - bh - Math.abs(sy);
-  const i = img(u?.url);
+  const i = u?.kind === 'video' ? vid(u.url, opts) : img(u?.url);
   if (i) cover(ctx, i, 0, ay, G.W, ah, f.uploadFit || 'cover');
   else { ctx.fillStyle = '#e9e5dd'; ctx.fillRect(0, ay, G.W, ah); ctx.save(); ctx.fillStyle = '#5b6b6e'; ctx.font = `600 ${G.wide ? 30 : 44}px ${FONT}`; ctx.textAlign = 'center'; ctx.direction = 'rtl'; ctx.fillText(u ? 'جارٍ تحميل الملف…' : 'ارفع ملف التصميم من «طريقة التصميم»', G.W/2, ay + ah/2); ctx.restore(); }
   if (bar !== 'none') { const y = bar === 'top' ? Math.max(0, sy) : G.H - bh - Math.max(0, -sy); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, y, G.W, bh);
@@ -545,15 +582,15 @@ function renderUpload(ctx, G, d, sl, opts){
   return {overflow:false, scale:1};
 }
 function render(canvas, d, idx, opts = {}){
-  const G = geo(d); canvas.width = G.W; canvas.height = G.H;
-  const ctx = canvas.getContext('2d'), slides = buildSlides(d), sl = slides[Math.min(idx, slides.length - 1)], n = slides.length;
+  const G = geo(d), fm = FORMATS[d.format]; if (canvas.width !== fm.w || canvas.height !== fm.h) { canvas.width = fm.w; canvas.height = fm.h; }
+  const ctx = canvas.getContext('2d'); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, fm.w, fm.h); if (fm.lw) ctx.setTransform(fm.w / fm.lw, 0, 0, fm.h / fm.lh, 0, 0); const slides = buildSlides(d), sl = slides[Math.min(idx, slides.length - 1)], n = slides.length;
   let res;
   if (d.fields.mode === 'upload') res = renderUpload(ctx, G, d, sl, opts);
   else {
     let L = d.fields.layout || 'classic'; if (L === 'photo' && !d.fields.photo) L = 'classic'; if (L === 'stat' && !statOf(d)) L = 'classic';
     const zones = layoutSpec(L, ctx, G, d, idx, n, opts), blocks = blocksFor(d, sl, L); res = {overflow:false, scale:1};
     zones.forEach((z, zi) => { const mine = blocks.filter(b => z.groups.includes(b.g)).map(b => b.b); if (!mine.length) return;
-      const r = fillZone(ctx, z, mine); res.overflow = res.overflow || r.overflow; res.scale = Math.min(res.scale, r.scale); });
+      const r = fillZone(ctx, z, mine, opts.anim == null ? null : opts.anim - zi * .35); res.overflow = res.overflow || r.overflow; res.scale = Math.min(res.scale, r.scale); });
   }
   if (opts.watermark) { ctx.save(); ctx.translate(G.W/2, G.H/2); ctx.rotate(-Math.PI/7); ctx.font = `700 ${G.W*.09}px ${FONT}`; ctx.textAlign = 'center'; ctx.fillStyle = '#14262a'; ctx.globalAlpha = .13; ctx.fillText('مسودة — غير معتمد', 0, 0); ctx.restore(); }
   if (opts.safe) {
@@ -588,7 +625,7 @@ const RISKY = [
   [/مضمون|مضمونة|نضمن|100\s*[%٪]/u, 'تجنّب وعود النتائج المضمونة. صياغة مقترحة: «نتائج تُقاس وتُتابع دورياً».'],
   [/التخلص\s*من\s*(ال)?توح|يختفي\s*(ال)?توح|معاناة|مريض\s*(ال)?توح|مرضى\s*(ال)?توح/u, 'استخدم لغة تحترم الطفل: «الأطفال ذوو التوحّد» بدل «مرضى التوحّد» أو «المعاناة».']
 ];
-const allText = d => { const f = d.fields; return ['kind','eyebrow','title','text','details','cta','contact','source','caption','statLabel','alt','uploadDesc'].map(k => f[k] || '').join(' ') + ' ' + (d.slides || []).join(' '); };
+const allText = d => { const f = d.fields; return ['kind','eyebrow','title','text','details','cta','contact','note','caption','statLabel','alt','uploadDesc'].map(k => f[k] || '').join(' ') + ' ' + (d.slides || []).join(' '); };
 function hashtagsOf(d){ return String(d.fields.hashtags || '').split(/[\s,،]+/).map(t => t.replace(/^#+/, '').trim()).filter(Boolean).map(t => '#' + t.replace(/\s+/g, '_')); }
 function brandChecks(d, res){
   const f = d.fields, out = [], text = allText(d), upload = f.mode === 'upload';
@@ -609,20 +646,22 @@ function brandChecks(d, res){
     else if (res.minScale < .8) out.push(['warn', 'مساحة النص', 'صُغّر الخط ليتسع النص. النص الأقصر أوضح على الهاتف.']);
     else out.push(['ok', 'مساحة النص', 'النص داخل المنطقة الآمنة بحجم مقروء.']);
     const words = [f.eyebrow, f.title, f.text, f.details, f.cta].join(' ').split(/\s+/).filter(Boolean).length;
-    if (!isMulti(d) && words > 70) out.push(['warn', 'كثافة النص', `على التصميم ${n0(words)} كلمة. الإعلان الواضح يكتفي غالباً بأقل من 40 كلمة؛ انقل التفاصيل إلى الكابتشن.`]);
+    if (!isMulti(d) && words > 90) out.push(['warn', 'كثافة النص', `على التصميم ${n0(words)} كلمة؛ راجع وضوحه على شاشة الهاتف.`]);
     if (!f.title && !f.text && !(d.slides || []).length) out.push(['bad', 'المحتوى', 'اكتب عنواناً أو نصاً على الأقل.']);
     const T = themeOf(d); if (d.theme === 'partner') { const c = contrast(solid(T.bg), T.ink); out.push([c >= 4.5 ? 'ok' : 'warn', 'التباين', c >= 4.5 ? 'تباين النص مع لون الشريك مناسب.' : 'لون الشريك يضعف قراءة النص. اختر هوية سكاد أو الفاتحة.']); }
     if (/[a-z]{3,}/i.test(f.title || '')) out.push(['warn', 'الاتجاه', 'العنوان يحتوي كلمات لاتينية؛ راجع ترتيبها في المعاينة.']);
     if (f.photo && !f.consent) out.push(['bad', 'موافقة الصورة', 'أكّد وجود موافقة موثّقة على نشر الصورة، خاصة إن ظهر فيها أطفال أو أشخاص.']);
     if (isMulti(d) && !(d.slides || []).length) out.push(['warn', 'الشرائح', 'الكاروسيل بلا شرائح محتوى؛ أضف شريحة واحدة على الأقل.']);
   }
-  if (kindClass(f.kind) === 'edu' && !f.source) out.push(['warn', 'المرجع', 'المحتوى التوعوي والعلمي يحتاج إلى مرجع.']);
+  if (f.ctaType && f.ctaType !== 'none' && f.ctaValue && !ctaLink(f)) out.push(['warn', 'الدعوة لإجراء', `«${f.ctaValue}» لا يبدو ${CTA_TYPES[f.ctaType]} صالحاً؛ لن يظهر رابط قابل للضغط.`]);
+  if (isVideo(d)) { if (!VIDEO_TYPE) out.push(['bad', 'الفيديو', 'هذا المتصفح لا يدعم إنتاج الفيديو. استخدم Chrome أو Edge على الحاسوب.']);
+    else if (!/mp4/.test(VIDEO_TYPE)) out.push(['warn', 'صيغة الفيديو', 'سيُنتج المتصفح ملف WebM؛ حوّله إلى MP4 قبل رفعه إلى إنستغرام، أو استخدم Chrome محدّثاً.']); }
   return out;
 }
 function captionChecks(d){
   const out = [], pl = platformOf(d), P = PLATFORMS[pl], cap = captionFor(d, pl), tags = hashtagsOf(d), len = [...cap].length;
   if (len > P.max) out.push(['bad', 'طول نص المنشور', `نص ${P.name} ${n0(len)} حرفاً ويتجاوز الحد (${n0(P.max)}). اختصر الكابتشن أو التفاصيل.`]);
-  if (pl === 'ig' && tags.length > 5) out.push(['bad', 'الوسوم', `إنستغرام يقبل 5 وسوم كحد أقصى؛ لديك ${n0(tags.length)}.`]);
+  if (pl === 'ig' && tags.length > 5) out.push(['bad', 'الهاشتاقات', `إنستغرام يقبل 5 هاشتاقات كحد أقصى؛ لديك ${n0(tags.length)}.`]);
   if (!(d.fields.caption || '').trim()) out.push(['warn', 'الكابتشن', 'لم تكتب كابتشن؛ سيبدأ نص المنشور بالعنوان.']);
   return out;
 }
@@ -646,8 +685,8 @@ function captionFor(d, pl = platformOf(d), variant = 'full'){
     const st = statOf(d); if (st) push(`${st.num} ${st.label}`);
     parseDetails(f.details).forEach(([k, v]) => push(bullet + (k ? k + ': ' : '') + v));
   }
-  push(f.cta); push(f.contact);
-  if (variant === 'full' && f.source) push('المرجع: ' + f.source);
+  const link = ctaLink(f); push(f.cta && link ? `${f.cta}: ${ctaDisplay(f)}` : f.cta || (link ? ctaDisplay(f) : '')); push(f.contact);
+  if (variant === 'full') push(f.note);
   const tags = hashtagsOf(d), base = tags.length ? tags : ['#سكاد', '#' + p.name.replace(/\s+/g, '_')];
   const lim = pl === 'ig' ? 5 : PLATFORMS[pl].tags;
   return out.join('\n') + `\n\nبالشراكة بين معهد سكاد للتعليم والتدريب السريري و${p.name}.\n\n` + base.slice(0, lim).join(' ');
@@ -660,7 +699,7 @@ function altFor(d){
   const st = statOf(d); if (st) parts.push(`رقم بارز ${q(st.num + ' ' + st.label)}`);
   if (f.text) parts.push('النص ' + q(f.text)); if (f.photo) parts.push('وصورة ' + (f.photoDesc ? q(f.photoDesc) : 'مرفقة'));
   const det = parseDetails(f.details); if (det.length) parts.push('التفاصيل: ' + det.map(([k, v]) => (k ? k + ' ' : '') + v).join('، '));
-  if (f.cta) parts.push('ودعوة ' + q(f.cta));
+  if (f.cta && f.ctaShow !== false) parts.push('ودعوة ' + q(f.cta)); if (f.note) parts.push('وملاحظة ' + q(f.note));
   let s = parts.join('؛ ') + '.';
   if (isMulti(d)) s += ` كاروسيل من ${n0(buildSlides(d).length)} شرائح: ` + (d.slides || []).map((t, i) => `الشريحة ${i+2}: ${q(t)}`).join('؛ ') + '.';
   return f.alt && f.altCustom ? f.alt : s;
@@ -720,6 +759,8 @@ async function buildExport(d, o = {}){ // o: {type:'png'|'jpg'|'zip'|'pdf', plat
   if (o.caption) texts.push({name:`نص-المنشور-${PLATFORMS[pl].name}.txt`, data:enc.encode(captionFor(d, pl, o.variant || 'full'))});
   if (o.alt) texts.push({name:'النص-البديل.txt', data:enc.encode(altFor(d))});
   const base = `${safeName(designName(d))} — ${FORMATS[d.format].name} — الإصدار ${d.version}${wm ? ' — مسودة' : ''}`;
+  if (isVideo(d)) { const v = await buildVideo(d, {watermark: wm, onProgress: o.onProgress, signal: o.signal});
+    if (!texts.length) return {blob:v.blob, name:`${base}.${v.ext}`}; return {blob:await zip([{name:`${base}.${v.ext}`, data:new Uint8Array(await v.blob.arrayBuffer())}, ...texts]), name:base + '.zip'}; }
   const type = o.type || (n > 1 ? (d.format === 'lidoc' ? 'pdf' : 'zip') : 'png');
   if (type === 'pdf') { const pages = []; for (let i = 0; i < n; i++) { render(c, d, i, {watermark: wm}); pages.push({w:c.width, h:c.height, data:new Uint8Array(await (await toBlob(c, 'image/jpeg', .92)).arrayBuffer())}); }
     const pdf = pdfFromJpegs(pages); if (!texts.length) return {blob:pdf, name:base + '.pdf'};
@@ -729,6 +770,32 @@ async function buildExport(d, o = {}){ // o: {type:'png'|'jpg'|'zip'|'pdf', plat
   const files = [];
   for (let i = 0; i < n; i++) { render(c, d, i, {watermark: wm}); files.push({name: n > 1 ? `شريحة-${String(i+1).padStart(2,'0')}.${ext}` : `${safeName(designName(d))}.${ext}`, data:new Uint8Array(await (await toBlob(c, mime, .93)).arrayBuffer())}); }
   return {blob:await zip([...files, ...texts]), name:base + '.zip'};
+}
+const videoDuration = d => { const u = (d.fields.uploads || [])[0]; return d.fields.mode === 'upload' ? (u?.duration || 0) : Math.max(3, +(d.fields.videoDur || 10)); };
+async function buildVideo(d, o = {}){
+  if (!VIDEO_TYPE) throw new Error('المتصفح لا يدعم إنتاج الفيديو');
+  const fm = FORMATS[d.format], f = d.fields, c = document.createElement('canvas'); c.width = fm.w; c.height = fm.h;
+  const n = buildSlides(d).length, stream = c.captureStream(30); let video = null, ac = null, dur;
+  try { await document.fonts.load(`700 40px ${FONT}`); await document.fonts.load(`500 40px ${FONT}`); } catch {}
+  if (f.mode === 'upload') {
+    const u = (f.uploads || [])[0]; if (!u || u.kind !== 'video') throw new Error('ارفع ملف فيديو أولاً');
+    video = document.createElement('video'); if (/^https?:/.test(u.url)) video.crossOrigin = 'anonymous'; video.playsInline = true; video.preload = 'auto'; video.src = u.url;
+    await new Promise((res, rej) => { video.onloadeddata = res; video.onerror = () => rej(new Error('تعذّر تحميل الفيديو')); });
+    dur = video.duration;
+    try { ac = new AudioContext(); const src = ac.createMediaElementSource(video), dest = ac.createMediaStreamDestination(); src.connect(dest); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t)); } catch {}
+  } else dur = videoDuration(d);
+  const rec = new MediaRecorder(stream, {mimeType:VIDEO_TYPE, videoBitsPerSecond:8000000}), chunks = [];
+  rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(r => { rec.onstop = r; });
+  const per = dur / n, draw = t => { if (video) render(c, d, 0, {watermark:o.watermark, video}); else { const i = Math.min(n - 1, Math.floor(t / per)); render(c, d, i, {watermark:o.watermark, anim:t - i * per}); } };
+  draw(0); rec.start(250); const t0 = performance.now();
+  if (video) await video.play();
+  await new Promise(res => { const tick = () => { if (o.signal?.aborted) return res(); const t = video ? video.currentTime : (performance.now() - t0) / 1000; draw(Math.min(t, dur)); o.onProgress?.(Math.min(1, t / dur));
+    if (video ? video.ended : t >= dur + .3) return res(); requestAnimationFrame(tick); }; tick(); });
+  rec.stop(); await stopped; video?.pause(); try { await ac?.close(); } catch {}
+  stream.getTracks().forEach(t => t.stop());
+  if (o.signal?.aborted) throw new Error('aborted');
+  return {blob:new Blob(chunks, {type:VIDEO_TYPE.split(';')[0]}), ext:/mp4/.test(VIDEO_TYPE) ? 'mp4' : 'webm'};
 }
 async function exportDesign(d, o){ const r = await buildExport(d, o); return saveFile(r.name, r.blob); }
 
@@ -812,7 +879,7 @@ const PRESETS = {
     details:[S.course.start ? 'يبدأ في: ' + dateAr(S.course.start) : '', S.course.city ? 'المدينة: ' + S.course.city : ''].filter(Boolean).join('\n'), cta:'احجز مقعدك الآن'})
 };
 function newDesign(preset){ const pid = S.user.partnerId || S.partners[0]?.id;
-  const fields = {mode:'design', kind:'', layout:'classic', eyebrow:'', title:'', text:'', details:'', cta:'', contact:'', source:'', caption:'', hashtags:'', multi:false, ...(PRESETS[preset] ? PRESETS[preset]() : {})};
+  const fields = {mode:'design', kind:'', layout:'classic', eyebrow:'', title:'', text:'', details:'', cta:'', contact:'', note:'', ctaShow:true, ctaType:'none', ctaValue:'', caption:'', hashtags:'', multi:false, ...(PRESETS[preset] ? PRESETS[preset]() : {})};
   return {id:uid(), projectId:S.pid, partnerId:pid, template:'free', format:'post45', theme:'scadd', status:'draft', version:1, updated:new Date().toISOString().slice(0,10), fields, slides:[], comments:[], isNew:true}; }
 let capPl = null, capVar = 'full', optsOpen = false, aiUndo = null, aiBusy = false;
 const aiState = {}; // design id → {used, limit}
@@ -825,25 +892,30 @@ const PROMPT_PARTS = [
   ['الدعوة لإجراء', /سجّل|سجل|احجز|تواصل|اتصل|واتساب|رابط|زوروا|شارك|تابع|راسل/],
   ['النبرة والأسلوب', /نبرة|أسلوب|رسمي|ودود|بسيط|علمي|مؤسسي|مختصر|ملهم|دافئ|جاد/]
 ];
-const promptScore = t => PROMPT_PARTS.map(([k, re]) => [k, re.test(t || '')]);
+const promptScore = (t, d) => PROMPT_PARTS.map(([k, re], i) => [k, re.test(t || '') || (i === 3 && !!d && !!schedText(schedOf(d))) || (i === 2 && !!d && !!d.fields.fmtPicked)]);
+function schedOf(d){ const f = d.fields; if (!f.sched) f.sched = {start:S.course?.start || '', days:S.course?.days || null, hours:S.course?.dailyHours || null, auto:true}; return f.sched; }
+function schedText(sc){ if (!sc || (!sc.start && !sc.days)) return '';
+  const parts = []; if (sc.start) parts.push('يبدأ ' + dateAr(sc.start)); if (sc.days) parts.push(arN(+sc.days, 'يوم واحد', 'يومان', 'أيام', 'يوماً'));
+  if (sc.hours) parts.push(`${n0(+sc.hours)} ${+sc.hours > 2 && +sc.hours < 11 ? 'ساعات' : 'ساعة'} يومياً`); let out = parts.join(' · '); if (sc.days && sc.hours) out += ` (${n0(sc.days * sc.hours)} ساعة)`; return out; }
+function schedLines(sc){ const out = []; if (sc.start) out.push('يبدأ في: ' + dateAr(sc.start));
+  if (sc.days) out.push('المدة: ' + arN(+sc.days, 'يوم واحد', 'يومان', 'أيام', 'يوماً') + (sc.hours ? ` · ${n0(+sc.hours)} ${+sc.hours > 2 && +sc.hours < 11 ? 'ساعات' : 'ساعة'} يومياً (${n0(sc.days * sc.hours)} ساعة)` : '')); return out; }
 function canEdit(){ return caps().edit && !(editing.status === 'pending' && !caps().review); }
 
 function renderStudio(){
   if (!editing) editing = newDesign();
   const d = normalizeDesign(editing), f = d.fields, fm = FORMATS[d.format], pl = fm.pl, locked = d.status === 'pending' && !caps().review, C = caps();
   if (!capPl || !PLATFORMS[capPl]) capPl = pl;
-  const upload = f.mode === 'upload', multi = isMulti(d);
+  const upload = f.mode === 'upload', multi = isMulti(d), video = isVideo(d), kindNew = f.kindNew || (f.kind && !kindsList().includes(f.kind));
   const fieldsSrc = [
-    ['eyebrow','الوسم العلوي','text','كلمتان أو ثلاث فوق العنوان'],
+    ['eyebrow','العنوان التمهيدي','text','كلمة أو كلمتان فوق العنوان الرئيسي'],
     ['title','العنوان','text',''],
-    ['text','النص','area','فقرة قصيرة على التصميم. اترك سطراً فارغاً بين الفقرات'],
-    ['details','التفاصيل','area','سطر لكل معلومة، مثل «التاريخ: 10 كانون الثاني» أو «المكان: بغداد». السطر بلا نقطتين يظهر كنقطة'],
-    ['cta','الدعوة لإجراء','text','مثل «سجّل الآن»'],
+    ['text','النص','area','اكتب النص كما تريده. اترك سطراً فارغاً بين الفقرات لتظهر منفصلة'],
+    ['details','التفاصيل','area','أي معلومات عن الموضوع'],
     ['contact','التواصل أو التذييل','text','يظهر في أسفل التصميم'],
-    ['source','المرجع','text','للمحتوى العلمي والتوعوي']
+    ['note','ملاحظة ختامية','text','سطر صغير في أسفل المحتوى، مثل «الشهادة معتمدة من معهد سكاد»']
   ];
   const field = ([k, label, type, hint]) => { const v = f[k] ?? '', id = 'fld-' + k;
-    const input = type === 'area' ? `<textarea id="${id}" data-k="${k}" rows="${k === 'details' ? 3 : 4}">${esc(v)}</textarea>` : `<input id="${id}" data-k="${k}" type="text" value="${esc(v)}">`;
+    const input = type === 'area' ? `<textarea id="${id}" data-k="${k}" rows="${k === 'details' ? 4 : 5}">${esc(v)}</textarea>` : `<input id="${id}" data-k="${k}" type="text" value="${esc(v)}">`;
     return `<label class="f" for="${id}">${label}${hint ? `<span class="hint">${hint}</span>` : ''}${input}</label>`; };
   const st = statOf(d);
   const statEd = `<details class="more" ${f.statNum || f.statLive ? 'open' : ''}><summary>رقم بارز (اختياري)</summary><div class="grid g2" style="margin-top:10px">
@@ -857,8 +929,8 @@ function renderStudio(){
     <div class="row" style="margin-top:10px"><button class="btn" id="add-slide">إضافة شريحة</button><span class="small muted">${arN(d.slides.length + 2, 'شريحة', 'شريحتان', 'شرائح', 'شريحة')} مع الغلاف والختام (الحد 10)</span></div></div>` : '';
   const ups = f.uploads || [];
   const methodEd = upload ? `
-      <label class="f">ملف التصميم${multi ? ' (ملف لكل شريحة، حتى 10)' : ''}<span class="hint">PNG أو JPG أو WebP حتى 10 ميغابايت، بمقاس ${fm.w}×${fm.h} بكسل للحصول على أفضل نتيجة</span><input type="file" id="up-file" accept="image/png,image/jpeg,image/webp" ${multi ? 'multiple' : ''}></label>
-      ${ups.length ? `<div class="uplist">${ups.map((u, i) => `<div class="upitem"><img src="${esc(u.url || '')}" alt=""><div class="small"><b><bdi>${esc(u.name || 'ملف ' + (i+1))}</bdi></b><br><span class="muted">${u.w ? `${u.w}×${u.h}` : ''}</span></div><div class="row">${multi ? `<button class="btn" data-uup="${i}" aria-label="تقديم الملف ${i+1}" ${i===0?'disabled':''}>↑</button>` : ''}<button class="btn" data-udel="${i}">حذف</button></div></div>`).join('')}</div>` : ''}
+      <label class="f">${video ? 'ملف الفيديو' : 'ملف التصميم'}${multi && !video ? ' (ملف لكل شريحة، حتى 10)' : ''}<span class="hint">${video ? 'MP4 أو MOV أو WebM حتى 50 ميغابايت' : 'PNG أو JPG أو WebP حتى 10 ميغابايت'}، بمقاس ${fm.w}×${fm.h} بكسل للحصول على أفضل نتيجة</span><input type="file" id="up-file" accept="${video ? 'video/mp4,video/quicktime,video/webm' : 'image/png,image/jpeg,image/webp'}" ${multi && !video ? 'multiple' : ''}></label>
+      ${ups.length ? `<div class="uplist">${ups.map((u, i) => `<div class="upitem">${u.kind === 'video' ? `<span class="vthumb" aria-hidden="true">▶</span>` : `<img src="${esc(u.url || '')}" alt="">`}<div class="small"><b><bdi>${esc(u.name || 'ملف ' + (i+1))}</bdi></b><br><span class="muted">${u.w ? `${u.w}×${u.h}` : ''}${u.duration ? ` · ${n0(Math.round(u.duration))} ثانية` : ''}</span></div><div class="row">${multi ? `<button class="btn" data-uup="${i}" aria-label="تقديم الملف ${i+1}" ${i===0?'disabled':''}>↑</button>` : ''}<button class="btn" data-udel="${i}">حذف</button></div></div>`).join('')}</div>` : ''}
       <div class="grid g2"><label class="f">ملاءمة الملف للإطار<select id="up-fit"><option value="cover" ${f.uploadFit !== 'contain' ? 'selected' : ''}>ملء الإطار (قد يُقصّ الطرف)</option><option value="contain" ${f.uploadFit === 'contain' ? 'selected' : ''}>احتواء كامل مع هامش</option></select></label>
       <label class="f">شريط الشعارين<select id="up-bar"><option value="bottom" ${(f.logoBar || 'bottom') === 'bottom' ? 'selected' : ''}>أسفل التصميم</option><option value="top" ${f.logoBar === 'top' ? 'selected' : ''}>أعلى التصميم</option><option value="none" ${f.logoBar === 'none' ? 'selected' : ''}>بدون — الملف يتضمن الشعارين</option></select></label></div>
       ${f.logoBar === 'none' ? `<label class="toggle"><input type="checkbox" id="up-has" ${f.hasLogos ? 'checked' : ''}> أؤكد أن الملف يتضمن شعاري سكاد و${esc(partnerOf(d.partnerId).name)} وفق قواعد الهوية</label>` : ''}
@@ -874,6 +946,7 @@ function renderStudio(){
         <label class="toggle"><input type="checkbox" id="consent" ${f.consent ? 'checked' : ''}> لديّ موافقة موثّقة من أصحاب الصورة (أو أولياء الأمور) على نشرها</label></div></details>`;
   const R = REC_LEN[kindClass(f.kind)][pl], capLen = [...(f.caption || '')].length;
   const comments = d.comments.length ? `<div class="card"><h3>ملاحظات المراجعة</h3><div class="grid" style="margin-top:10px">${d.comments.map(c => `<div class="comment"><b>${esc(c.by)}</b> <span class="small muted">${esc(c.at)}</span><br>${esc(c.text)}</div>`).join('')}</div></div>` : '';
+  const sched = schedOf(d);
   const ai = aiState[d.id] || {used: ONLINE ? null : (f.aiUsed || 0), limit: AI_LIMIT}, used = ai.used ?? 0, left = Math.max(0, (ai.limit || AI_LIMIT) - used), first = used === 0;
   $('#main').innerHTML = `<div class="head"><div><h1>${d.isNew ? 'تصميم جديد' : esc(designName(d))}</h1><p class="muted">${statusTag(d.status)} <span class="small">الإصدار ${d.version}${C.staff ? ' · ' + esc(partnerOf(d.partnerId).name) : ''}</span></p></div>
     <div class="row">${C.edit ? '<button class="btn" id="save">حفظ المسودة</button>' : ''}${!C.edit ? '' : !C.review ? `<button class="btn primary" id="submit" ${locked?'disabled':''}>إرسال للاعتماد</button>` : `<button class="btn primary" id="approve">اعتماد</button>`}</div></div>
@@ -884,31 +957,49 @@ function renderStudio(){
       <div class="ai-limit" role="note"><b>لكل تصميم توليد واحد ثم ثلاث تعديلات فقط.</b> اكتب تعليماتك بالتفصيل من المرة الأولى: الهدف، والجمهور، والمنصة، والتفاصيل، والدعوة، والنبرة.</div>
       <label class="f" for="ai-p">${first ? 'ما الذي تريد إنتاجه؟' : 'ما الذي تريد تغييره في النتيجة؟'}<textarea id="ai-p" rows="5" maxlength="3000" placeholder="${first ? 'مثال: إعلان لدورة تحليل السلوك التطبيقي في بغداد تبدأ 10 كانون الثاني 2027 لمدة 11 يوماً، موجّه للأخصائيين والمعلمين العاملين مع الأطفال ذوي التوحّد. منشور إنستغرام عمودي. اذكر أن المقاعد 25 فقط وأن الشهادة معتمدة من معهد سكاد. الدعوة: التسجيل عبر واتساب. نبرة مؤسسية واضحة بلا مبالغة.' : 'مثال: اختصر النص إلى سطرين، واجعل الدعوة «احجز مقعدك عبر واتساب»، وأضف شريحة عن محاور الدورة.'}">${esc(f.aiDraft || '')}</textarea></label>
       <div class="pchips" id="pchips" aria-live="polite"></div>
+      <fieldset class="sched"><legend>الموعد والمدة <span class="small muted">(اختياري — يُرسَل مع الطلب ويمكن إضافته إلى التفاصيل)</span></legend>
+        <div class="grid g3"><label class="f" for="sc-start">تاريخ البدء<input type="date" id="sc-start" value="${esc(sched.start || '')}"></label>
+          <label class="f" for="sc-days">عدد الأيام الإجمالي<input type="number" min="1" step="1" id="sc-days" value="${sched.days ?? ''}" placeholder="مثل 11"></label>
+          <label class="f" for="sc-hours">الساعات اليومية<input type="number" min="0.5" step="0.5" id="sc-hours" value="${sched.hours ?? ''}" placeholder="مثل 4"></label></div>
+        <div class="row" style="justify-content:space-between"><span class="small" id="sc-prev"></span><button class="btn" id="sc-add" ${!schedText(sched) ? 'disabled' : ''}>أضف إلى التفاصيل</button></div></fieldset>
       <div class="row" style="justify-content:space-between"><div class="tries" aria-label="المحاولات المستخدمة ${n0(used)} من ${n0(ai.limit || AI_LIMIT)}">${Array.from({length: ai.limit || AI_LIMIT}, (_, i) => `<i class="${i < used ? 'on' : ''}" title="${i === 0 ? 'التوليد' : 'تعديل ' + i}"></i>`).join('')}<span class="small">${ai.used == null ? 'جارٍ التحقق من المحاولات…' : left ? `متبقٍ: ${first ? 'التوليد و' : ''}${arN(first ? left - 1 : left, 'تعديل واحد', 'تعديلان', 'تعديلات', 'تعديلاً')}` : 'استُنفدت المحاولات لهذا التصميم'}</span></div>
         <div class="row">${aiUndo ? '<button class="btn" id="ai-undo">تراجع عن آخر نتيجة</button>' : ''}<button class="btn primary" id="ai-go" ${!left || ai.used == null || !C.edit ? 'disabled' : ''}>${first ? 'توليد المحتوى' : 'تطبيق التعديل'}</button></div></div>
       ${f.aiNotes ? `<div class="comment small" style="margin-top:4px"><b>ملاحظات المولّد:</b> ${esc(f.aiNotes)}</div>` : ''}
       ${!ONLINE ? '<p class="note">في الوضع التجريبي يعمل المولّد محاكاةً محلية مبسّطة، لعرض سير العمل فقط.</p>' : ''}</div>
     <div class="card"><h3>١. المنصة والمقاس</h3>
       <div class="ptabs" role="tablist" aria-label="المنصة">${Object.entries(PLATFORMS).map(([k, p]) => `<button role="tab" class="ptab" data-pl="${k}" aria-selected="${k === pl}">${p.name}</button>`).join('')}</div>
-      <div class="fmt" style="margin-top:10px">${Object.entries(FORMATS).filter(([, x]) => x.pl === pl).map(([k, x]) => { const r = x.h/x.w; return `<button class="choice" data-fmt="${k}" aria-pressed="${k===d.format}"><i class="shape" style="width:${r>1?18/r*1.2:26}px;height:${r>1?26:26*r}px"></i><b>${x.name}</b><span>${x.size}</span></button>`; }).join('')}</div>
-      ${fm.multi && !fm.forceMulti ? `<label class="toggle" style="margin-top:8px"><input type="checkbox" id="multi" ${f.multi ? 'checked' : ''}> عدة شرائح (كاروسيل)</label>` : fm.forceMulti ? '<p class="small muted" style="margin-top:8px">يُصدَّر مستند لينكدإن ملف PDF، وكل صفحة شريحة.</p>' : ''}</div>
+      <div class="ptabs sm" role="tablist" aria-label="نوع المادة" style="margin-top:10px">${[['image','صورة'],['video','فيديو']].map(([k, l]) => `<button role="tab" class="ptab" data-media="${k}" aria-selected="${(k === 'video') === video}">${l}</button>`).join('')}</div>
+      <div class="fmt" style="margin-top:10px">${Object.entries(FORMATS).filter(([, x]) => x.pl === pl && !!x.video === video).map(([k, x]) => { const r = x.h/x.w; return `<button class="choice" data-fmt="${k}" aria-pressed="${k===d.format}"><i class="shape" style="width:${r>1?18/r*1.2:26}px;height:${r>1?26:26*r}px"></i><b>${x.name}</b><span>${x.size}</span></button>`; }).join('')}</div>
+      ${fm.multi && !fm.forceMulti && !(video && upload) ? `<label class="toggle" style="margin-top:8px"><input type="checkbox" id="multi" ${f.multi ? 'checked' : ''}> ${video ? 'عدة مشاهد متتالية' : 'عدة شرائح (كاروسيل)'}</label>` : fm.forceMulti ? '<p class="small muted" style="margin-top:8px">يُصدَّر مستند لينكدإن ملف PDF، وكل صفحة شريحة.</p>' : ''}
+      ${multi && !video && !fm.forceMulti ? `<div class="row" role="radiogroup" aria-label="صيغة الكاروسيل" style="margin-top:6px"><span class="small" style="font-weight:600">صيغة الكاروسيل:</span>${[['png','صور PNG'],['pdf','ملف PDF']].map(([k, l]) => `<label class="toggle"><input type="radio" name="car-out" value="${k}" ${(f.carouselOut || (pl === 'li' ? 'pdf' : 'png')) === k ? 'checked' : ''}> ${l}</label>`).join('')}</div>` : ''}
+      ${video && !upload ? `<label class="f" style="margin-top:8px;max-width:260px">مدة الفيديو<select id="vdur">${[6, 10, 15, 20, 30].map(x => `<option value="${x}" ${+(f.videoDur || 10) === x ? 'selected' : ''}>${n0(x)} ثانية</option>`).join('')}</select></label><p class="small muted">يتحرك المحتوى عنصراً بعد عنصر${multi ? '، وتتوالى المشاهد بالتساوي' : ''}. يُنتَج الفيديو في المتصفح بالمدة نفسها، فأبقِ النافذة مفتوحة أثناء التصدير.</p>` : ''}</div>
     <div class="card fields"><h3>٢. طريقة التصميم</h3>
       <div class="choices two"><button class="choice" data-mode="design" aria-pressed="${!upload}"><b>يصمّم النظام</b><span>تخطيطات ضمن هوية سكاد والشريك، مع خيارات مقترحة</span></button>
         <button class="choice" data-mode="upload" aria-pressed="${upload}"><b>أرفع تصميمي الجاهز</b><span>ملف من عندك، ويضيف النظام شريط الشعارين عند الحاجة</span></button></div>
       ${methodEd}</div>
     <div class="card fields"><h3>٣. ${upload ? 'معلومات المنشور' : 'المحتوى على التصميم'}</h3>
       ${upload ? '<p class="small muted">لا تُرسم هذه المعلومات على ملفك؛ تُستخدم في نص المنشور والنص البديل والأرشفة.</p>' : ''}
-      <label class="f" for="fld-kind">نوع المحتوى<span class="hint">اكتب أي نوع أو اختر من المقترحات. لا يغيّر النوع الحقول، ويُستخدم في الطول المقترح للكابتشن والنص البديل والأرشفة</span><input id="fld-kind" data-k="kind" list="kinds" value="${esc(f.kind || '')}" placeholder="إعلان، توعية، فعالية…"><datalist id="kinds">${KINDS.map(k => `<option value="${k}">`).join('')}</datalist></label>
-      ${fieldsSrc.map(field).join('')}${upload ? '' : statEd}</div>
+      <label class="f" for="kind-sel">نوع المحتوى<span class="hint">لا يغيّر الحقول؛ يُستخدم في الطول المقترح للكابتشن والنص البديل والأرشفة</span>
+        <select id="kind-sel"><option value="">— اختر —</option>${kindsList().map(k => `<option value="${esc(k)}" ${k === f.kind ? 'selected' : ''}>${esc(k)}</option>`).join('')}<option value="__new" ${kindNew ? 'selected' : ''}>＋ إنشاء نوع جديد…</option></select></label>
+      ${kindNew ? `<label class="f" for="fld-kind">اسم النوع الجديد<span class="hint">يُضاف إلى القائمة لتصاميم المشروع القادمة</span><input id="fld-kind" data-k="kind" value="${esc(kindsList().includes(f.kind) ? '' : f.kind || '')}" placeholder="مثل: يوم مفتوح"></label>` : ''}
+      ${fieldsSrc.map(field).join('')}
+      <fieldset class="exf cta-ed"><legend>الدعوة لإجراء</legend>
+        <label class="f" for="fld-cta">نص الدعوة<input id="fld-cta" data-k="cta" value="${esc(f.cta || '')}" placeholder="مثل: سجّل الآن"></label>
+        <div class="grid g2"><label class="f" for="cta-type">وسيلة الإجراء<select id="cta-type">${Object.entries(CTA_TYPES).map(([k, l]) => `<option value="${k}" ${(f.ctaType || 'none') === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+          ${(f.ctaType || 'none') !== 'none' ? `<label class="f" for="cta-val">${{whatsapp:'رقم واتساب مع رمز الدولة', link:'الرابط', phone:'رقم الهاتف مع رمز الدولة', email:'البريد الإلكتروني'}[f.ctaType]}<input id="cta-val" data-k="ctaValue" dir="ltr" value="${esc(f.ctaValue || '')}" placeholder="${{whatsapp:'+962 7 9600 0000', link:'scadd.jo/register', phone:'+962 6 000 0000', email:'info@scadd.jo'}[f.ctaType]}"></label>` : '<span></span>'}</div>
+        ${ctaLink(f) ? `<p class="small">الرابط القابل للضغط: <bdi dir="ltr">${esc(ctaLink(f))}</bdi></p>` : ''}
+        <label class="toggle"><input type="checkbox" id="cta-show" ${f.ctaShow !== false ? 'checked' : ''}> إظهار الدعوة على التصميم أيضاً</label>
+        <p class="small muted">يُضاف الرابط إلى نص المنشور ليكون قابلاً للضغط في فيسبوك ولينكدإن. في إنستغرام لا تعمل الروابط داخل نص المنشور؛ ضعه في رابط الحساب أو في ملصق الرابط داخل القصة.</p></fieldset>
+      ${upload ? '' : statEd}</div>
     ${slidesEd}
-    <div class="card fields"><h3>٤. الكابتشن والوسوم</h3>
+    <div class="card fields"><h3>٤. الكابتشن والهاشتاقات</h3>
       <label class="f" for="fld-caption">الكابتشن<span class="hint">افتتاحية المنشور. في ${PLATFORMS[pl].name} يظهر نحو ${n0(PLATFORMS[pl].fold)} حرفاً قبل «المزيد»، والحد ${n0(PLATFORMS[pl].max)} حرف</span><textarea id="fld-caption" data-k="caption" rows="4">${esc(f.caption || '')}</textarea></label>
       <div class="meter" id="cap-meter"></div>
-      <label class="f" for="fld-hashtags">الوسوم<span class="hint">افصل بينها بمسافة. إنستغرام يقبل 5 وسوم كحد أقصى</span><input id="fld-hashtags" data-k="hashtags" value="${esc(f.hashtags || '')}" placeholder="#سكاد #التوحد"></label>
+      <label class="f" for="fld-hashtags">الهاشتاقات<span class="hint">افصل بينها بمسافة. إنستغرام يقبل 5 هاشتاقات كحد أقصى</span><input id="fld-hashtags" data-k="hashtags" value="${esc(f.hashtags || '')}" placeholder="#سكاد #التوحد"></label>
       <p class="small muted">يُبنى «نص المنشور» تلقائياً من الكابتشن وكل المعلومات المدخلة أعلاه، ويُكتب «النص البديل» من محتوى التصميم.</p></div>
     ${comments}
   </div>
-  <div class="preview"><div class="proof"><div class="row" style="justify-content:space-between"><b class="small">المعاينة · ${PLATFORMS[pl].name} · ${fm.size}</b><label class="toggle"><input type="checkbox" id="safe" ${showSafe?'checked':''}> المنطقة الآمنة</label></div>
+  <div class="preview"><div class="proof"><div class="row" style="justify-content:space-between"><b class="small">المعاينة · ${PLATFORMS[pl].name} · ${fm.size}</b>${video ? '<button class="btn" id="vplay">▶ تشغيل</button>' : ''}<label class="toggle"><input type="checkbox" id="safe" ${showSafe?'checked':''}> المنطقة الآمنة</label></div>
     <div class="canvas-wrap"><canvas id="cv" role="img" aria-label="معاينة التصميم"></canvas></div><div class="slidenav" id="snav"></div></div>
     <div class="checks" id="checks" aria-live="polite"></div>
     <div class="card cap-card"><div class="row" style="justify-content:space-between"><h3>نص المنشور</h3><div class="row"><div class="ptabs sm" role="tablist" aria-label="نص المنشور لمنصة">${Object.entries(PLATFORMS).map(([k, p]) => `<button role="tab" class="ptab" data-cpl="${k}" aria-selected="${k === capPl}">${p.name}</button>`).join('')}</div><button class="btn" id="copy">نسخ</button></div></div>
@@ -928,7 +1019,7 @@ async function loadAiState(d){
   aiState[d.id] = error ? {used:0, limit:AI_LIMIT} : {used:data?.used ?? 0, limit:data?.limit ?? AI_LIMIT};
   if (editing?.id === d.id && location.hash === '#studio') renderStudio();
 }
-function paintPrompt(){ const t = $('#ai-p')?.value || '', sc = promptScore(t), n = sc.filter(x => x[1]).length, len = [...t].length;
+function paintPrompt(){ const t = $('#ai-p')?.value || '', sc = promptScore(t, editing), n = sc.filter(x => x[1]).length, len = [...t].length;
   $('#pchips').innerHTML = sc.map(([k, ok]) => `<span class="pchip ${ok ? 'on' : ''}">${ok ? '✓' : '○'} ${k}</span>`).join('') +
     `<span class="small ${len && (n < 4 || len < 160) ? 'warn-t' : 'muted'}">${!len ? '' : n >= 5 && len >= 160 ? 'تعليمات مفصّلة وواضحة.' : 'أضف ما ينقص قبل الإرسال، فالمحاولات محدودة.'}</span>`; }
 function paintMeter(){ const d = editing, pl = platformOf(d), P = PLATFORMS[pl], [lo, hi] = REC_LEN[kindClass(d.fields.kind)][pl], len = [...(d.fields.caption || '')].length, el = $('#cap-meter'); if (!el) return;
@@ -942,7 +1033,18 @@ function paintOptions(){
   g.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { const o = list[+b.dataset.opt]; d.fields.layout = o.layout; d.theme = o.theme; touch(); renderStudio(); toast(`اختير «${LAYOUTS[o.layout].name}» بألوان ${THEMES[o.theme].name}.`); });
 }
 function touch(){ const d = editing; if (d.status !== 'draft' && !d.isNew) { d.status = 'draft'; d.version += 1; d.bumped = true; } }
+async function readVideo(file){
+  if (!/^video\/(mp4|quicktime|webm)$/.test(file.type)) { toast('صيغ الفيديو المقبولة: MP4 أو MOV أو WebM.'); return null; }
+  if (file.size > 50 * 1048576) { toast('حجم الفيديو أكبر من 50 ميغابايت. اضغطه أو قصّره أولاً.'); return null; }
+  const url = URL.createObjectURL(file), v = document.createElement('video'); v.preload = 'metadata'; v.muted = true;
+  const ok = await new Promise(r => { v.onloadedmetadata = () => r(true); v.onerror = () => r(false); v.src = url; });
+  if (!ok || !v.videoWidth) { URL.revokeObjectURL(url); toast('تعذّرت قراءة الفيديو. جرّب ملف MP4.'); return null; }
+  const meta = {kind:'video', w:v.videoWidth, h:v.videoHeight, duration:v.duration, name:file.name};
+  if (ONLINE) { URL.revokeObjectURL(url); const r = await uploadImage('photos', editing.projectId || S.pid, file); return r && {...meta, path:r.path, url:r.url}; }
+  toast('في الوضع التجريبي لا يُحفظ الفيديو بعد إغلاق الصفحة.'); return {...meta, url};
+}
 async function readImage(file, maxSide){
+  if (/^video\//.test(file.type)) return readVideo(file);
   if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { toast('الصيغ المقبولة: PNG أو JPG أو WebP.'); return null; }
   if (file.size > 10 * 1048576) { toast('حجم الملف أكبر من 10 ميغابايت.'); return null; }
   const url = URL.createObjectURL(file), im = new Image(); await new Promise((r, j) => { im.onload = r; im.onerror = j; im.src = url; }).catch(() => null);
@@ -954,8 +1056,17 @@ async function readImage(file, maxSide){
 }
 function bindStudio(){
   const d = editing, f = d.fields;
-  document.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const k = Object.keys(FORMATS).find(x => FORMATS[x].pl === b.dataset.pl && FORMATS[x].w === FORMATS[d.format].w && FORMATS[x].h === FORMATS[d.format].h) || Object.keys(FORMATS).find(x => FORMATS[x].pl === b.dataset.pl);
+  document.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const V = isVideo(d), ok = x => FORMATS[x].pl === b.dataset.pl && !!FORMATS[x].video === V; const k = Object.keys(FORMATS).find(x => ok(x) && FORMATS[x].w === FORMATS[d.format].w && FORMATS[x].h === FORMATS[d.format].h) || Object.keys(FORMATS).find(ok);
     d.format = k; f.fmtPicked = true; capPl = b.dataset.pl; touch(); slideIdx = 0; renderStudio(); });
+  document.querySelectorAll('[data-media]').forEach(b => b.onclick = () => { const toV = b.dataset.media === 'video'; if (toV === isVideo(d)) return; const cur = FORMATS[d.format], pl = cur.pl;
+    const list = Object.keys(FORMATS).filter(k => FORMATS[k].pl === pl && !!FORMATS[k].video === toV), same = list.find(k => Math.abs(FORMATS[k].w / FORMATS[k].h - cur.w / cur.h) < .02);
+    d.format = same || list[0]; f.fmtPicked = true; f.uploads = (f.uploads || []).filter(u => (u.kind === 'video') === toV); stopPreview(); touch(); slideIdx = 0; renderStudio(); });
+  $('#vdur') && ($('#vdur').onchange = e => { f.videoDur = +e.target.value; touch(); draw(); });
+  document.querySelectorAll('[name=car-out]').forEach(r => r.onchange = () => { f.carouselOut = r.value; touch(); });
+  $('#kind-sel').onchange = e => { const v = e.target.value; if (v === '__new') { f.kindNew = true; f.kind = ''; } else { f.kindNew = false; f.kind = v; } touch(); renderStudio(); if (f.kindNew) $('#fld-kind')?.focus(); };
+  $('#cta-type').onchange = e => { f.ctaType = e.target.value; touch(); renderStudio(); $('#cta-val')?.focus(); };
+  $('#cta-show').onchange = e => { f.ctaShow = e.target.checked; touch(); draw(); };
+  $('#cta-val') && ($('#cta-val').onchange = () => renderStudio());
   document.querySelectorAll('[data-fmt]').forEach(b => b.onclick = () => { d.format = b.dataset.fmt; f.fmtPicked = true; touch(); slideIdx = 0; renderStudio(); });
   $('#multi') && ($('#multi').onchange = e => { f.multi = e.target.checked; if (f.multi && !d.slides.length && f.mode !== 'upload') d.slides = splitBody(f.text).slice(1, 9); touch(); slideIdx = 0; renderStudio(); });
   document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { f.mode = b.dataset.mode; touch(); slideIdx = 0; renderStudio(); });
@@ -975,7 +1086,7 @@ function bindStudio(){
   $('#photo') && ($('#photo').onchange = async e => { const file = e.target.files[0]; if (!file) return; const r = await readImage(file, 1800); if (!r) return; f.photo = r.url; f.photoPath = r.path; touch(); renderStudio(); });
   $('#photo-del') && ($('#photo-del').onclick = () => { delete f.photo; delete f.photoPath; f.consent = false; if (f.layout === 'photo') f.layout = 'classic'; touch(); renderStudio(); });
   $('#consent') && ($('#consent').onchange = e => { f.consent = e.target.checked; touch(); draw(); });
-  $('#up-file') && ($('#up-file').onchange = async e => { const files = [...e.target.files]; if (!files.length) return; const multi = isMulti(d); const room = multi ? 10 - (f.uploads || []).length : 1;
+  $('#up-file') && ($('#up-file').onchange = async e => { const files = [...e.target.files]; if (!files.length) return; const multi = isMulti(d) && !isVideo(d); const room = multi ? 10 - (f.uploads || []).length : 1;
     if (multi && files.length > room) toast(`يُقبل ${arN(room, 'ملف واحد', 'ملفان', 'ملفات', 'ملفاً')} إضافي فقط.`);
     const got = []; for (const file of files.slice(0, Math.max(0, room))) { const r = await readImage(file, 2200); if (r) got.push(r); }
     if (!got.length) return; f.uploads = multi ? [...(f.uploads || []), ...got] : got; touch(); renderStudio(); toast('رُفع الملف. راجع الأبعاد في المعاينة.'); });
@@ -985,8 +1096,15 @@ function bindStudio(){
   $('#up-bar') && ($('#up-bar').onchange = e => { f.logoBar = e.target.value; touch(); renderStudio(); });
   $('#up-has') && ($('#up-has').onchange = e => { f.hasLogos = e.target.checked; touch(); draw(); });
   $('#safe').onchange = e => { showSafe = e.target.checked; draw(); };
+  $('#vplay') && ($('#vplay').onclick = () => previewRaf ? stopPreview() : startPreview());
   document.querySelectorAll('[data-cpl]').forEach(b => b.onclick = () => { capPl = b.dataset.cpl; document.querySelectorAll('[data-cpl]').forEach(x => x.setAttribute('aria-selected', x === b)); draw(); });
   $('#ai-p').oninput = () => { f.aiDraft = $('#ai-p').value; paintPrompt(); };
+  const sc = schedOf(d), schedUpd = () => { sc.auto = false; $('#sc-prev').textContent = schedText(sc) ? 'سيُكتب: ' + schedText(sc) : ''; $('#sc-add').disabled = !schedText(sc); paintPrompt(); touch(); };
+  $('#sc-start').oninput = e => { sc.start = e.target.value; schedUpd(); };
+  $('#sc-days').oninput = e => { sc.days = e.target.value ? Math.max(1, Math.floor(+e.target.value)) : null; schedUpd(); };
+  $('#sc-hours').oninput = e => { sc.hours = e.target.value ? Math.max(0, +e.target.value) : null; schedUpd(); };
+  $('#sc-prev').textContent = schedText(sc) ? 'سيُكتب: ' + schedText(sc) : '';
+  $('#sc-add').onclick = () => { const lines = schedLines(sc), cur = (f.details || '').split('\n').filter(l => l.trim() && !/^(يبدأ في|المدة)\s*:/.test(l.trim())); f.details = [...lines, ...cur].join('\n'); touch(); renderStudio(); toast('أُضيف الموعد والمدة إلى التفاصيل.'); };
   $('#ai-go').onclick = () => runAI();
   $('#ai-undo') && ($('#ai-undo').onclick = () => { Object.assign(d, JSON.parse(aiUndo)); aiUndo = null; touch(); renderStudio(); toast('استُعيد المحتوى السابق. المحاولة المستخدمة لا تُسترد.'); });
   $('#ai-howto').onclick = () => openExplainer();
@@ -999,9 +1117,20 @@ function bindStudio(){
   $('#copy-alt').onclick = () => copy(altFor(d), $('#alt'), 'نُسخ النص البديل.');
   $('#export').onclick = $('#export-m').onclick = () => openExport(d);
 }
+let previewRaf = 0, previewVid = null;
+function stopPreview(){ cancelAnimationFrame(previewRaf); previewRaf = 0; previewVid?.pause(); previewVid = null; const b = $('#vplay'); if (b) b.textContent = '▶ تشغيل'; }
+function startPreview(){
+  const d = editing, cv = $('#cv'); if (!cv) return; stopPreview(); const up = d.fields.mode === 'upload', u = (d.fields.uploads || [])[0];
+  if (up) { const v = u?.kind === 'video' && vidCache[u.url]; if (!v) return toast('ارفع ملف الفيديو أولاً.'); previewVid = v; v.currentTime = 0; v.play().catch(() => {}); }
+  const dur = videoDuration(d) || 10, n = buildSlides(d).length, per = dur / n, t0 = performance.now(); $('#vplay').textContent = '■ إيقاف';
+  const tick = () => { if (!$('#cv')) return stopPreview(); const t = (performance.now() - t0) / 1000;
+    if (up) render(cv, d, 0, {preview:true, safe:showSafe}); else { const i = Math.min(n - 1, Math.floor(t / per)); render(cv, d, i, {preview:true, safe:showSafe, watermark:d.status !== 'approved', anim:t - i * per}); const dots = document.querySelectorAll('#snav .dots i'); dots.forEach((x, k) => x.classList.toggle('on', k === i)); }
+    if (t >= dur + .5 || (up && previewVid?.ended)) { stopPreview(); draw(); return; } previewRaf = requestAnimationFrame(tick); };
+  tick();
+}
 function persist(){ const d = editing; d.updated = new Date().toISOString().slice(0,10); delete d.isNew; delete d.bumped; const i = S.designs.findIndex(x => x.id === d.id); const copy = JSON.parse(JSON.stringify(d)); if (i >= 0) { copy.rev = S.designs[i].rev; S.designs[i] = copy; } else S.designs.unshift(copy); save(); }
 function draw(){
-  const d = editing, cv = $('#cv'); if (!cv) return;
+  const d = editing, cv = $('#cv'); if (!cv) return; if (previewRaf) stopPreview();
   const n = buildSlides(d).length; slideIdx = Math.min(slideIdx, n - 1);
   render(cv, d, slideIdx, {preview:true, safe:showSafe, watermark:d.status !== 'approved'});
   cv.setAttribute('aria-label', 'معاينة التصميم: ' + altFor(d).slice(0, 300));
@@ -1012,7 +1141,7 @@ function draw(){
   $('#checks').innerHTML = html; $('#checks-m').innerHTML = '<h3>فحوص الجودة</h3>' + html;
   const cap = captionFor(d, capPl, 'full'), P = PLATFORMS[capPl], len = [...cap].length;
   $('#cap').textContent = cap; $('#cap-m').textContent = cap; $('#alt').textContent = altFor(d);
-  $('#cap-n').innerHTML = `${n0(len)} / ${n0(P.max)} حرف لـ${P.name}${len > P.max ? ' — <b style="color:var(--bad)">يتجاوز الحد</b>' : ''}${capPl === 'ig' && hashtagsOf(d).length > 5 ? ' · تُستخدم أول 5 وسوم فقط' : ''}`;
+  $('#cap-n').innerHTML = `${n0(len)} / ${n0(P.max)} حرف لـ${P.name}${len > P.max ? ' — <b style="color:var(--bad)">يتجاوز الحد</b>' : ''}${capPl === 'ig' && hashtagsOf(d).length > 5 ? ' · تُستخدم أول 5 هاشتاقات فقط' : ''}`;
   $('#exnote-m').textContent = $('#exnote').textContent = d.status === 'approved' ? 'التصميم معتمد: يُصدَّر بلا علامة مسودة.' : 'التصميم غير معتمد بعد: يُصدَّر بعلامة «مسودة» للمراجعة الداخلية فقط.';
 }
 window.addEventListener('imgload', () => { if ($('#cv')) draw(); });
@@ -1021,17 +1150,17 @@ document.addEventListener('keydown', e => { if (!$('#cv') || /INPUT|TEXTAREA|SEL
 
 /* ---------- export options ---------- */
 function openExport(d){
-  const n = buildSlides(d).length, pl = platformOf(d), def = n > 1 ? (d.format === 'lidoc' || pl === 'li' ? 'pdf' : 'zip') : 'png';
-  const types = n > 1 ? [['zip','صور PNG مرقّمة (ZIP)'],['pdf','ملف PDF — مناسب لمستند لينكدإن']] : [['png','صورة PNG'],['jpg','صورة JPG (حجم أصغر)'],['pdf','ملف PDF']];
+  const n = buildSlides(d).length, pl = platformOf(d), vd = isVideo(d), def = vd ? 'video' : n > 1 ? (d.format === 'lidoc' ? 'pdf' : d.fields.carouselOut === 'pdf' ? 'pdf' : d.fields.carouselOut === 'png' ? 'zip' : pl === 'li' ? 'pdf' : 'zip') : 'png';
+  const types = vd ? [['video', `فيديو ${/mp4/.test(VIDEO_TYPE || '') ? 'MP4' : 'WebM'} · ${n0(Math.round(videoDuration(d)))} ثانية`]] : n > 1 ? [['zip','صور PNG مرقّمة (ZIP)'],['pdf','ملف PDF — مناسب لمستند لينكدإن']] : [['png','صورة PNG'],['jpg','صورة JPG (حجم أصغر)'],['pdf','ملف PDF']];
   dialog('خيارات التصدير', `<div class="fields">
     <fieldset class="exf"><legend>الملف</legend>${types.map(([k, l]) => `<label class="toggle"><input type="radio" name="ex-t" value="${k}" ${k === def ? 'checked' : ''}> ${l}</label>`).join('')}</fieldset>
     <fieldset class="exf"><legend>نص المنشور</legend><label class="f">لمنصة<select id="ex-pl">${Object.entries(PLATFORMS).map(([k, p]) => `<option value="${k}" ${k === pl ? 'selected' : ''}>${p.name}</option>`).join('')}</select></label>
-      <label class="toggle"><input type="radio" name="ex-v" value="full" checked> كامل: الكابتشن وكل المعلومات المدخلة</label><label class="toggle"><input type="radio" name="ex-v" value="short"> مختصر: الكابتشن والدعوة والتواصل والوسوم</label>
+      <label class="toggle"><input type="radio" name="ex-v" value="full" checked> كامل: الكابتشن وكل المعلومات المدخلة</label><label class="toggle"><input type="radio" name="ex-v" value="short"> مختصر: الكابتشن والدعوة والتواصل والهاشتاقات</label>
       <label class="toggle"><input type="checkbox" id="ex-cap" checked> تضمين نص المنشور في ملف نصي</label><label class="toggle"><input type="checkbox" id="ex-alt" checked> تضمين النص البديل في ملف نصي</label>
       <p class="small muted" id="ex-len"></p></fieldset>
     <p class="small muted">${d.status === 'approved' ? 'التصميم معتمد ويُصدَّر بلا علامة مسودة.' : 'التصميم غير معتمد: يُصدَّر بعلامة «مسودة».'} عند تضمين النصوص يُجمع كل شيء في ملف ZIP واحد.</p></div>`,
     [['تصدير', 'coral', () => { const o = {type:document.querySelector('[name=ex-t]:checked').value, platform:$('#ex-pl').value, variant:document.querySelector('[name=ex-v]:checked').value, caption:$('#ex-cap').checked, alt:$('#ex-alt').checked};
-      persist(); toast('جارٍ تجهيز الملف…'); exportDesign(d, o); }],
+      persist(); if (o.type === 'video') return exportVideoWithProgress(d, o); toast('جارٍ تجهيز الملف…'); exportDesign(d, o); }],
      ['نسخ نص المنشور', '', () => { const t = captionFor(d, $('#ex-pl').value, document.querySelector('[name=ex-v]:checked').value); navigator.clipboard?.writeText(t).then(() => toast('نُسخ نص المنشور.'), () => toast('تعذّر النسخ؛ انسخه من لوحة «نص المنشور».')); return false; }],
      ['إلغاء', 'ghost', () => {}]]);
   const upd = () => { const p = $('#ex-pl').value, v = document.querySelector('[name=ex-v]:checked').value, len = [...captionFor(d, p, v)].length, P = PLATFORMS[p];
@@ -1039,12 +1168,24 @@ function openExport(d){
   $('#ex-pl').onchange = upd; document.querySelectorAll('[name=ex-v]').forEach(r => r.onchange = upd); upd();
 }
 
+function exportVideoWithProgress(d, o){
+  if (!VIDEO_TYPE) return toast('هذا المتصفح لا يدعم إنتاج الفيديو. استخدم Chrome أو Edge على الحاسوب.');
+  const ac = new AbortController(), ov = document.createElement('div'); ov.className = 'xpl'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'إنتاج الفيديو');
+  ov.innerHTML = `<div class="xpl-box" style="max-width:440px"><b>جارٍ إنتاج الفيديو</b><p class="small muted">يُسجَّل الفيديو بمدته الحقيقية (${n0(Math.round(videoDuration(d)))} ثانية). أبقِ هذه النافذة ظاهرة حتى ينتهي.</p><div class="xpl-bar"><i id="vx-p"></i></div><p class="small" id="vx-t" aria-live="polite">0٪</p><button class="btn" id="vx-c">إلغاء</button></div>`;
+  document.body.append(ov); $('#vx-c').focus(); $('#vx-c').onclick = () => ac.abort();
+  exportDesign(d, {...o, signal:ac.signal, onProgress:p => { $('#vx-p').style.width = (p * 100) + '%'; $('#vx-t').textContent = Math.round(p * 100) + '٪'; }})
+    .catch(e => toast(/aborted/.test(e.message) ? 'أُلغي إنتاج الفيديو.' : 'تعذّر إنتاج الفيديو: ' + e.message)).finally(() => ov.remove());
+}
+
 /* ---------- the generator: request → structured content, quota enforced on the server ---------- */
 function aiContext(d){ const f = d.fields, p = partnerOf(d.partnerId), proj = ONLINE ? currentProject() : null;
   return {format:d.format, format_name:FORMATS[d.format].name, platform:PLATFORMS[platformOf(d)].name, size:FORMATS[d.format].size, multi:isMulti(d), mode:f.mode,
     format_picked:!!f.fmtPicked, formats:Object.fromEntries(Object.entries(FORMATS).map(([k, x]) => [k, PLATFORMS[x.pl].name + ' · ' + x.name + ' · ' + x.size])), layouts:Object.fromEntries(Object.entries(LAYOUTS).map(([k, l]) => [k, l.name + ': ' + l.desc])),
-    current:{kind:f.kind, eyebrow:f.eyebrow, title:f.title, text:f.text, details:f.details, cta:f.cta, contact:f.contact, source:f.source, caption:f.caption, hashtags:f.hashtags, stat:f.statNum ? [f.statNum, f.statLabel] : null, slides:d.slides, layout:f.layout, theme:d.theme},
-    partner:p.name, project:proj?.name || '', course:{title:S.course.title, city:S.course.city, start:S.course.start, days:S.course.days, capacity:S.course.capacity, seats_left:seatsLeft()}, has_photo:!!f.photo}; }
+    current:{kind:f.kind, eyebrow:f.eyebrow, title:f.title, text:f.text, details:f.details, cta:f.cta, contact:f.contact, note:f.note, caption:f.caption, hashtags:f.hashtags, stat:f.statNum ? [f.statNum, f.statLabel] : null, slides:d.slides, layout:f.layout, theme:d.theme},
+    media: isVideo(d) ? 'video' : 'image', video_seconds: isVideo(d) ? videoDuration(d) : null,
+    schedule: schedText(schedOf(d)) ? {start_date: schedOf(d).start || null, start_text: schedOf(d).start ? dateAr(schedOf(d).start) : null, total_days: schedOf(d).days || null, daily_hours: schedOf(d).hours || null, summary: schedText(schedOf(d)), detail_lines: schedLines(schedOf(d))} : null,
+    cta_action: f.ctaType && f.ctaType !== 'none' ? {type: CTA_TYPES[f.ctaType], link: ctaLink(f) || null} : null,
+    partner:p.name, project:proj?.name || '', course:{title:S.course.title, city:S.course.city, start:S.course.start, days:S.course.days, daily_hours:S.course.dailyHours ?? null, mode:S.course.mode === 'online' ? 'أونلاين' : 'حضوري', capacity:S.course.capacity, seats_left:seatsLeft()}, has_photo:!!f.photo}; }
 async function runAI(){
   const d = editing, f = d.fields, prompt = ($('#ai-p').value || '').trim(), ai = aiState[d.id] || {used:f.aiUsed || 0, limit:AI_LIMIT};
   if (aiBusy) return; if (prompt.length < 15) return toast('اكتب تعليمات أوضح؛ الطلب القصير يستهلك محاولة دون نتيجة جيدة.');
@@ -1076,7 +1217,7 @@ function applyAI(d, r){
   const f = d.fields, str = (v, max) => typeof v === 'string' ? v.trim().slice(0, max) : '';
   f.kind = str(r.kind, 40) || f.kind; f.eyebrow = str(r.eyebrow, 40); f.title = str(r.title, 120); f.text = str(r.text, 600);
   f.details = Array.isArray(r.details) ? r.details.slice(0, 6).map(x => (x?.label ? str(x.label, 24) + ': ' : '') + str(x?.value, 120)).filter(s => s.replace(/[:\s]/g, '')).join('\n') : str(r.details, 500);
-  f.cta = str(r.cta, 60); f.contact = str(r.contact, 80) || f.contact; f.source = str(r.source, 160);
+  f.cta = str(r.cta, 60); f.contact = str(r.contact, 80) || f.contact; f.note = str(r.note, 160) || (r.source ? 'المرجع: ' + str(r.source, 150) : '');
   if (r.stat && r.stat.num) { f.statLive = false; f.statNum = str(String(r.stat.num), 12); f.statLabel = str(r.stat.label, 40); } else if (!f.statLive) { f.statNum = ''; f.statLabel = ''; }
   f.caption = str(r.caption, 2000); f.hashtags = Array.isArray(r.hashtags) ? r.hashtags.slice(0, 5).map(t => '#' + String(t).replace(/^#+/, '').replace(/\s+/g, '_')).join(' ') : str(r.hashtags, 200);
   f.aiNotes = str(r.notes, 400);
@@ -1092,7 +1233,7 @@ function applyAI(d, r){
 }
 function simulateAI(prompt, d, mode){ // demo only: a transparent, rule-based stand-in for the real generator
   const t = prompt.replace(/\s+/g, ' ').trim(), cur = d.fields;
-  if (mode === 'revise') { const r = {kind:cur.kind, eyebrow:cur.eyebrow, title:cur.title, text:cur.text, details:cur.details, cta:cur.cta, contact:cur.contact, source:cur.source, caption:cur.caption, hashtags:cur.hashtags, layout:cur.layout, theme:d.theme, slides:d.slides};
+  if (mode === 'revise') { const r = {kind:cur.kind, eyebrow:cur.eyebrow, title:cur.title, text:cur.text, details:cur.details, cta:cur.cta, contact:cur.contact, note:cur.note, caption:cur.caption, hashtags:cur.hashtags, layout:cur.layout, theme:d.theme, slides:d.slides};
     const m = t.match(/(?:الدعوة|الزر)[^«"]{0,14}[«"]([^»"]+)[»"]/); if (m) r.cta = m[1];
     if (/اختصر|أقصر/.test(t)) r.text = splitBody(cur.text)[0]?.split(/[.،!]/).slice(0, 2).join('،') || cur.text;
     const q = t.match(/العنوان[^«"]{0,14}[«"]([^»"]+)[»"]/); if (q) r.title = q[1];
@@ -1102,7 +1243,8 @@ function simulateAI(prompt, d, mode){ // demo only: a transparent, rule-based st
   const aud = t.match(/(?:موجّه|موجه|للـ?|ل)\s*(الأخصائيين[^،.]*|الأهل[^،.]*|المعلمين[^،.]*|أولياء[^،.]*)/)?.[1];
   const cta = /واتساب/.test(t) ? 'سجّل الآن عبر واتساب' : /احجز/.test(t) ? 'احجز مقعدك الآن' : /سجّل|سجل|التسجيل/.test(t) ? 'سجّل الآن' : 'تواصل معنا';
   const title = (sent[0] || 'منشور جديد').replace(/^(اعمل|اصنع|أريد|اريد|صمم|صمّم)\s+(لي\s+)?/, '').replace(/^(إعلان|اعلان|منشور)\s+(عن|ل|لـ)?\s*/, '').split(/\s+(?:في|تبدأ|يبدأ|لمدة)\s+|،/)[0].slice(0, 70);
-  const det = [date && {label:'يبدأ في', value:date}, place && {label:'المكان', value:place}, aud && {label:'الفئة', value:aud.trim()}].filter(Boolean);
+  const sc = schedOf(d), sl = schedLines(sc).map(l => { const [a, ...b] = l.split(': '); return {label:a, value:b.join(': ')}; });
+  const det = [...(sl.length ? sl : [date && {label:'يبدأ في', value:date}]), place && {label:'المكان', value:place}, aud && {label:'الفئة', value:aud.trim()}].filter(Boolean);
   const seats = t.match(/(\d+)\s*مقعد/)?.[1];
   return {kind: kind === 'دورة' ? 'دورة تدريبية' : kind || 'إعلان', eyebrow: kind ? (kind === 'دورة' ? 'دورة تدريبية' : kind) : '', title, text: sent.slice(1, 3).join('. ').slice(0, 220),
     details:det, cta, caption:[title, aud ? 'موجّه إلى ' + aud.trim() + '.' : ''].filter(Boolean).join(' '), hashtags:['سكاد', 'التوحد'], stat: seats ? {num:seats, label:'مقعداً فقط'} : null,
@@ -1192,65 +1334,250 @@ function renderBrand(){
     ['إضافة', 'primary', () => { const v = $('#np').value.trim(); if (!v) { toast('اكتب اسم الجهة.'); return false; } S.partners.push({id:uid(), name:v, logo:null, color:PALETTE[S.partners.length % PALETTE.length]}); save(); renderBrand(); }], ['إلغاء','',()=>{}]]));
 }
 
-/* ---------- finance ---------- */
+/* ---------- finance (v4): price, trainer, hours, delivery mode, exports, import ---------- */
+const FIN_DEFAULTS = {fee:500, mode:'onsite', dailyHours:4, theoryHours:null, practicalHours:null, trainerMode:'lump', trainerRate:null, trainerExtra:null, onlineCost:null, targetMargin:null};
+const MODE_LABEL = {onsite:'حضوري', online:'أونلاين'}, TMODE_LABEL = {lump:'مبلغ إجمالي للدورة', hour:'لكل ساعة تدريب', day:'لكل يوم تدريب'};
+const FIN_INPUTS = [ // key, label, unit, kind ('int' | 'num' | 'opt' optional number | 'mode' | 'tmode')
+  ['fee','سعر الدورة للمتدرب','دولار','num'], ['trainees','عدد المتدربين','متدرب','int'], ['capacity','السعة','مقعد','int'], ['mode','نمط التنفيذ','حضوري / أونلاين','mode'],
+  ['days','عدد أيام الدورة','يوم','int'], ['dailyHours','الساعات اليومية','ساعة','opt'], ['theoryHours','الساعات النظرية','ساعة للدورة','opt'], ['practicalHours','الساعات العملية','ساعة للدورة','opt'],
+  ['trainerMode','طريقة احتساب أجر المدرب','','tmode'], ['trainerRate','أجر المدرب','دولار','opt'], ['trainerExtra','مصاريف أخرى للمدرب','دولار للدورة (سفر، إقامة، بدلات)','opt'],
+  ['staff','فريق سكاد المسافر','شخص','int'], ['nights','ليالي الفندق','ليلة لكل شخص','int'], ['hotel','الفندق','دولار لكل شخص لكل ليلة','num'], ['travel','الطيران والتأشيرة','دولار لكل شخص','num'],
+  ['transport','النقل المحلي','دولار لكل شخص','num'], ['roomRate','حجز القاعة','دولار لكل حجز 4 ساعات يومياً','opt'], ['venueDays','أيام حجز القاعة','يوم (فارغ = كل الأيام)','opt'],
+  ['hospRate','الضيافة اليومية','دولار لكل يوم لجميع المتدربين','opt'], ['hospDays','أيام الضيافة','يوم (فارغ = كل الأيام)','opt'], ['onlineCost','منصة البث والأدوات','دولار للدورة','opt'],
+  ['supplies','المستلزمات','دولار لكل متدرب','num'], ['reserveMode','طريقة الاحتياطي','0 = مبلغ ثابت، 1 = نسبة','int'], ['reserveAmount','مبلغ الاحتياطي','دولار للدورة','num'],
+  ['reservePct','نسبة الاحتياطي','٪ من التكاليف المباشرة','num'], ['targetMargin','الهامش المستهدف','٪ من الإيراد','opt']
+];
+const FIN_LABEL = Object.fromEntries(FIN_INPUTS.map(x => [x[0], x[1]]));
+function finReady(c){ Object.entries(FIN_DEFAULTS).forEach(([k, v]) => { if (!(k in c)) c[k] = v; }); return c; }
+const hoursOf = c => ((c.theoryHours || 0) + (c.practicalHours || 0)) || (c.days || 0) * (c.dailyHours || 0);
 function calc(c, n = c.trainees){
+  finReady(c); const on = c.mode !== 'online', hours = hoursOf(c);
   const vd = c.venueDays ?? c.days, hd = c.hospDays ?? c.days;
-  const room = (c.roomRate ?? 0) * vd, hosp = (c.hospRate ?? 0) * hd;
-  const logistics = c.staff*c.nights*c.hotel + c.staff*c.travel + c.staff*c.transport + room + hosp + n*c.supplies;
-  const reserve = c.reserveMode === 1 ? logistics*c.reservePct/100 : c.reserveAmount;
-  const revenue = n*c.fee, cost = logistics + reserve, per = v => n > 0 ? v/n : null;
-  return {n, vd, hd, room, hosp, logistics, reserve, revenue, cost, profit: revenue - cost, perT: per(cost), roomT: c.roomRate == null ? null : per(room), hospT: c.hospRate == null ? null : per(hosp), venue: room + hosp, venueT: c.roomRate == null && c.hospRate == null ? null : per(room + hosp), budget: logistics + reserve + revenue};
+  const room = on ? (c.roomRate ?? 0) * vd : 0, hosp = on ? (c.hospRate ?? 0) * hd : 0;
+  const travelBlock = on ? c.staff*c.nights*c.hotel + c.staff*c.travel + c.staff*c.transport : 0;
+  const online = on ? 0 : (c.onlineCost ?? 0), supplies = n * (c.supplies || 0);
+  const trainerFee = c.trainerRate == null ? 0 : c.trainerMode === 'hour' ? c.trainerRate * hours : c.trainerMode === 'day' ? c.trainerRate * (c.days || 0) : c.trainerRate;
+  const trainer = trainerFee + (c.trainerExtra ?? 0);
+  const logistics = travelBlock + room + hosp + supplies + online, direct = logistics + trainer;
+  const reserve = c.reserveMode === 1 ? direct * (c.reservePct || 0) / 100 : (c.reserveAmount || 0);
+  const revenue = n * (c.fee || 0), cost = direct + reserve, per = v => n > 0 ? v / n : null, tm = c.targetMargin;
+  return {n, on, hours, vd, hd, room, hosp, travelBlock, online, supplies, trainerFee, trainer, logistics, direct, reserve, revenue, cost, profit: revenue - cost,
+    perT: per(cost), roomT: on && c.roomRate != null ? per(room) : null, hospT: on && c.hospRate != null ? per(hosp) : null, venue: room + hosp, venueT: on && (c.roomRate != null || c.hospRate != null) ? per(room + hosp) : null,
+    perHour: hours > 0 ? cost / hours : null, bePrice: per(cost), targetPrice: n > 0 && tm != null && tm < 100 ? cost / (n * (1 - tm / 100)) : null, margin: revenue > 0 ? (revenue - cost) / revenue * 100 : null, budget: cost + revenue};
 }
 function breakEven(c){ for (let n = 0; n <= 2000; n++) if (calc(c, n).profit >= 0) return n; return null; }
+const finTouched = () => { S.courseTouched = true; save(); };
 function renderFinance(){
-  const c = S.course;
-  const num = (k, label, unit, opt = false, whole = false, ph = '') => `<label class="f">${label}<span class="hint">${unit}</span><input type="number" min="0" step="${whole?1:0.01}" data-fk="${k}" data-opt="${opt?1:''}" data-whole="${whole?1:''}" value="${c[k] ?? ''}" placeholder="${ph || (opt ? 'أدخل السعر' : '')}"></label>`;
-  $('#main').innerHTML = `<div class="head"><div><h1>التخطيط المالي للدورة</h1><p class="muted">${esc(c.title)} · ${esc(c.city)} · جميع المبالغ بالدولار الأمريكي</p></div></div>
+  const c = finReady(S.course), on = c.mode !== 'online', pname = partnerOf(c.partnerId || S.partners[0]?.id)?.name || 'الشريك';
+  const num = (k, label, unit, opt = false, whole = false, ph = '') => `<label class="f">${label}<span class="hint">${unit}</span><input type="number" min="0" step="${whole?1:0.01}" data-fk="${k}" data-opt="${opt?1:''}" data-whole="${whole?1:''}" value="${c[k] ?? ''}" placeholder="${ph || (opt ? 'غير محدد' : '')}"></label>`;
+  $('#main').innerHTML = `<div class="head"><div><h1>التخطيط المالي للدورة</h1><p class="muted">${esc(c.title)} · ${esc(c.city || '')}${c.start ? ' · تبدأ ' + dateAr(c.start) : ''} · جميع المبالغ بالدولار الأمريكي</p></div>
+    <div class="row"><button class="btn" id="fx-pdf">تصدير PDF</button><button class="btn" id="fx-xlsx">تصدير Excel</button><label class="btn" for="fx-in" tabindex="0" id="fx-in-l">استيراد Excel</label><input type="file" id="fx-in" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></div></div>
   <div class="card" style="margin-bottom:16px"><h2>الملخص المالي</h2><div class="tiles" id="tiles" style="margin-top:12px" aria-live="polite"></div>
-    <p class="note">الإيراد = 500 دولار × عدد المتدربين. إجمالي الكلفة = اللوجستيات + الاحتياطي. الربح = الإيراد − إجمالي الكلفة. نقطة التعادل = أقل عدد متدربين يغطي فيه الإيراد الكلفة.</p></div>
+    <p class="note">الإيراد = سعر الدورة × عدد المتدربين. التكاليف المباشرة = أجر المدرب + اللوجستيات. إجمالي الكلفة = المباشرة + الاحتياطي. سعر التعادل = إجمالي الكلفة ÷ عدد المتدربين.</p></div>
   <div class="card"><h2>الفرضيات</h2>
-    <fieldset><legend>الدورة والتسجيل</legend><div class="grid g4">${num('trainees','عدد المتدربين','متدرب',false,true)}${num('capacity','السعة','مقعد',false,true)}${num('days','أيام التدريب','يوم',false,true)}${num('staff','فريق سكاد المسافر','شخص',false,true)}</div></fieldset>
-    <fieldset id="venue"><legend>القاعة والضيافة</legend><p class="small muted" style="margin-bottom:8px">أدخل سعر حجز القاعة الكامل لأربع ساعات في اليوم، وإجمالي ضيافة جميع المتدربين في اليوم.</p>
+    <fieldset><legend>الدورة والتسجيل</legend>
+      <div class="ptabs seg" role="radiogroup" aria-label="نمط التنفيذ">${Object.entries(MODE_LABEL).map(([k, l]) => `<button role="radio" class="ptab" data-mode-f="${k}" aria-checked="${c.mode === k}" aria-selected="${c.mode === k}">${l}</button>`).join('')}</div>
+      <div class="grid g4" style="margin-top:10px">${num('fee','سعر الدورة للمتدرب','دولار لكل متدرب')}${num('trainees','عدد المتدربين','متدرب',false,true)}${num('capacity','السعة','مقعد',false,true)}${on ? num('staff','فريق سكاد المسافر','شخص',false,true) : '<span></span>'}</div></fieldset>
+    <fieldset><legend>المدة والساعات</legend><div class="grid g4">${num('days','عدد أيام الدورة','يوم',false,true)}${num('dailyHours','الساعات اليومية','ساعة',true)}${num('theoryHours','الساعات النظرية','ساعة للدورة كاملة',true)}${num('practicalHours','الساعات العملية','ساعة للدورة كاملة',true)}</div>
+      <p class="small" id="hrs" style="margin-top:8px"></p></fieldset>
+    <fieldset><legend>المدرب</legend><div class="grid g4">
+      <label class="f">طريقة احتساب الأجر<span class="hint">إجمالي أو بالساعة أو باليوم</span><select id="tmode">${Object.entries(TMODE_LABEL).map(([k, l]) => `<option value="${k}" ${c.trainerMode === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      ${num('trainerRate','أجر المدرب', c.trainerMode === 'hour' ? 'دولار لكل ساعة' : c.trainerMode === 'day' ? 'دولار لكل يوم' : 'دولار للدورة كاملة', true)}${num('trainerExtra','مصاريف أخرى للمدرب','سفر وإقامة وبدلات، دولار للدورة',true)}<div class="calc" id="c-trainer"></div></div></fieldset>
+    ${on ? `<fieldset id="venue"><legend>القاعة والضيافة</legend><p class="small muted" style="margin-bottom:8px">أدخل سعر حجز القاعة الكامل لأربع ساعات في اليوم، وإجمالي ضيافة جميع المتدربين في اليوم.</p>
       <div class="vrow"><b class="vname">القاعة</b>${num('roomRate','سعر الحجز','دولار لكل حجز 4 ساعات (حجز يومياً)',true)}${num('venueDays','أيام الحجز','فارغ = كل أيام التدريب',true,true,'الكل ('+c.days+')')}<div class="calc" id="c-room"></div><div class="calc" id="c-roomT"></div></div>
       <div class="vrow"><b class="vname">الضيافة</b>${num('hospRate','الضيافة اليومية','دولار لكل يوم لجميع المتدربين',true)}${num('hospDays','أيام الضيافة','فارغ = كل أيام التدريب',true,true,'الكل ('+c.days+')')}<div class="calc" id="c-hosp"></div><div class="calc" id="c-hospT"></div></div>
       <div class="vrow"><b class="vname">المجموع</b><span class="sp"></span><span class="sp"></span><div class="calc" id="c-venue"></div><div class="calc" id="c-venueT"></div></div>
-      <div class="impact" id="impact" aria-live="polite"></div></fieldset>
-    <fieldset><legend>السفر والمستلزمات والاحتياطي</legend><div class="grid g4">${num('nights','ليالي الفندق','ليلة لكل شخص',false,true)}${num('hotel','الفندق','دولار لكل شخص لكل ليلة')}${num('travel','الطيران والتأشيرة','دولار لكل شخص')}${num('transport','النقل المحلي','دولار لكل شخص')}${num('supplies','المستلزمات','دولار لكل متدرب')}
-      <label class="f">طريقة الاحتياطي<span class="hint">مبلغ ثابت أو نسبة</span><select id="rmode"><option value="0" ${c.reserveMode===0?'selected':''}>مبلغ ثابت</option><option value="1" ${c.reserveMode===1?'selected':''}>نسبة من اللوجستيات</option></select></label>
-      ${c.reserveMode===1?num('reservePct','نسبة الاحتياطي','٪ من اللوجستيات'):num('reserveAmount','مبلغ الاحتياطي','دولار للدورة')}</div></fieldset></div>
-  <div class="card" style="margin-top:16px"><h2>مقارنة أحجام الدفعة</h2><div class="scroll" style="margin-top:10px"><table id="scen"></table></div>
-    <p class="note">النسخة الكاملة من لوحة بغداد، بالرسوم البيانية وتوزيع اللوجستيات، متاحة ملفاً مستقلاً، وتُدمج في النسخة الفعلية.</p></div>`;
-  document.querySelectorAll('[data-fk]').forEach(i => i.oninput = () => { const k = i.dataset.fk; if (i.dataset.opt && i.value === '') c[k] = null; else { let v = Math.max(0, Number(i.value)); if (!Number.isFinite(v)) return; c[k] = i.dataset.whole ? Math.floor(v) : v; } save(); paintFinance(); });
-  $('#rmode').onchange = e => { c.reserveMode = +e.target.value; save(); renderFinance(); };
+      <p class="small warn-t" id="room-warn" hidden></p><div class="impact" id="impact" aria-live="polite"></div></fieldset>
+    <fieldset><legend>السفر والمستلزمات</legend><div class="grid g4">${num('nights','ليالي الفندق','ليلة لكل شخص',false,true)}${num('hotel','الفندق','دولار لكل شخص لكل ليلة')}${num('travel','الطيران والتأشيرة','دولار لكل شخص')}${num('transport','النقل المحلي','دولار لكل شخص')}${num('supplies','المستلزمات','دولار لكل متدرب')}</div></fieldset>`
+    : `<fieldset><legend>التنفيذ عبر الإنترنت</legend><p class="small muted" style="margin-bottom:8px">في الدورة الأونلاين لا تُحتسب القاعة والضيافة والسفر.</p><div class="grid g4">${num('onlineCost','منصة البث والأدوات','دولار للدورة',true)}${num('supplies','المواد والشحن','دولار لكل متدرب')}</div><div class="impact" id="impact" aria-live="polite"></div></fieldset>`}
+    <fieldset><legend>الاحتياطي والهدف</legend><div class="grid g4">
+      <label class="f">طريقة الاحتياطي<span class="hint">مبلغ ثابت أو نسبة</span><select id="rmode"><option value="0" ${c.reserveMode===0?'selected':''}>مبلغ ثابت</option><option value="1" ${c.reserveMode===1?'selected':''}>نسبة من التكاليف المباشرة</option></select></label>
+      ${c.reserveMode===1?num('reservePct','نسبة الاحتياطي','٪ من التكاليف المباشرة'):num('reserveAmount','مبلغ الاحتياطي','دولار للدورة')}${num('targetMargin','الهامش المستهدف','٪ من الإيراد — يحسب السعر المطلوب',true)}</div></fieldset></div>
+  <div class="grid g2" style="margin-top:16px"><div class="card"><h2>توزيع الكلفة</h2><div class="scroll" style="margin-top:10px"><table id="brk"></table></div></div>
+    <div class="card"><h2>مؤشرات للقرار</h2><div class="checks" id="hints" style="margin-top:10px"></div></div></div>
+  <div class="card" style="margin-top:16px"><h2>مقارنة أحجام الدفعة</h2><div class="scroll" style="margin-top:10px"><table id="scen"></table></div></div>`;
+  document.querySelectorAll('[data-fk]').forEach(i => i.oninput = () => { const k = i.dataset.fk; if (i.dataset.opt && i.value === '') c[k] = null; else { let v = Math.max(0, Number(i.value)); if (!Number.isFinite(v)) return; c[k] = i.dataset.whole ? Math.floor(v) : v; } finTouched(); paintFinance(); });
+  document.querySelectorAll('[data-mode-f]').forEach(b => b.onclick = () => { c.mode = b.dataset.modeF; finTouched(); renderFinance(); });
+  $('#tmode').onchange = e => { c.trainerMode = e.target.value; finTouched(); renderFinance(); };
+  $('#rmode').onchange = e => { c.reserveMode = +e.target.value; finTouched(); renderFinance(); };
+  $('#fx-pdf').onclick = () => exportFinancePdf(c);
+  $('#fx-xlsx').onclick = () => exportFinanceXlsx(c);
+  $('#fx-in-l').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#fx-in').click(); } };
+  $('#fx-in').onchange = async e => { const f = e.target.files[0]; e.target.value = ''; if (f) importFinanceXlsx(c, f); };
   paintFinance();
 }
+const plN = (n, one, two, few, many) => arN(n, one, two, few, many);
 function paintFinance(){
-  const c = S.course, r = calc(c), be = breakEven(c), pl = (n, a, b) => n === 1 ? '1 ' + a : arN(n, '1 ' + a, '2 ' + a, b === 'متدرباً' ? 'متدربين' : b === 'متدرباً إضافياً' ? 'متدربين إضافيين' : b === 'أيام' ? 'أيام' : b, b === 'أيام' ? 'يوماً' : b);
-  const beTxt = be == null ? 'غير متحققة' : pl(be, 'متدرب', 'متدرباً');
+  const c = S.course, r = calc(c), be = breakEven(c), on = r.on, pname = partnerOf(c.partnerId || S.partners[0]?.id)?.name || 'الشريك';
+  const beTxt = be == null ? 'غير متحققة' : plN(be, 'متدرب واحد', 'متدربان', 'متدربين', 'متدرباً');
   $('#tiles').innerHTML = [
-    ['الإيراد', usd(r.revenue), `${pl(c.trainees,'متدرب','متدرباً')} × ${usd(c.fee)}`, ''],
-    ['إجمالي كلفة الدورة', usd(r.cost), 'اللوجستيات والاحتياطي', ''],
-    ['ربح الدورة', usd(r.profit), r.revenue > 0 ? `هامش ${(r.profit / r.revenue * 100).toFixed(1)}٪ من الإيراد` : 'لا إيراد عند صفر متدربين', r.profit < 0 ? 'neg' : 'pos'],
-    ['نقطة التعادل', beTxt, be == null ? 'الكلفة تتجاوز الإيراد' : c.trainees >= be ? 'متحققة عند العدد الحالي' : `يلزم ${pl(be - c.trainees,'متدرب إضافي','متدرباً إضافياً')}`, be != null && c.trainees >= be ? 'pos' : 'neg'],
-    ['كلفة المتدرب', usd(r.perT), c.trainees > 0 ? 'إجمالي الكلفة ÷ عدد المتدربين' : 'أضف متدربين للحساب', '']
+    ['الإيراد', usd(r.revenue), `${plN(c.trainees, 'متدرب واحد', 'متدربان', 'متدربين', 'متدرباً')} × ${usd(c.fee)}`, ''],
+    ['إجمالي كلفة الدورة', usd(r.cost), 'المدرب واللوجستيات والاحتياطي', ''],
+    ['ربح الدورة', usd(r.profit), r.margin != null ? `هامش ${r.margin.toFixed(1)}٪ من الإيراد` : 'لا إيراد', r.profit < 0 ? 'neg' : 'pos'],
+    ['نقطة التعادل', beTxt, be == null ? 'الكلفة تتجاوز الإيراد عند أي عدد' : c.trainees >= be ? 'متحققة عند العدد الحالي' : `يلزم ${plN(be - c.trainees, 'متدرب إضافي', 'متدربان إضافيان', 'متدربين إضافيين', 'متدرباً إضافياً')}`, be != null && c.trainees >= be ? 'pos' : 'neg'],
+    ['سعر التعادل للمتدرب', usd(r.bePrice), c.trainees > 0 ? `عند ${plN(c.trainees, 'متدرب واحد', 'متدربين', 'متدربين', 'متدرباً')}` : 'أضف متدربين', r.bePrice != null && c.fee < r.bePrice ? 'neg' : ''],
+    ['كلفة ساعة التدريب', usd(r.perHour), r.hours ? `${n0(r.hours)} ساعة تدريبية` : 'أدخل الساعات', '']
   ].map(([k,v,s,t]) => `<div class="tile ${t}"><span>${k}</span><b>${esc(v)}</b><small>${esc(s)}</small></div>`).join('');
-  const cl = (id, v, u) => { $('#' + id).innerHTML = `<b>${esc(v)}</b><small>${esc(u)}</small>`; };
-  cl('c-room', c.roomRate == null ? '—' : usd(r.room), c.roomRate == null ? 'أدخل السعر' : `إجمالي ${pl(r.vd,'يوم','أيام')}`);
-  cl('c-roomT', c.roomRate == null ? '—' : usd(r.roomT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
-  cl('c-hosp', c.hospRate == null ? '—' : usd(r.hosp), c.hospRate == null ? 'أدخل السعر' : `إجمالي ${pl(r.hd,'يوم','أيام')}`);
-  cl('c-hospT', c.hospRate == null ? '—' : usd(r.hospT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
-  cl('c-venue', c.roomRate == null && c.hospRate == null ? '—' : usd(r.venue), 'القاعة والضيافة');
-  cl('c-venueT', usd(r.venueT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+  const th = (c.theoryHours || 0) + (c.practicalHours || 0), sched = (c.days || 0) * (c.dailyHours || 0);
+  $('#hrs').innerHTML = th ? `مجموع ساعات الدورة: <b>${n0(th)}</b> ساعة (${n0(c.theoryHours || 0)} نظري، ${n0(c.practicalHours || 0)} عملي)${sched && sched !== th ? ` · <span class="warn-t">الأيام × الساعات اليومية = ${n0(sched)} ساعة، لا تساوي مجموع النظري والعملي</span>` : sched ? ' · يطابق الأيام × الساعات اليومية' : ''}`
+    : sched ? `مجموع ساعات الدورة: <b>${n0(sched)}</b> ساعة (الأيام × الساعات اليومية). أدخل النظري والعملي لتوزيعها.` : '<span class="muted">أدخل الساعات لحساب أجر المدرب بالساعة وكلفة ساعة التدريب.</span>';
+  const cl = (id, v, u) => { const e = $('#' + id); if (e) e.innerHTML = `<b>${esc(v)}</b><small>${esc(u)}</small>`; };
+  cl('c-trainer', c.trainerRate == null && c.trainerExtra == null ? '—' : usd(r.trainer), c.trainerMode === 'hour' ? `${n0(r.hours)} ساعة × ${usd(c.trainerRate)} + المصاريف` : c.trainerMode === 'day' ? `${n0(c.days)} يوماً × ${usd(c.trainerRate)} + المصاريف` : 'إجمالي كلفة المدرب');
+  if (on) {
+    cl('c-room', c.roomRate == null ? '—' : usd(r.room), c.roomRate == null ? 'أدخل السعر' : `إجمالي ${plN(r.vd, 'يوم واحد', 'يومين', 'أيام', 'يوماً')}`);
+    cl('c-roomT', c.roomRate == null ? '—' : usd(r.roomT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+    cl('c-hosp', c.hospRate == null ? '—' : usd(r.hosp), c.hospRate == null ? 'أدخل السعر' : `إجمالي ${plN(r.hd, 'يوم واحد', 'يومين', 'أيام', 'يوماً')}`);
+    cl('c-hospT', c.hospRate == null ? '—' : usd(r.hospT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+    cl('c-venue', c.roomRate == null && c.hospRate == null ? '—' : usd(r.venue), 'القاعة والضيافة');
+    cl('c-venueT', usd(r.venueT), c.trainees > 0 ? 'لكل متدرب' : 'أضف متدربين');
+    const w = $('#room-warn'); if (w) { w.hidden = !(c.roomRate != null && (c.dailyHours || 0) > 4); w.textContent = `تنبيه: الساعات اليومية ${n0(c.dailyHours)} بينما سعر القاعة محسوب لحجز 4 ساعات. راجع السعر مع القاعة.`; }
+  }
   $('#impact').innerHTML = `<b style="direction:rtl">الأثر على الدورة:</b><span>إجمالي الكلفة <b>${usd(r.cost)}</b></span><span>كلفة المتدرب <b>${usd(r.perT)}</b></span><span>الربح <b style="color:var(${r.profit<0?'--bad':'--ok'})">${usd(r.profit)}</b></span><span>التعادل <b style="direction:rtl">${beTxt}</b></span>`;
-  const sizes = [...new Set([15, 20, 25, c.capacity].filter(x => x > 0))].sort((a,b) => a-b), sc = sizes.map(n => calc(c, n));
-  $('#scen').innerHTML = `<thead><tr><th>البند (دولار)</th>${sizes.map(n => `<th>${arN(n, 'متدرب', 'متدربان', 'متدربين', 'متدرباً')}${n===c.capacity?' (السعة)':''}</th>`).join('')}</tr></thead><tbody>${[
-    ['الإيراد','revenue'],['لوجستيات بيت العلاج','logistics'],['الاحتياطي','reserve'],['إجمالي كلفة الدورة','cost'],['ربح الدورة','profit',1],['كلفة المتدرب','perT'],['القاعة لكل متدرب','roomT'],['الضيافة لكل متدرب','hospT'],['إجمالي ميزانية بيت العلاج','budget']
-  ].map(([l,k,em]) => `<tr class="${em?'em':''}"><td>${l}</td>${sc.map(x => `<td style="${k==='profit'&&x.profit<0?'color:var(--bad)':''}">${usd(x[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  const items = finBreakdown(c, r);
+  $('#brk').innerHTML = `<thead><tr><th>البند</th><th>المبلغ</th><th>لكل متدرب</th><th>النسبة</th></tr></thead><tbody>${items.map(([l, v, em]) => `<tr class="${em ? 'em' : ''}"><td>${l}</td><td>${usd(v)}</td><td>${usd(c.trainees > 0 ? v / c.trainees : null)}</td><td>${r.cost > 0 ? (v / r.cost * 100).toFixed(1) + '٪' : '—'}</td></tr>`).join('')}</tbody>`;
+  $('#hints').innerHTML = finHints(c, r, be).map(([lv, t]) => `<div class="chk ${lv}"><b>${lv === 'ok' ? 'جيد' : lv === 'warn' ? 'انتبه' : 'خطر'}</b><span>${t}</span></div>`).join('');
+  const sizes = [...new Set([10, 15, 20, 25, c.capacity, c.trainees].filter(x => x > 0))].sort((a,b) => a-b), sc = sizes.map(n => calc(c, n));
+  $('#scen').innerHTML = `<thead><tr><th>البند (دولار)</th>${sizes.map(n => `<th>${plN(n, 'متدرب', 'متدربان', 'متدربين', 'متدرباً')}${n===c.capacity?' (السعة)':n===c.trainees?' (الحالي)':''}</th>`).join('')}</tr></thead><tbody>${finScenarioRows(pname).map(([l,k,em]) => `<tr class="${em?'em':''}"><td>${l}</td>${sc.map(x => `<td style="${k==='profit'&&x.profit<0?'color:var(--bad)':''}">${usd(x[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+}
+function finBreakdown(c, r){ return [['أجر المدرب', r.trainerFee], ['مصاريف المدرب الأخرى', c.trainerExtra ?? 0], ...(r.on ? [['السفر والإقامة لفريق سكاد', r.travelBlock], ['القاعة', r.room], ['الضيافة', r.hosp]] : [['منصة البث والأدوات', r.online]]), ['المستلزمات', r.supplies], ['الاحتياطي', r.reserve], ['إجمالي الكلفة', r.cost, 1]].filter(x => x[2] || x[1]); }
+const finScenarioRows = pname => [['الإيراد','revenue'],['أجر المدرب ومصاريفه','trainer'],['اللوجستيات','logistics'],['الاحتياطي','reserve'],['إجمالي كلفة الدورة','cost'],['ربح الدورة','profit',1],['كلفة المتدرب','perT'],['سعر التعادل للمتدرب','bePrice'],['إجمالي ميزانية ' + pname,'budget']];
+function finHints(c, r, be){
+  const out = [];
+  if (c.fee > 0 && r.bePrice != null) out.push(c.fee >= r.bePrice ? ['ok', `السعر الحالي ${usd(c.fee)} أعلى من سعر التعادل ${usd(r.bePrice)} بفارق ${usd(c.fee - r.bePrice)} للمتدرب.`] : ['bad', `السعر الحالي أقل من سعر التعادل (${usd(r.bePrice)}). ارفع السعر أو العدد أو خفّض الكلفة.`]);
+  if (r.targetPrice != null) out.push(['warn', `لتحقيق هامش ${n0(c.targetMargin)}٪ عند العدد الحالي يلزم سعر ${usd(r.targetPrice)} للمتدرب.`]);
+  if (be != null && c.capacity && be > c.capacity) out.push(['bad', `نقطة التعادل (${n0(be)}) تتجاوز السعة (${n0(c.capacity)}): الدورة خاسرة حتى لو امتلأت.`]);
+  else if (be != null && c.capacity) out.push([be / c.capacity > .8 ? 'warn' : 'ok', `تتحقق نقطة التعادل عند ${Math.round(be / c.capacity * 100)}٪ من السعة${be / c.capacity > .8 ? '؛ هامش الأمان ضيق' : ''}.`]);
+  if (r.cost > 0) { const big = finBreakdown(c, r).filter(x => !x[2]).sort((a, b) => b[1] - a[1])[0]; if (big && big[1] / r.cost > .4) out.push(['warn', `«${big[0]}» يمثل ${Math.round(big[1] / r.cost * 100)}٪ من الكلفة؛ أي تفاوض عليه يؤثر أكثر من غيره.`]); }
+  if (c.trainerRate == null) out.push(['warn', 'لم يُدخل أجر المدرب؛ الربح المعروض أعلى من الحقيقي إن كان للمدرب أجر.']);
+  if (!hoursOf(c)) out.push(['warn', 'أدخل ساعات الدورة لمقارنة كلفة ساعة التدريب بين الدورات.']);
+  return out;
 }
 
+/* ---------- finance exports ---------- */
+const xmlEsc = s => String(s).replace(/[<>&"']/g, ch => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[ch]));
+const colName = i => { let s = ''; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+function xlsxBlob(sheets){ // [{name, cols:[widths], rows:[[cell...]]}] cell: string | number | null | {v, b:bold}
+  const enc = new TextEncoder(), f = (name, xml) => ({name, data: enc.encode('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n' + xml)});
+  const files = [
+    f('[Content_Types].xml', `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`),
+    f('_rels/.rels', `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`),
+    f('xl/workbook.xml', `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, i) => `<sheet name="${xmlEsc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`),
+    f('xl/_rels/workbook.xml.rels', `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, i) => `<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`),
+    f('xl/styles.xml', `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="1"><numFmt numFmtId="164" formatCode="#,##0.00"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE6F0F1"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="4"><xf/><xf fontId="1" fillId="2" applyFont="1" applyFill="1"/><xf numFmtId="164" applyNumberFormat="1"/><xf numFmtId="164" fontId="1" applyNumberFormat="1" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`)
+  ];
+  sheets.forEach((s, si) => {
+    const rows = s.rows.map((row, ri) => `<row r="${ri+1}">${row.map((cell, ci) => { if (cell == null || cell === '') return ''; const o = typeof cell === 'object' ? cell : {v:cell}, ref = colName(ci) + (ri+1);
+      return typeof o.v === 'number' && Number.isFinite(o.v) ? `<c r="${ref}" s="${o.b ? 3 : 2}"><v>${o.v}</v></c>` : `<c r="${ref}" t="inlineStr"${o.b ? ' s="1"' : ''}><is><t xml:space="preserve">${xmlEsc(o.v)}</t></is></c>`; }).join('')}</row>`).join('');
+    files.push(f(`xl/worksheets/sheet${si+1}.xml`, `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetViews><sheetView rightToLeft="1" workbookViewId="0"/></sheetViews><cols>${(s.cols || []).map((w, i) => `<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols><sheetData>${rows}</sheetData></worksheet>`));
+  });
+  return zip(files).then(b => new Blob([b], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+}
+const finFileBase = c => `التخطيط المالي — ${safeName(c.title)} — ${new Date().toISOString().slice(0, 10)}`;
+const finValueText = (k, v) => k === 'mode' ? MODE_LABEL[v] || v : k === 'trainerMode' ? TMODE_LABEL[v] || v : v;
+async function exportFinanceXlsx(c){
+  const r = calc(c), be = breakEven(c), pname = partnerOf(c.partnerId || S.partners[0]?.id)?.name || 'الشريك', B = v => ({v, b:true});
+  const sizes = [...new Set([10, 15, 20, 25, c.capacity, c.trainees].filter(x => x > 0))].sort((a,b) => a-b), sc = sizes.map(n => calc(c, n)), rnd = v => v == null ? null : Math.round(v * 100) / 100;
+  const sheets = [
+    {name:'الملخص', cols:[34, 22], rows:[[B('التخطيط المالي للدورة'), ''], ['الدورة', c.title], ['المدينة', c.city || ''], ['تاريخ البدء', c.start ? dateAr(c.start) : ''], ['نمط التنفيذ', MODE_LABEL[c.mode]], ['ساعات الدورة', r.hours], ['تاريخ التصدير', nowAr()], [],
+      [B('المؤشر'), B('القيمة (دولار)')], ['الإيراد', rnd(r.revenue)], ['أجر المدرب ومصاريفه', rnd(r.trainer)], ['اللوجستيات', rnd(r.logistics)], ['الاحتياطي', rnd(r.reserve)], [B('إجمالي الكلفة'), B(rnd(r.cost))], [B('الربح'), B(rnd(r.profit))],
+      ['هامش الربح ٪', r.margin == null ? null : rnd(r.margin)], ['نقطة التعادل (متدربين)', be], ['سعر التعادل للمتدرب', rnd(r.bePrice)], ['كلفة المتدرب', rnd(r.perT)], ['كلفة ساعة التدريب', rnd(r.perHour)], ['السعر المطلوب للهامش المستهدف', rnd(r.targetPrice)]]},
+    {name:'الفرضيات', cols:[18, 34, 16, 36], rows:[[B('المفتاح'), B('البند'), B('القيمة'), B('الوحدة')], ...FIN_INPUTS.map(([k, l, u]) => [k, l, finValueText(k, c[k]) ?? null, u]),
+      [], ['', 'لاستيراد الملف: عدّل عمود «القيمة» فقط واترك «المفتاح» كما هو. نمط التنفيذ: حضوري أو أونلاين. طريقة أجر المدرب: مبلغ إجمالي للدورة، لكل ساعة تدريب، لكل يوم تدريب.']]},
+    {name:'التكاليف', cols:[30, 16, 16, 12], rows:[[B('البند'), B('المبلغ'), B('لكل متدرب'), B('النسبة ٪')], ...finBreakdown(c, r).map(([l, v, em]) => [em ? B(l) : l, em ? B(rnd(v)) : rnd(v), c.trainees > 0 ? rnd(v / c.trainees) : null, r.cost > 0 ? rnd(v / r.cost * 100) : null])]},
+    {name:'السيناريوهات', cols:[30, ...sizes.map(() => 16)], rows:[[B('البند (دولار)'), ...sizes.map(n => B(n + ' متدرب'))], ...finScenarioRows(pname).map(([l, k]) => [l, ...sc.map(x => rnd(x[k]))])]}
+  ];
+  await saveFile(finFileBase(c) + '.xlsx', await xlsxBlob(sheets));
+}
+async function exportFinancePdf(c){
+  const r = calc(c), be = breakEven(c), pname = partnerOf(c.partnerId || S.partners[0]?.id)?.name || 'الشريك', W = 1240, H = 1754, M = 80, pages = [];
+  try { await document.fonts.load(`700 30px ${FONT}`); } catch {}
+  let cv, x, y; const newPage = () => { cv = document.createElement('canvas'); cv.width = W; cv.height = H; x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.direction = 'rtl'; y = M; pages.push(cv);
+    x.fillStyle = '#0e5a63'; x.fillRect(0, 0, W, 14); x.font = `500 18px ${FONT}`; x.fillStyle = '#5b6b6e'; x.textAlign = 'left'; x.fillText(`سكاد — التخطيط المالي · صفحة ${pages.length}`, M, H - 40); };
+  const ensure = h => { if (y + h > H - 90) newPage(); };
+  const T = (t, size, w = 400, col = '#14262a', xx = W - M, align = 'right') => { x.font = `${w} ${size}px ${FONT}`; x.fillStyle = col; x.textAlign = align; x.fillText(String(t), xx, y); };
+  newPage(); y += 30; T('التخطيط المالي للدورة', 40, 700, '#0e5a63'); y += 48; T(c.title || '', 26, 600); y += 36;
+  T([c.city, c.start ? 'تبدأ ' + dateAr(c.start) : '', MODE_LABEL[c.mode], r.hours ? n0(r.hours) + ' ساعة' : '', 'صدر في ' + nowAr()].filter(Boolean).join(' · '), 20, 400, '#4c5d60'); y += 40;
+  const tiles = [['الإيراد', usd(r.revenue)], ['إجمالي الكلفة', usd(r.cost)], ['الربح', usd(r.profit)], ['نقطة التعادل', be == null ? 'غير متحققة' : n0(be) + ' متدرب'], ['سعر التعادل', usd(r.bePrice)], ['كلفة الساعة', usd(r.perHour)]];
+  const tw = (W - 2*M - 5*16) / 6;
+  tiles.forEach(([k, v], i) => { const tx = W - M - i * (tw + 16); x.fillStyle = '#f1f6f6'; x.beginPath(); x.roundRect ? x.roundRect(tx - tw, y, tw, 96, 12) : x.rect(tx - tw, y, tw, 96); x.fill();
+    x.font = `500 17px ${FONT}`; x.fillStyle = '#4c5d60'; x.textAlign = 'right'; x.fillText(k, tx - 14, y + 30); x.font = `700 22px ${FONT}`; x.fillStyle = k === 'الربح' && r.profit < 0 ? '#b3261e' : '#14262a'; x.fillText(v, tx - 14, y + 70); });
+  y += 140;
+  const table = (title, head, rows, widths) => { ensure(70 + 40); T(title, 26, 700, '#0e5a63'); y += 18; const rowH = 38, total = widths.reduce((a, b) => a + b, 0), k = (W - 2*M) / total;
+    const drawRow = (cells, bold, bg) => { ensure(rowH); if (bg) { x.fillStyle = bg; x.fillRect(M, y, W - 2*M, rowH); } let xx = W - M; cells.forEach((cell, i) => { x.font = `${bold ? 700 : 400} 18px ${FONT}`; x.fillStyle = '#14262a'; x.textAlign = 'right'; x.fillText(String(cell ?? ''), xx - 10, y + 26); xx -= widths[i] * k; });
+      x.strokeStyle = '#e3e0da'; x.beginPath(); x.moveTo(M, y + rowH); x.lineTo(W - M, y + rowH); x.stroke(); y += rowH; };
+    drawRow(head, true, '#e6f0f1'); rows.forEach(rw => drawRow(rw[0], rw[1])); y += 30; };
+  table('توزيع الكلفة', ['البند', 'المبلغ', 'لكل متدرب', 'النسبة'], finBreakdown(c, r).map(([l, v, em]) => [[l, usd(v), usd(c.trainees > 0 ? v / c.trainees : null), r.cost > 0 ? (v / r.cost * 100).toFixed(1) + '٪' : '—'], em]), [3, 2, 2, 1.2]);
+  const sizes = [...new Set([10, 15, 20, 25, c.capacity, c.trainees].filter(n => n > 0))].sort((a,b) => a-b).slice(0, 6), sc = sizes.map(n => calc(c, n));
+  table('مقارنة أحجام الدفعة', ['البند', ...sizes.map(n => n + ' متدرب')], finScenarioRows(pname).map(([l, k, em]) => [[l, ...sc.map(s => usd(s[k]))], em]), [3, ...sizes.map(() => 1.6)]);
+  table('الفرضيات', ['البند', 'القيمة', 'الوحدة'], FIN_INPUTS.filter(([k]) => r.on || !['staff','nights','hotel','travel','transport','roomRate','venueDays','hospRate','hospDays'].includes(k)).filter(([k]) => r.on ? k !== 'onlineCost' : true)
+    .map(([k, l, u]) => [[l, c[k] == null ? '—' : finValueText(k, c[k]), u]]), [3, 1.6, 3]);
+  ensure(80); T('الإيراد = السعر × عدد المتدربين. إجمالي الكلفة = أجر المدرب ومصاريفه + اللوجستيات + الاحتياطي. سعر التعادل = إجمالي الكلفة ÷ عدد المتدربين.', 17, 400, '#4c5d60');
+  const jp = []; for (const p of pages) jp.push({w:W, h:H, data:new Uint8Array(await (await toBlob(p, 'image/jpeg', .92)).arrayBuffer())});
+  await saveFile(finFileBase(c) + '.pdf', pdfFromJpegs(jp));
+}
+
+/* ---------- Excel import: reads the «الفرضيات» sheet (key column + value column) ---------- */
+async function unzipEntries(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder(); let e = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+  if (e < 0) throw new Error('ليس ملف Excel صالحاً');
+  const n = dv.getUint16(e + 10, true); let p = dv.getUint32(e + 16, true); const out = {};
+  for (let k = 0; k < n; k++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error('ملف تالف');
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true), nl = dv.getUint16(p + 28, true), el = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true), lo = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nl)); p += 46 + nl + el + cl;
+    out[name] = async () => { const start = lo + 30 + dv.getUint16(lo + 26, true) + dv.getUint16(lo + 28, true), raw = u8.subarray(start, start + csize);
+      if (method === 0) return dec.decode(raw); if (method !== 8) throw new Error('ضغط غير مدعوم');
+      const ds = new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw')); return dec.decode(await new Response(ds).arrayBuffer()); };
+  }
+  return out;
+}
+async function readXlsxSheets(file){
+  if (file.size > 5 * 1048576) throw new Error('الملف أكبر من 5 ميغابايت');
+  const z = await unzipEntries(await file.arrayBuffer()), P = s => new DOMParser().parseFromString(s, 'application/xml');
+  const wb = P(await z['xl/workbook.xml']()), rels = z['xl/_rels/workbook.xml.rels'] ? P(await z['xl/_rels/workbook.xml.rels']()) : null;
+  const shared = z['xl/sharedStrings.xml'] ? [...P(await z['xl/sharedStrings.xml']()).getElementsByTagName('si')].map(si => [...si.getElementsByTagName('t')].map(t => t.textContent).join('')) : [];
+  const sheets = [];
+  for (const sh of wb.getElementsByTagName('sheet')) {
+    const rid = sh.getAttribute('r:id') || sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
+    let target = rels ? [...rels.getElementsByTagName('Relationship')].find(r => r.getAttribute('Id') === rid)?.getAttribute('Target') : null;
+    if (!target) continue; target = target.replace(/^\/?xl\//, '').replace(/^\//, ''); const path = 'xl/' + target; if (!z[path]) continue;
+    const doc = P(await z[path]()), rows = [];
+    for (const row of doc.getElementsByTagName('row')) { const cells = [];
+      for (const c of row.getElementsByTagName('c')) { const ref = c.getAttribute('r') || '', col = ref.replace(/\d+/g, '').split('').reduce((a, ch) => a * 26 + ch.charCodeAt(0) - 64, 0) - 1, t = c.getAttribute('t'), v = c.getElementsByTagName('v')[0]?.textContent;
+        cells[col] = t === 's' ? shared[+v] : t === 'inlineStr' ? [...c.getElementsByTagName('t')].map(x => x.textContent).join('') : t === 'b' ? v === '1' : v == null ? null : t === 'str' ? v : Number(v); }
+      rows.push(cells); }
+    sheets.push({name: sh.getAttribute('name'), rows});
+  }
+  return sheets;
+}
+function parseFinRows(sheets){
+  const sh = sheets.find(s => s.name === 'الفرضيات') || sheets.find(s => s.rows.some(r => r[0] === 'المفتاح' || FIN_LABEL[r[0]]));
+  if (!sh) throw new Error('لم أجد ورقة «الفرضيات». صدّر ملف Excel من المنصة أولاً واستخدمه قالباً.');
+  const byLabel = Object.fromEntries(FIN_INPUTS.map(x => [x[1], x[0]])), kinds = Object.fromEntries(FIN_INPUTS.map(x => [x[0], x[3]])), changes = {}, errors = [];
+  sh.rows.forEach(row => { const k = FIN_LABEL[row[0]] ? row[0] : byLabel[String(row[1] || '').trim()]; if (!k) return; let v = row[2]; const kind = kinds[k];
+    if (kind === 'mode') { v = String(v ?? '').trim(); v = v === 'أونلاين' || v === 'online' ? 'online' : v === 'حضوري' || v === 'onsite' ? 'onsite' : null; if (!v) return errors.push(`${FIN_LABEL[k]}: اكتب «حضوري» أو «أونلاين»`); }
+    else if (kind === 'tmode') { v = String(v ?? '').trim(); const m = Object.entries(TMODE_LABEL).find(([kk, l]) => l === v || kk === v)?.[0]; if (!m) return errors.push(`${FIN_LABEL[k]}: قيمة غير معروفة`); v = m; }
+    else { if (v === null || v === undefined || v === '') { if (kind === 'opt') v = null; else return; } else { v = typeof v === 'number' ? v : Number(String(v).replace(/[,٬\s$]/g, '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)));
+      if (!Number.isFinite(v) || v < 0) return errors.push(`${FIN_LABEL[k]}: «${row[2]}» ليس رقماً صالحاً`); if (kind === 'int') v = Math.floor(v); if (k === 'reserveMode') v = v ? 1 : 0; } }
+    changes[k] = v; });
+  return {changes, errors};
+}
+async function importFinanceXlsx(c, file){
+  let parsed; try { parsed = parseFinRows(await readXlsxSheets(file)); } catch (e) { return toast('تعذّر قراءة الملف: ' + (e.message || e)); }
+  const diff = Object.entries(parsed.changes).filter(([k, v]) => (c[k] ?? null) !== v);
+  if (!diff.length && !parsed.errors.length) return toast('لا توجد قيم مختلفة في الملف عن الحالية.');
+  const show = (k, v) => v == null ? '—' : esc(String(finValueText(k, v)));
+  dialog('مراجعة الاستيراد', `<p class="small muted">الملف: <bdi>${esc(file.name)}</bdi>. راجع التغييرات قبل تطبيقها.</p>
+    ${diff.length ? `<div class="scroll" style="max-height:44vh;margin-top:8px"><table><thead><tr><th>البند</th><th>الحالي</th><th>من الملف</th></tr></thead><tbody>${diff.map(([k, v]) => `<tr><td>${esc(FIN_LABEL[k])}</td><td>${show(k, c[k])}</td><td><b>${show(k, v)}</b></td></tr>`).join('')}</tbody></table></div>` : '<p>لا تغييرات صالحة.</p>'}
+    ${parsed.errors.length ? `<div class="chk bad" style="margin-top:10px"><b>تُتجاهل</b><span>${parsed.errors.map(esc).join('<br>')}</span></div>` : ''}`,
+    diff.length ? [['تطبيق ' + arN(diff.length, 'تغيير واحد', 'تغييرين', 'تغييرات', 'تغييراً'), 'primary', () => { diff.forEach(([k, v]) => c[k] = v); finTouched(); renderFinance(); toast('طُبّقت القيم من ملف Excel.'); }], ['إلغاء', 'ghost', () => {}]] : [['حسناً', 'primary', () => {}]]);
+}
+
+
 /* ---------- online layer (Supabase) — active only when config.js holds a project URL and key ---------- */
-const ROLE_LABEL = {owner:'مالك المنصة', admin:'إدارة سكاد', manager:'مدير المشروع', reviewer:'مراجع المحتوى', editor:'محرر المحتوى', finance:'المالية', viewer:'اطلاع فقط'};
-const ROLE_HINT = {manager:'يدير المشروع ومحتواه وماليته وفريقه', reviewer:'يعتمد المحتوى أو يعيده بملاحظة', editor:'يُنشئ المحتوى ويعدّله ويرسله للاعتماد', finance:'يرى التخطيط المالي ويعدّله فقط', viewer:'يرى المحتوى المعتمد والأرشيف فقط'};
+const ROLE_LABEL = {owner:'مالك المنصة', admin:'إدارة سكاد', manager:'مدير المشروع', reviewer:'مراجع المحتوى', editor:'محرر المحتوى', finance:'المالية (قديم)', viewer:'اطلاع فقط'};
+const ROLE_HINT = {manager:'يدير المشروع ومحتواه وفريقه', reviewer:'يعتمد المحتوى أو يعيده بملاحظة', editor:'يُنشئ المحتوى ويعدّله ويرسله للاعتماد', viewer:'يرى المحتوى المعتمد والأرشيف فقط'};
 const STATUS_LABEL = {planning:'قيد التخطيط', active:'نشط', completed:'مكتمل', archived:'مؤرشف'};
 const DRIVE_ON = !!CFG.driveEnabled;
 const toEmail = l => { l = String(l || '').trim().toLowerCase(); return l.includes('@') ? l : l + '@team.scadd.jo'; };
@@ -1272,22 +1599,24 @@ function caps(){
   if (!ONLINE) { const r = S.user?.role; return {staff:r === 'admin', edit:r === 'admin' || r === 'partner', review:r === 'admin', finance:r === 'admin' || r === 'finance', manage:r === 'admin', view:true, role:r}; }
   const r = myProjectRole(S.pid), staff = !!S.user?.staff, p = currentProject(), delegated = p?.approval_mode === 'project';
   return {staff, role: staff ? 'staff' : r, view: staff || !!r, edit: staff || ['manager','reviewer','editor'].includes(r),
-    review: staff || (delegated && ['manager','reviewer'].includes(r)), finance: staff || ['manager','finance'].includes(r), manage: staff || r === 'manager'};
+    review: staff || (delegated && ['manager','reviewer'].includes(r)), finance: ['owner','finance'].includes(S.user?.globalRole), manage: staff || r === 'manager'};
 }
 function applyProject(pid){
   S.pid = pid; try { localStorage.setItem('scadd-active-project', pid); } catch {}
   const p = currentProject();
-  S.course = p ? {...COURSE_DEFAULT, ...p.course, id:p.id, partnerId:p.partner_id, title:p.course?.title || p.name, city:p.city || p.course?.city || '', start:p.start_date || p.course?.start || ''} : {...COURSE_DEFAULT, id:null};
+  S.course = p ? {...COURSE_DEFAULT, ...p.course, ...(S.finances?.[p.id]?.data || {}), id:p.id, partnerId:p.partner_id, title:p.course?.title || p.name, city:p.city || p.course?.city || '', start:p.start_date || p.course?.start || ''} : {...COURSE_DEFAULT, id:null};
   const c = caps();
   S.user.role = c.staff || c.manage || c.review ? 'admin' : c.edit ? 'partner' : c.finance ? 'finance' : 'viewer';
   S.user.partnerId = p?.partner_id;
-  S.user.title = c.staff ? ROLE_LABEL[S.user.globalRole] : (ROLE_LABEL[c.role] || '') + (p ? ' · ' + p.name : '');
+  S.user.title = c.staff ? ROLE_LABEL[S.user.globalRole] : S.user.globalRole === 'finance' ? 'المدير المالي لسكاد' + (p ? ' · ' + p.name : '') : (ROLE_LABEL[c.role] || '') + (p ? ' · ' + p.name : '');
 }
 
 /* rows */
 const designRow = d => { const fields = {...d.fields}; delete fields.photo; delete fields.aiDraft; if (fields.uploads) fields.uploads = fields.uploads.map(({url, ...u}) => u); return {id:d.id, project_id:d.projectId, template:d.template, format:d.format, theme:d.theme, status:d.status, version:d.version, fields, slides:d.slides || []}; };
 const partnerRow = p => ({id:p.id, name:p.name, name_en:p.nameEn || null, color:p.color, logo_url:p.logo || null});
-const courseOf = c => { const {id, partnerId, title, city, start, ...rest} = c; return {...rest, title}; };
+const FIN_KEYS = ['fee','staff','nights','hotel','travel','transport','supplies','roomRate','venueDays','hospRate','hospDays','reserveMode','reserveAmount','reservePct','trainerMode','trainerRate','trainerExtra','onlineCost','targetMargin'];
+const courseOf = c => { const {id, partnerId, title, city, start, ...rest} = c; FIN_KEYS.forEach(k => delete rest[k]); return {...rest, title}; };
+const financeOf = c => Object.fromEntries(FIN_KEYS.filter(k => k in c).map(k => [k, c[k]]));
 function fromDesign(r, comments){ return normalizeDesign({id:r.id, projectId:r.project_id, partnerId:r.partner_id, template:r.template, format:r.format, theme:r.theme, status:r.status, version:r.version, rev:r.rev,
   fields:r.fields || {}, slides:r.slides || [], updated:(r.updated_at || '').slice(0,10), updatedAt:r.updated_at,
   comments:comments.filter(c => c.design_id === r.id).map(c => ({id:c.id, by:c.author_name, at:fmtAt(c.created_at), text:c.body}))}); }
@@ -1303,7 +1632,7 @@ function takeSnapshot(){
 }
 async function loadAll(){
   const none = {data:[], error:null};
-  const [pa, pr, me, d, cm, st, pf, af, ac] = await Promise.all([
+  const [pa, pr, me, d, cm, st, pf, af, ac, fin] = await Promise.all([
     sb.from('partners').select('*').order('created_at'),
     sb.from('projects').select('*').order('created_at'),
     sb.from('project_members').select('*'),
@@ -1312,9 +1641,11 @@ async function loadAll(){
     sb.from('settings').select('*'),
     sb.from('profiles').select('*').order('created_at'),
     sb.from('archive_files').select('*').order('created_at', {ascending:false}),
-    sb.from('activity_log').select('*').order('created_at', {ascending:false}).limit(60)
+    sb.from('activity_log').select('*').order('created_at', {ascending:false}).limit(60),
+    sb.from('project_finance').select('*')
   ]);
   const err = [pa, pr, me, d, cm, st, pf, af, ac].find(r => r.error); if (err) throw err.error;
+  S.finances = Object.fromEntries((fin.error ? [] : fin.data).map(r => [r.project_id, {data:r.data || {}, rev:r.rev}]));
   S.partners = pa.data.map(r => ({id:r.id, name:r.name, nameEn:r.name_en, color:r.color, logo:r.logo_url}));
   S.projects = pr.data; S.memberships = me.data; S.profiles = pf.data; S.archive = af.data; S.activity = ac.data;
   S.designs = d.data.map(r => fromDesign(r, cm.data));
@@ -1364,12 +1695,23 @@ async function syncNow(){
       if (r.error) throw r.error; snap.partners.set(p.id, key);
     }
     const p = currentProject();
-    if (p) {
+    if (p && S.courseTouched) {
+      S.courseTouched = false;
       const course = courseOf(S.course), ck = JSON.stringify(course);
       if (ck !== snap.courses.get(p.id) && JSON.stringify(p.course || {}) !== ck) {
         const r = await sb.from('projects').update({course}).eq('id', p.id).select();
         if (r.error) throw r.error; if (!r.data.length) throw new Error('permission denied');
         p.course = course; snap.courses.set(p.id, ck);
+      }
+      if (caps().finance) {
+        const data = financeOf(S.course), cur = S.finances[p.id];
+        if (!cur || JSON.stringify(cur.data) !== JSON.stringify(data)) {
+          const r = cur ? await sb.from('project_finance').update({data}).eq('project_id', p.id).eq('rev', cur.rev).select()
+                        : await sb.from('project_finance').insert({project_id:p.id, data}).select();
+          if (r.error) throw r.error;
+          if (!r.data.length) { toast('عدّل شخص آخر البيانات المالية لهذا المشروع؛ حُمّلت النسخة الأحدث.'); await loadAll(); route(); return; }
+          S.finances[p.id] = {data:r.data[0].data, rev:r.data[0].rev};
+        }
       }
     }
     dirty = false; setSync('saved');
@@ -1494,7 +1836,7 @@ async function boot(){
 }
 
 /* ---------- platform screens: manager dashboard, projects, team, users, archive (online only) ---------- */
-const courseFor = p => ({...COURSE_DEFAULT, ...(p.course || {})});
+const courseFor = p => ({...COURSE_DEFAULT, ...(p.course || {}), ...(S.finances?.[p.id]?.data || {})});
 const memberCount = pid => (S.memberships || []).filter(m => m.project_id === pid).length;
 const pendingOf = pid => S.designs.filter(d => d.projectId === pid && d.status === 'pending');
 const partnerName = id => S.partners.find(p => p.id === id)?.name || '—';
@@ -1502,7 +1844,7 @@ const profileOf = id => (S.profiles || []).find(p => p.id === id);
 const ageDays = iso => iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 864e5) : 0;
 const fileSize = b => b == null ? '' : b > 1048576 ? (b / 1048576).toFixed(1) + ' م.ب' : Math.max(1, Math.round(b / 1024)) + ' ك.ب';
 function roleOptions(selected, allowManager, allowReviewer){
-  return Object.entries(ROLE_HINT).filter(([k]) => (k !== 'manager' || allowManager || selected === 'manager') && (k !== 'reviewer' || allowReviewer || selected === 'reviewer'))
+  return [...Object.entries(ROLE_HINT), ...(selected === 'finance' ? [['finance', '']] : [])].filter(([k]) => (k !== 'manager' || allowManager || selected === 'manager') && (k !== 'reviewer' || allowReviewer || selected === 'reviewer'))
     .map(([k]) => `<option value="${k}" ${k === selected ? 'selected' : ''}>${ROLE_LABEL[k]}</option>`).join('');
 }
 function activityText(a){
@@ -1560,8 +1902,8 @@ function renderDashboard(){
   const sum = k => rows.reduce((a, x) => a + (x.r[k] || 0), 0);
   const trainees = rows.reduce((a, x) => a + (x.c.trainees || 0), 0), capacity = rows.reduce((a, x) => a + (x.c.capacity || 0), 0);
   const pending = S.designs.filter(d => d.status === 'pending'), activeUsers = (S.profiles || []).filter(u => u.active).length;
-  const alerts = [];
-  rows.forEach(x => { if (x.be != null && x.c.trainees < x.be) alerts.push(['warn', `${esc(x.p.name)}: التسجيل ${n0(x.c.trainees)} أقل من نقطة التعادل (${n0(x.be)}).`, x.p.id, 'finance']); });
+  const alerts = [], FIN = caps().finance;
+  if (FIN) rows.forEach(x => { if (x.be != null && x.c.trainees < x.be) alerts.push(['warn', `${esc(x.p.name)}: التسجيل ${n0(x.c.trainees)} أقل من نقطة التعادل (${n0(x.be)}).`, x.p.id, 'finance']); });
   pending.filter(d => ageDays(d.updatedAt) >= 2).forEach(d => alerts.push(['warn', `«${esc(designName(d))}» بانتظار الاعتماد منذ ${n0(ageDays(d.updatedAt))} أيام.`, d.projectId, 'review']));
   (DRIVE_ON ? S.memberships || [] : []).filter(m => m.drive_status === 'failed').forEach(m => alerts.push(['bad', `وصول Drive لم يُمنح لـ <span dir="ltr">${esc(profileOf(m.user_id)?.email || '')}</span> في ${esc(S.projects.find(p => p.id === m.project_id)?.name || '')}: ${esc(m.drive_error || '')}`, m.project_id, 'team']));
   (DRIVE_ON ? live : []).filter(p => !p.drive_folder_id).forEach(p => alerts.push(['warn', `${esc(p.name)}: لم يُنشأ مجلد الأرشيف بعد.`, p.id, 'archive']));
@@ -1570,16 +1912,17 @@ function renderDashboard(){
   <div class="tiles" style="margin-bottom:16px">
     <div class="tile"><span>المشاريع الجارية</span><b>${n0(live.length)}</b><small>من أصل ${n0(ps.length)} مشروعاً مسجلاً</small></div>
     <div class="tile"><span>المتدربون المسجّلون</span><b>${n0(trainees)}</b><small>من سعة ${n0(capacity)} مقعداً</small></div>
-    <div class="tile"><span>الإيراد المتوقع</span><b>${usd(sum('revenue'))}</b><small>كل المشاريع الجارية</small></div>
-    <div class="tile ${sum('profit') < 0 ? 'neg' : 'pos'}"><span>الربح المتوقع</span><b>${usd(sum('profit'))}</b><small>الإيراد − كلفة الدورات</small></div>
+    ${FIN ? `<div class="tile"><span>الإيراد المتوقع</span><b>${usd(sum('revenue'))}</b><small>كل المشاريع الجارية</small></div>
+    <div class="tile ${sum('profit') < 0 ? 'neg' : 'pos'}"><span>الربح المتوقع</span><b>${usd(sum('profit'))}</b><small>الإيراد − كلفة الدورات</small></div>` : `<div class="tile"><span>التصاميم المعتمدة</span><b>${n0(S.designs.filter(d => d.status === 'approved').length)}</b><small>كل المشاريع</small></div>
+    <div class="tile"><span>نسبة الإشغال</span><b>${capacity ? Math.round(trainees / capacity * 100) + '٪' : '—'}</b><small>المسجّلون ÷ السعة</small></div>`}
     <div class="tile ${pending.length ? 'neg' : ''}"><span>بانتظار الاعتماد</span><b>${n0(pending.length)}</b><small>${n0(activeUsers)} مستخدماً نشطاً</small></div>
   </div>
   <div class="card" style="margin-bottom:16px"><h2>المشاريع</h2><div class="scroll" style="margin-top:10px"><table class="dash"><thead><tr><th>المشروع</th><th>الحالة</th><th>التسجيل</th><th>الربح المتوقع</th><th>التعادل</th><th>بانتظار الاعتماد</th><th>الفريق</th><th>الأرشيف</th><th></th></tr></thead><tbody>
     ${rows.map(x => `<tr><td><b>${esc(x.p.name)}</b><div class="small muted">${esc(partnerName(x.p.partner_id))} · ${esc(x.p.city || '')}${x.p.start_date ? ' · ' + dateAr(x.p.start_date) : ''}</div></td>
       <td><span class="tag st-${x.p.status === 'active' ? 'approved' : x.p.status === 'planning' ? 'pending' : 'draft'}">${STATUS_LABEL[x.p.status]}</span></td>
       <td><div class="seatbar" style="margin:0 0 4px;min-width:90px"><i style="width:${Math.min(100, x.c.trainees / Math.max(1, x.c.capacity) * 100)}%"></i></div><span class="small">${n0(x.c.trainees)} / ${n0(x.c.capacity)}</span></td>
-      <td style="color:var(${x.r.profit < 0 ? '--bad' : '--ok'});font-weight:600">${usd(x.r.profit)}</td>
-      <td>${x.be == null ? 'غير متحققة' : x.c.trainees >= x.be ? '<span class="tag st-approved">متحققة</span>' : `<span class="tag st-returned">ينقص ${n0(x.be - x.c.trainees)}</span>`}</td>
+      ${!FIN ? '<td class="muted small" title="للمالك والمدير المالي فقط">—</td><td class="muted small">—</td>' : `<td style="color:var(${x.r.profit < 0 ? '--bad' : '--ok'});font-weight:600">${usd(x.r.profit)}</td>
+      <td>${x.be == null ? 'غير متحققة' : x.c.trainees >= x.be ? '<span class="tag st-approved">متحققة</span>' : `<span class="tag st-returned">ينقص ${n0(x.be - x.c.trainees)}</span>`}</td>`}
       <td>${x.pend.length ? `<b>${n0(x.pend.length)}</b>` : '—'}</td><td>${n0(x.members)}</td>
       <td>${!DRIVE_ON ? '<span class="muted small">غير مفعّل</span>' : x.p.drive_folder_url ? `<a href="${esc(x.p.drive_folder_url)}" target="_blank" rel="noopener">${n0(x.files)} ملف</a>` : '<span class="muted small">لا مجلد</span>'}</td>
       <td><button class="btn" data-go="${x.p.id}">فتح</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">لا توجد مشاريع جارية.</td></tr>'}
@@ -1660,7 +2003,7 @@ function renderUsers(){
     $('#ul').innerHTML = list.map(u => { const self = u.id === S.user.id, lockedOwner = u.global_role === 'owner';
       return `<div class="it" style="flex-wrap:wrap;align-items:flex-start"><div style="flex:1;min-width:220px"><b>${esc(u.full_name || '')}</b> ${u.active ? '' : '<span class="tag st-returned">موقوف</span>'}<div class="small muted" dir="ltr" style="text-align:right">${esc(loginLabel(u))}</div>
         <div class="small muted">${esc(partnerName(u.partner_id) === '—' ? '' : partnerName(u.partner_id))}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${projectsOf(u.id) || (u.global_role ? '' : '<span class="small muted">لم يُضَف إلى مشروع</span>')}</div></div>
-        <div class="row"><label class="f" style="font-weight:400">الصلاحية العامة<select data-grole="${u.id}" ${!owner || self || lockedOwner ? 'disabled' : ''}><option value="">عضو مشاريع</option><option value="admin" ${u.global_role === 'admin' ? 'selected' : ''}>إدارة سكاد</option>${lockedOwner ? '<option value="owner" selected>مالك المنصة</option>' : ''}</select></label>
+        <div class="row"><label class="f" style="font-weight:400">الصلاحية العامة<select data-grole="${u.id}" ${!owner || self || lockedOwner ? 'disabled' : ''}><option value="">عضو مشاريع</option><option value="admin" ${u.global_role === 'admin' ? 'selected' : ''}>إدارة سكاد</option><option value="finance" ${u.global_role === 'finance' ? 'selected' : ''}>المدير المالي لسكاد</option>${lockedOwner ? '<option value="owner" selected>مالك المنصة</option>' : ''}</select></label>
         <button class="btn" data-upw="${u.id}" ${self || lockedOwner ? 'hidden' : ''}>كلمة المرور</button><button class="btn" data-act="${u.id}" data-on="${u.active ? '0' : '1'}" ${self || lockedOwner ? 'disabled' : ''}>${u.active ? 'إيقاف' : 'إعادة تفعيل'}</button></div></div>`; }).join('') || '<p class="muted" style="padding:12px 0">لا نتائج.</p>';
     document.querySelectorAll('[data-grole]').forEach(s => s.onchange = async () => { const {error} = await sb.from('profiles').update({global_role:s.value || null}).eq('id', s.dataset.grole); if (error) { toast(arErr(error)); return paint(); } await loadAll(); toast('حُدّثت الصلاحية العامة.'); paint(); });
     document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => { const on = b.dataset.on === '1';
@@ -1670,7 +2013,7 @@ function renderUsers(){
   $('#ul').addEventListener('click', e => { const b = e.target.closest('[data-upw]'); if (b) resetPassword(profileOf(b.dataset.upw)); });
   $('#invu').onclick = () => { dialog('إنشاء حساب', credentialFields(null, null, `
     <label class="f">الجهة<select id="iu-partner"><option value="">سكاد</option>${S.partners.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label>
-    ${owner ? '<label class="f">الصلاحية العامة<select id="iu-g"><option value="">عضو مشاريع</option><option value="admin">إدارة سكاد</option></select></label>' : ''}
+    ${owner ? '<label class="f">الصلاحية العامة<select id="iu-g"><option value="">عضو مشاريع</option><option value="admin">إدارة سكاد</option><option value="finance">المدير المالي لسكاد</option></select></label>' : ''}
     <div class="grid g2"><label class="f">المشروع<select id="iu-p"><option value="">—</option>${S.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label><label class="f">الدور في المشروع<select id="iu-r">${roleOptions('editor', true, true)}</select></label></div>`), [
     ['إنشاء الحساب', 'primary', () => { (async () => { const pid = $('#iu-p').value;
       const r = await createAccount({project:pid || null, role:pid ? $('#iu-r').value : null, partner:$('#iu-partner').value || null, globalRole:$('#iu-g')?.value || null}); if (!r) return;
@@ -1709,6 +2052,7 @@ async function archiveApproved(d){
   } catch (e) { toast('اعتُمد التصميم، وتعذّرت أرشفته في Drive: ' + arErr(e)); }
 }
 
+window.__scadd = {calc, breakEven, get S(){ return S; }};
 boot();
 }
 </script>
