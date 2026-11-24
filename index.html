@@ -525,9 +525,10 @@ function route(){
   $('#root').innerHTML = `<div class="app"><aside class="side"><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>معهد سكاد للتعليم والتدريب السريري</span></div></div>
     ${ONLINE && S.projects.length > 1 ? `<label class="projsel"><span>المشروع</span><select id="psel">${S.projects.map(p => `<option value="${p.id}" ${p.id === S.pid ? 'selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>` : ONLINE && currentProject() ? `<div class="projsel"><span>المشروع</span><b>${esc(currentProject().name)}</b></div>` : ''}
     <nav aria-label="الأقسام">${NAV.filter(n => n[2](C)).map(([id,label]) => `<a href="#${id}" ${id===v?'aria-current="page"':''}>${label}${id==='review'&&pending?`<span class="count">${pending}</span>`:''}</a>`).join('')}</nav>
-    <div class="who"><div class="nm"><b>${esc(S.user.name)}</b><br><span style="opacity:.8">${esc(S.user.title)}</span></div><span class="sync" id="sync" role="status">${ONLINE ? 'متصل · محفوظ' : 'وضع تجريبي · محفوظ في هذا المتصفح'}</span><button id="logout">${ONLINE ? 'تسجيل الخروج' : 'تبديل الحساب'}</button></div></aside><main id="main"></main></div>`;
+    <div class="who"><div class="nm"><b>${esc(S.user.name)}</b><br><span style="opacity:.8">${esc(S.user.title)}</span></div><span class="sync" id="sync" role="status">${ONLINE ? 'متصل · محفوظ' : 'وضع تجريبي · محفوظ في هذا المتصفح'}</span>${ONLINE ? '<button id="chpw">تغيير كلمة المرور</button>' : ''}<button id="logout">${ONLINE ? 'تسجيل الخروج' : 'تبديل الحساب'}</button></div></aside><main id="main"></main></div>`;
   $('#logout').onclick = async () => { if (ONLINE) { await flushSync(); await sb.auth.signOut(); S.user = null; S.designs = []; S.partners = []; S.projects = []; history.replaceState(null, '', location.pathname); route(); return; } S.user = null; save(); location.hash = ''; route(); };
   $('#psel') && ($('#psel').onchange = e => switchProject(e.target.value));
+  $('#chpw') && ($('#chpw').onclick = () => renderChangePassword(false, () => route()));
   ({home:renderHome, studio:renderStudio, library:renderLibrary, review:renderReview, brand:renderBrand, finance:renderFinance, dashboard:renderDashboard, projects:renderProjects, team:renderTeam, users:renderUsers, archive:renderArchive})[v]();
   if (ONLINE) refreshIfStale();
   document.title = 'SCADD Partner Studio — ' + NAV.find(n => n[0] === v)[1];
@@ -760,6 +761,8 @@ function paintFinance(){
 const ROLE_LABEL = {owner:'مالك المنصة', admin:'إدارة سكاد', manager:'مدير المشروع', reviewer:'مراجع المحتوى', editor:'محرر المحتوى', finance:'المالية', viewer:'اطلاع فقط'};
 const ROLE_HINT = {manager:'يدير المشروع ومحتواه وماليته وفريقه', reviewer:'يعتمد المحتوى أو يعيده بملاحظة', editor:'يُنشئ المحتوى ويعدّله ويرسله للاعتماد', finance:'يرى التخطيط المالي ويعدّله فقط', viewer:'يرى المحتوى المعتمد والأرشيف فقط'};
 const STATUS_LABEL = {planning:'قيد التخطيط', active:'نشط', completed:'مكتمل', archived:'مؤرشف'};
+const DRIVE_ON = !!CFG.driveEnabled;
+const toEmail = l => { l = String(l || '').trim().toLowerCase(); return l.includes('@') ? l : l + '@team.scadd.jo'; };
 const snap = {designs:new Map(), partners:new Map(), courses:new Map()};
 let syncTimer = null, syncChain = Promise.resolve(), lastLoad = 0, sessionStarting = false, dirty = false;
 const fmtAt = iso => { try { return new Intl.DateTimeFormat('ar-EG-u-nu-latn', {dateStyle:'medium', timeStyle:'short'}).format(new Date(iso)); } catch { return iso; } };
@@ -920,21 +923,49 @@ const blobToB64 = blob => new Promise((res, rej) => { const fr = new FileReader(
 
 /* sign-in and session */
 function renderOnlineLogin(msg){
-  $('#root').innerHTML = `<div class="login"><section class="hero"><div><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>منصة الشركاء · media.scadd.jo</span></div></div></div>
+  $('#root').innerHTML = `<div class="login"><section class="hero"><div><div class="brandmark"><div class="mark">SCADD</div><div><b>Partner Studio</b><span>منصة الشركاء</span></div></div></div>
   <div><h1>محتوى مشترك بهوية واحدة، وتخطيط مالي للدورات في مكان واحد</h1><p>لكل مشروع مساحة مستقلة لفريقه: المحتوى والاعتماد والمالية والأرشيف، بحسب صلاحية كل عضو.</p></div>
   <div class="stack" aria-hidden="true"><div style="width:190px;height:238px;background:#f6f3ee;inset-inline-start:0;top:40px;transform:rotate(-6deg)"></div><div style="width:190px;height:238px;background:#e8644a;inset-inline-start:150px;top:10px;transform:rotate(3deg)"></div><div style="width:190px;height:238px;background:#ffffff;inset-inline-start:300px;top:50px;transform:rotate(-2deg)"></div></div></section>
-  <section class="pick"><h2>تسجيل الدخول</h2><p class="muted small">أدخل بريدك المسجّل لدى سكاد، وسيصلك رابط دخول آمن صالح لمرة واحدة. لا حاجة إلى كلمة مرور.</p>
-  <form id="lf" class="grid" novalidate><label class="f" for="em">البريد الإلكتروني<input id="em" type="email" inputmode="email" autocomplete="email" dir="ltr" required placeholder="name@organization.org"></label>
-  <button class="btn primary" id="lb" type="submit">إرسال رابط الدخول</button></form>
+  <section class="pick"><h2>تسجيل الدخول</h2><p class="muted small">استخدم اسم المستخدم وكلمة المرور اللذين أرسلتهما لك إدارة سكاد أو مدير مشروعك.</p>
+  <form id="pf" class="grid" novalidate>
+    <label class="f" for="lg">اسم المستخدم أو البريد<input id="lg" autocomplete="username" dir="ltr" autocapitalize="none" spellcheck="false" required></label>
+    <label class="f" for="pw">كلمة المرور<input id="pw" type="password" autocomplete="current-password" dir="ltr" required></label>
+    <label class="toggle"><input type="checkbox" id="showpw"> إظهار كلمة المرور</label>
+    <button class="btn primary" id="pb" type="submit">دخول</button></form>
   <div id="lmsg" role="status" class="small" style="min-height:24px">${msg ? esc(msg) : ''}</div>
-  <p class="note">الحسابات تُنشأ بدعوة من إدارة سكاد أو من مدير المشروع. إن لم تصلك رسالة خلال دقائق، فتحقق من مجلد الرسائل غير المرغوب فيها.</p></section></div>`;
+  <details class="note"><summary>الدخول برابط يصل إلى البريد</summary>
+    <form id="lf" class="grid" novalidate style="margin-top:10px"><label class="f" for="em">البريد الإلكتروني<input id="em" type="email" inputmode="email" autocomplete="email" dir="ltr" placeholder="name@organization.org"></label>
+    <button class="btn" id="lb" type="submit">إرسال رابط الدخول</button><p class="small muted">يعمل فقط للحسابات المسجّلة ببريد حقيقي، ويُفتح الرابط من الجهاز نفسه.</p></form></details>
+  <p class="note">نسيت كلمة المرور؟ اطلب من مدير مشروعك أو من إدارة سكاد إعادة تعيينها.</p></section></div>`;
+  $('#showpw').onchange = e => { $('#pw').type = e.target.checked ? 'text' : 'password'; };
+  $('#pf').onsubmit = async e => { e.preventDefault(); const login = $('#lg').value.trim(), pw = $('#pw').value, m = $('#lmsg'), b = $('#pb');
+    if (!login || !pw) { m.textContent = 'اكتب اسم المستخدم وكلمة المرور.'; return; }
+    b.disabled = true; b.textContent = 'جارٍ الدخول…';
+    const {error} = await sb.auth.signInWithPassword({email:toEmail(login), password:pw});
+    b.disabled = false; b.textContent = 'دخول';
+    if (error) m.textContent = /invalid|credentials/i.test(error.message) ? 'اسم المستخدم أو كلمة المرور غير صحيحة.' : /banned/i.test(error.message) ? 'هذا الحساب موقوف. تواصل مع إدارة سكاد.' : /rate|too many/i.test(error.message) ? 'محاولات كثيرة. انتظر دقيقة ثم أعد المحاولة.' : 'تعذّر الدخول: ' + arErr(error); };
   $('#lf').onsubmit = async e => { e.preventDefault(); const email = $('#em').value.trim().toLowerCase(), m = $('#lmsg'), b = $('#lb');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { m.textContent = 'اكتب بريداً إلكترونياً صحيحاً.'; $('#em').focus(); return; }
-    b.disabled = true; b.textContent = 'جارٍ الإرسال…';
-    const {error} = await sb.auth.signInWithOtp({email, options:{shouldCreateUser:false, emailRedirectTo:location.origin + location.pathname}});
-    b.disabled = false; b.textContent = 'إرسال رابط الدخول';
-    if (error) m.textContent = /signup|not allowed|not found|Signups/i.test(error.message) ? 'هذا البريد غير مسجّل في المنصة. اطلب دعوة من إدارة سكاد أو من مدير مشروعك.' : /rate|seconds/i.test(error.message) ? 'طلبات كثيرة خلال وقت قصير. انتظر دقيقة ثم أعد المحاولة.' : 'تعذّر الإرسال: ' + error.message;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { m.textContent = 'اكتب بريداً إلكترونياً صحيحاً.'; return; }
+    b.disabled = true; const {error} = await sb.auth.signInWithOtp({email, options:{shouldCreateUser:false, emailRedirectTo:location.origin + location.pathname}}); b.disabled = false;
+    if (error) m.textContent = /signup|not allowed|not found|Signups/i.test(error.message) ? 'هذا البريد غير مسجّل في المنصة.' : /rate|seconds/i.test(error.message) ? 'طلبات كثيرة خلال وقت قصير. انتظر دقيقة.' : 'تعذّر الإرسال: ' + error.message;
     else m.innerHTML = `أُرسل رابط الدخول إلى <b dir="ltr">${esc(email)}</b>. افتح الرابط من هذا الجهاز.`; };
+  setTimeout(() => $('#lg')?.focus(), 50);
+}
+function renderChangePassword(forced, onDone){
+  $('#root').innerHTML = `<main style="max-width:520px;margin:8vh auto;padding:24px"><div class="card grid"><div class="brandmark"><div class="mark">SCADD</div><b style="color:var(--teal-ink)">Partner Studio</b></div>
+    <h1>${forced ? 'اختر كلمة مرور خاصة بك' : 'تغيير كلمة المرور'}</h1><p class="muted">${forced ? 'دخلت بكلمة مرور أولية. لحماية حسابك، اختر كلمة مرور جديدة لا يعرفها غيرك.' : 'اختر كلمة مرور جديدة.'}</p>
+    <form id="cp" class="grid" novalidate><label class="f">كلمة المرور الجديدة<span class="hint">8 أحرف على الأقل، ويُفضَّل أن تجمع حروفاً وأرقاماً</span><input id="np1" type="password" autocomplete="new-password" dir="ltr"></label>
+    <label class="f">تأكيد كلمة المرور<input id="np2" type="password" autocomplete="new-password" dir="ltr"></label>
+    <div class="row"><button class="btn primary" type="submit" id="cpb">حفظ كلمة المرور</button>${forced ? '<button class="btn ghost" type="button" id="cpo">تسجيل الخروج</button>' : '<button class="btn ghost" type="button" id="cpc">إلغاء</button>'}</div></form>
+    <div id="cpm" role="status" class="small"></div></div></main>`;
+  $('#cpo') && ($('#cpo').onclick = async () => { await sb.auth.signOut(); S.user = null; route(); });
+  $('#cpc') && ($('#cpc').onclick = () => onDone());
+  $('#cp').onsubmit = async e => { e.preventDefault(); const a = $('#np1').value, b = $('#np2').value, m = $('#cpm');
+    if (a.length < 8) { m.textContent = 'كلمة المرور 8 أحرف على الأقل.'; return; }
+    if (a !== b) { m.textContent = 'كلمتا المرور غير متطابقتين.'; return; }
+    $('#cpb').disabled = true; const {error} = await sb.auth.updateUser({password:a});
+    if (error) { $('#cpb').disabled = false; m.textContent = /same|different/i.test(error.message) ? 'اختر كلمة مرور مختلفة عن الحالية.' : /weak|short/i.test(error.message) ? 'كلمة المرور ضعيفة؛ أضف أرقاماً ورموزاً.' : 'تعذّر الحفظ: ' + arErr(error); return; }
+    await sb.rpc('password_changed'); toast('حُفظت كلمة المرور الجديدة.'); onDone(); };
 }
 function renderStatus(title, body, withLogout = true){
   $('#root').innerHTML = `<main style="max-width:560px;margin:10vh auto;padding:24px"><div class="card grid"><div class="brandmark"><div class="mark">SCADD</div><b style="color:var(--teal-ink)">Partner Studio</b></div><h1>${esc(title)}</h1><p class="muted">${body}</p>${withLogout ? '<div class="row"><button class="btn" id="so">تسجيل الخروج</button><button class="btn ghost" id="rl">إعادة المحاولة</button></div>' : ''}</div></main>`;
@@ -947,7 +978,8 @@ async function startSession(session){
     if (error) throw error;
     if (!prof) throw new Error('لم يُعثر على ملف الحساب');
     if (!prof.active) { renderStatus('الحساب موقوف', 'أُوقف هذا الحساب من إدارة سكاد. تواصل معها إذا كان ذلك عن طريق الخطأ.'); return; }
-    S.user = {id:prof.id, email:prof.email || session.user.email, name:prof.full_name || session.user.email, globalRole:prof.global_role, staff:['owner','admin'].includes(prof.global_role), owner:prof.global_role === 'owner'};
+    if (prof.must_change_password) { sessionStarting = false; renderChangePassword(true, () => { location.reload(); }); return; }
+    S.user = {id:prof.id, email:prof.email || session.user.email, username:prof.username, name:prof.full_name || prof.username || session.user.email, globalRole:prof.global_role, staff:['owner','admin'].includes(prof.global_role), owner:prof.global_role === 'owner'};
     await loadAll();
     if (!S.user.staff && !S.projects.length) { const em = S.user.email; S.user = null; renderStatus('حسابك بانتظار التفعيل', `سُجّل دخولك بالبريد <b dir="ltr">${esc(em)}</b>، ولم تُضَف بعد إلى أي مشروع. سيضيفك مدير المشروع أو إدارة سكاد، ثم أعد تحميل الصفحة.`); return; }
     if (location.search.includes('code=')) history.replaceState(null, '', location.pathname + location.hash);
@@ -986,8 +1018,45 @@ function activityText(a){
     member_removed:`أزال <span dir="ltr">${esc(d.email)}</span> من الفريق`, member_role:`غيّر دور <span dir="ltr">${esc(d.email)}</span> إلى ${ROLE_LABEL[d.role] || d.role}`, user_invited:`دعا <span dir="ltr">${esc(d.email)}</span>`, user_attached:`أضاف حساباً قائماً <span dir="ltr">${esc(d.email)}</span>`,
     user_deactivated:`أوقف حساب <span dir="ltr">${esc(d.email)}</span>`, user_reactivated:`أعاد تفعيل <span dir="ltr">${esc(d.email)}</span>`, global_role:`غيّر الصلاحية العامة لـ <span dir="ltr">${esc(d.email)}</span>`,
     design_created:`أنشأ ${t}`, design_pending:`أرسل ${t} للاعتماد`, design_approved:`اعتمد ${t} (الإصدار ${esc(d.version)})`, design_returned:`أعاد ${t} بملاحظة`, design_draft:`أعاد ${t} مسودة`,
+    user_created:`أنشأ حساب <span dir="ltr">${esc(d.email)}</span>${d.role ? ' بصفة ' + (ROLE_LABEL[d.role] || d.role) : ''}`, password_reset:`أعاد تعيين كلمة مرور <span dir="ltr">${esc(d.email)}</span>`,
     archive_upload:`أرشف <bdi>${esc(d.name)}</bdi>`, archive_folder_created:'أنشأ مجلد الأرشيف في Google Drive'};
   return map[a.action] || esc(a.action);
+}
+const genPassword = () => { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ', a = 'abcdefghijkmnpqrstuvwxyz', d = '23456789', y = '#@%+=';
+  const r = n => { const b = new Uint32Array(1); crypto.getRandomValues(b); return b[0] % n; }, pick = set => set[r(set.length)];
+  const chars = [pick(A), pick(A), pick(y), ...Array.from({length:5}, () => pick(a)), pick(d), pick(d), pick(d), pick(A)];
+  for (let i = chars.length - 1; i > 0; i--) { const j = r(i + 1); [chars[i], chars[j]] = [chars[j], chars[i]]; } return chars.join(''); };
+const loginLabel = u => u?.username || u?.email || '';
+function showCredentials(title, login, password, note){
+  const site = location.origin + location.pathname;
+  const text = `بيانات الدخول إلى منصة سكاد للشركاء\nالرابط: ${site}\nاسم المستخدم: ${login}\nكلمة المرور الأولية: ${password}\nسيُطلب منك اختيار كلمة مرور جديدة عند أول دخول.`;
+  dialog(title, `<p class="small muted">${esc(note || 'أرسل هذه البيانات إلى صاحب الحساب بطريقة آمنة (مثل رسالة مباشرة). لن تظهر كلمة المرور مرة أخرى.')}</p>
+    <div class="caption" id="cred" dir="rtl" style="max-height:none;white-space:normal;line-height:2">بيانات الدخول إلى منصة سكاد للشركاء<br>الرابط: <bdi dir="ltr">${esc(site)}</bdi><br>اسم المستخدم: <bdi dir="ltr"><b>${esc(login)}</b></bdi><br>كلمة المرور الأولية: <bdi dir="ltr"><b>${esc(password)}</b></bdi><br>سيُطلب منك اختيار كلمة مرور جديدة عند أول دخول.</div>`, [
+    ['نسخ البيانات', 'primary', () => { navigator.clipboard?.writeText(text).then(() => toast('نُسخت بيانات الدخول.'), () => toast('حدّد النص وانسخه يدوياً.')); return false; }], ['تم', '', () => {}]]);
+}
+function credentialFields(defaultRole, roleOpts, extra = ''){
+  return `<div class="grid"><label class="f">الاسم الكامل<input id="cu-name" placeholder="مثال: سارة أحمد"></label>
+    <label class="f">اسم المستخدم<span class="hint">بالإنجليزية، 3 أحرف على الأقل، مثل sara.ahmed — أو اكتب بريداً إلكترونياً</span><input id="cu-login" dir="ltr" autocapitalize="none" spellcheck="false" placeholder="sara.ahmed"></label>
+    <label class="f">كلمة المرور الأولية<span class="hint">اقترحها النظام؛ يمكنك تغييرها. سيُطلب من العضو تغييرها عند أول دخول</span>
+      <div class="row" style="flex-wrap:nowrap"><input id="cu-pass" dir="ltr" value="${genPassword()}" style="flex:1"><button type="button" class="btn" id="cu-gen">اقتراح أخرى</button></div></label>
+    ${roleOpts ? `<label class="f">الدور<select id="cu-role">${roleOpts}</select></label>` : ''}${extra}</div>`;
+}
+function bindCredentialFields(){ $('#cu-gen') && ($('#cu-gen').onclick = () => { $('#cu-pass').value = genPassword(); }); }
+async function createAccount({project, role, partner, globalRole}){
+  const name = $('#cu-name').value.trim(), login = $('#cu-login').value.trim(), password = $('#cu-pass').value;
+  if (!login) { toast('اكتب اسم المستخدم.'); return null; }
+  if (!login.includes('@') && !/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,39}$/.test(login)) { toast('اسم المستخدم: 3 أحرف إنجليزية أو أرقام على الأقل، ويمكن أن يحوي . _ -'); return null; }
+  if (password.length < 8) { toast('كلمة المرور الأولية 8 أحرف على الأقل.'); return null; }
+  const exists = (S.profiles || []).some(p => (p.username && p.username === login.toLowerCase()) || (p.email && p.email === toEmail(login)));
+  const {error} = await sb.rpc('admin_create_user', {p_login:login, p_password:password, p_full_name:name || null, p_partner:partner || null, p_global_role:globalRole || null, p_project:project || null, p_role:role || null});
+  if (error) { toast(arErr(error)); return null; }
+  return {login: login.includes('@') ? login.toLowerCase() : login.toLowerCase(), password, existed: exists};
+}
+async function driveSync(pid){ if (!DRIVE_ON) return; try { await callFn('drive', pid ? {action:'sync', project_id:pid} : {action:'sync'}); } catch {} }
+async function resetPassword(user){
+  const pw = genPassword();
+  dialog('إعادة تعيين كلمة المرور', `<p>ستُنشأ كلمة مرور أولية جديدة لـ <b dir="ltr">${esc(loginLabel(user))}</b>، ويُطلب منه تغييرها عند الدخول التالي. لن تعمل كلمة المرور الحالية بعد ذلك.</p>`, [
+    ['إعادة التعيين', 'primary', () => { (async () => { const {error} = await sb.rpc('admin_set_password', {p_user:user.id, p_password:pw}); if (error) return toast(arErr(error)); showCredentials('كلمة المرور الجديدة', loginLabel(user), pw); })(); }], ['إلغاء', '', () => {}]]);
 }
 async function switchProject(pid){ await flushSync(); editing = null; applyProject(pid); route(); }
 
@@ -1001,8 +1070,8 @@ function renderDashboard(){
   const alerts = [];
   rows.forEach(x => { if (x.be != null && x.c.trainees < x.be) alerts.push(['warn', `${esc(x.p.name)}: التسجيل ${n0(x.c.trainees)} أقل من نقطة التعادل (${n0(x.be)}).`, x.p.id, 'finance']); });
   pending.filter(d => ageDays(d.updatedAt) >= 2).forEach(d => alerts.push(['warn', `«${esc(d.fields.title || TEMPLATES[d.template].name)}» بانتظار الاعتماد منذ ${n0(ageDays(d.updatedAt))} أيام.`, d.projectId, 'review']));
-  (S.memberships || []).filter(m => m.drive_status === 'failed').forEach(m => alerts.push(['bad', `وصول Drive لم يُمنح لـ <span dir="ltr">${esc(profileOf(m.user_id)?.email || '')}</span> في ${esc(S.projects.find(p => p.id === m.project_id)?.name || '')}: ${esc(m.drive_error || '')}`, m.project_id, 'team']));
-  live.filter(p => !p.drive_folder_id).forEach(p => alerts.push(['warn', `${esc(p.name)}: لم يُنشأ مجلد الأرشيف بعد.`, p.id, 'archive']));
+  (DRIVE_ON ? S.memberships || [] : []).filter(m => m.drive_status === 'failed').forEach(m => alerts.push(['bad', `وصول Drive لم يُمنح لـ <span dir="ltr">${esc(profileOf(m.user_id)?.email || '')}</span> في ${esc(S.projects.find(p => p.id === m.project_id)?.name || '')}: ${esc(m.drive_error || '')}`, m.project_id, 'team']));
+  (DRIVE_ON ? live : []).filter(p => !p.drive_folder_id).forEach(p => alerts.push(['warn', `${esc(p.name)}: لم يُنشأ مجلد الأرشيف بعد.`, p.id, 'archive']));
   (S.profiles || []).filter(u => u.active && !u.global_role && !(S.memberships || []).some(m => m.user_id === u.id)).forEach(u => alerts.push(['warn', `<span dir="ltr">${esc(u.email)}</span> سجّل دخوله ولم يُضَف إلى أي مشروع.`, null, 'users']));
   $('#main').innerHTML = `<div class="head"><div><h1>لوحة المدير</h1><p class="muted">كل المشاريع في مكان واحد · ${esc(new Intl.DateTimeFormat('ar-EG-u-nu-latn', {dateStyle:'full'}).format(new Date()))}</p></div>${S.user.staff ? '<a class="btn primary" href="#projects">مشروع جديد</a>' : ''}</div>
   <div class="tiles" style="margin-bottom:16px">
@@ -1019,7 +1088,7 @@ function renderDashboard(){
       <td style="color:var(${x.r.profit < 0 ? '--bad' : '--ok'});font-weight:600">${usd(x.r.profit)}</td>
       <td>${x.be == null ? 'غير متحققة' : x.c.trainees >= x.be ? '<span class="tag st-approved">متحققة</span>' : `<span class="tag st-returned">ينقص ${n0(x.be - x.c.trainees)}</span>`}</td>
       <td>${x.pend.length ? `<b>${n0(x.pend.length)}</b>` : '—'}</td><td>${n0(x.members)}</td>
-      <td>${x.p.drive_folder_url ? `<a href="${esc(x.p.drive_folder_url)}" target="_blank" rel="noopener">${n0(x.files)} ملف</a>` : '<span class="muted small">لا مجلد</span>'}</td>
+      <td>${!DRIVE_ON ? '<span class="muted small">غير مفعّل</span>' : x.p.drive_folder_url ? `<a href="${esc(x.p.drive_folder_url)}" target="_blank" rel="noopener">${n0(x.files)} ملف</a>` : '<span class="muted small">لا مجلد</span>'}</td>
       <td><button class="btn" data-go="${x.p.id}">فتح</button></td></tr>`).join('') || '<tr><td colspan="9" class="muted">لا توجد مشاريع جارية.</td></tr>'}
   </tbody></table></div></div>
   <div class="grid g2"><div class="card"><h2>تنبيهات تحتاج قراراً</h2><div class="checks" style="margin-top:10px">${alerts.map(([lv, t, pid, view]) => `<div class="chk ${lv}"><b>${lv === 'bad' ? 'عاجل' : 'تنبيه'}</b><span style="flex:1">${t}</span>${view ? `<button class="btn ghost" style="min-height:32px;padding:2px 8px" data-alert="${pid || ''}" data-view="${view}">عرض</button>` : ''}</div>`).join('') || '<div class="chk ok"><b>سليم</b><span>لا توجد تنبيهات حالياً.</span></div>'}</div></div>
@@ -1035,7 +1104,7 @@ function renderProjects(){
     <div class="row"><label class="f" style="font-weight:400">الحالة<select data-pstatus="${p.id}">${Object.entries(STATUS_LABEL).map(([k, l]) => `<option value="${k}" ${p.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     <label class="f" style="font-weight:400">الاعتماد النهائي للمحتوى<select data-papproval="${p.id}"><option value="scadd" ${p.approval_mode === 'scadd' ? 'selected' : ''}>سكاد فقط</option><option value="project" ${p.approval_mode === 'project' ? 'selected' : ''}>مدير المشروع أيضاً</option></select></label>
     <button class="btn" data-pteam="${p.id}">الفريق</button><button class="btn" data-go="${p.id}">فتح</button></div></div>
-    <p class="small" style="margin-top:8px">${p.drive_folder_url ? `الأرشيف: <a href="${esc(p.drive_folder_url)}" target="_blank" rel="noopener">مجلد Google Drive</a>` : `<span class="muted">لا يوجد مجلد أرشيف.</span> <button class="btn ghost" data-folder="${p.id}">إنشاء المجلد</button>`}</p></div>`).join('') || '<div class="card muted">لا توجد مشاريع بعد.</div>'}</div>`;
+    <p class="small" style="margin-top:8px">${!DRIVE_ON ? '<span class="muted">أرشيف Google Drive غير مفعّل بعد.</span>' : p.drive_folder_url ? `الأرشيف: <a href="${esc(p.drive_folder_url)}" target="_blank" rel="noopener">مجلد Google Drive</a>` : `<span class="muted">لا يوجد مجلد أرشيف.</span> <button class="btn ghost" data-folder="${p.id}">إنشاء المجلد</button>`}</p></div>`).join('') || '<div class="card muted">لا توجد مشاريع بعد.</div>'}</div>`;
   document.querySelectorAll('[data-go]').forEach(b => b.onclick = async () => { await switchProject(b.dataset.go); location.hash = 'home'; });
   document.querySelectorAll('[data-pteam]').forEach(b => b.onclick = async () => { await switchProject(b.dataset.pteam); location.hash = 'team'; });
   const upd = async (id, patch, okMsg) => { const {error} = await sb.from('projects').update(patch).eq('id', id); if (error) return toast(arErr(error)); Object.assign(S.projects.find(p => p.id === id), patch); if (id === S.pid) applyProject(id); toast(okMsg); };
@@ -1047,7 +1116,7 @@ function renderProjects(){
     <label class="f" id="np-pnew-l" hidden>اسم الجهة الجديدة<input id="np-pnew"></label>
     <div class="grid g2"><label class="f">المدينة<input id="np-city"></label><label class="f">تاريخ البدء<input id="np-start" type="date"></label></div>
     <div class="grid g2"><label class="f">السعة<input id="np-cap" type="number" min="0" value="25"></label><label class="f">الاعتماد النهائي<select id="np-appr"><option value="scadd">سكاد فقط</option><option value="project">مدير المشروع أيضاً</option></select></label></div>
-    <p class="small muted">يُنشأ للمشروع مجلد أرشيف في Google Drive تلقائياً.</p></div>`, [
+    ${DRIVE_ON ? '<p class="small muted">يُنشأ للمشروع مجلد أرشيف في Google Drive تلقائياً.</p>' : ''}</div>`, [
     ['إنشاء المشروع', 'primary', () => { createProject(); return false; }], ['إلغاء', '', () => {}]]);
   $('#np-partner') && ($('#np-partner').onchange = e => { $('#np-pnew-l').hidden = e.target.value !== '__new'; });
 }
@@ -1059,8 +1128,8 @@ async function createProject(){
   const course = {...courseOf({...COURSE_DEFAULT}), title:name, capacity:Math.max(0, Math.floor(+$('#np-cap').value || 0)), trainees:0};
   const {data:p, error} = await sb.from('projects').insert({name, partner_id:partner, city:$('#np-city').value.trim() || null, start_date:$('#np-start').value || null, approval_mode:$('#np-appr').value, status:'planning', course}).select().single();
   if (error) return toast(arErr(error));
-  $('#dlg').hidden = true; toast('أُنشئ المشروع. جارٍ إنشاء مجلد الأرشيف…');
-  try { await callFn('drive', {action:'ensure_folder', project_id:p.id}); toast('أُنشئ المشروع ومجلد أرشيفه.'); } catch (e) { toast('أُنشئ المشروع، وتعذّر إنشاء مجلد الأرشيف الآن: ' + arErr(e)); }
+  $('#dlg').hidden = true; toast('أُنشئ المشروع.');
+  if (DRIVE_ON) { try { await callFn('drive', {action:'ensure_folder', project_id:p.id}); toast('أُنشئ المشروع ومجلد أرشيفه.'); } catch (e) { toast('أُنشئ المشروع، وتعذّر إنشاء مجلد الأرشيف الآن: ' + arErr(e)); } }
   await loadAll(); await switchProject(p.id); location.hash = 'team';
 }
 
@@ -1069,55 +1138,57 @@ function renderTeam(){
   const p = currentProject(); if (!p) { $('#main').innerHTML = '<div class="card muted">اختر مشروعاً أولاً.</div>'; return; }
   const c = caps(), allowReviewer = c.staff || p.approval_mode === 'project';
   const ms = (S.memberships || []).filter(m => m.project_id === p.id).map(m => ({...m, prof:profileOf(m.user_id) || {}}));
-  const dStat = m => m.drive_status === 'granted' ? '<span class="tag st-approved">مفعّل في Drive</span>' : m.drive_status === 'failed' ? `<span class="tag st-returned" title="${esc(m.drive_error || '')}">دون Drive</span>` : '<span class="tag st-draft">قيد المزامنة</span>';
+  const dStat = m => !DRIVE_ON ? '' : m.drive_status === 'granted' ? '<span class="tag st-approved">مفعّل في Drive</span>' : m.drive_status === 'failed' ? `<span class="tag st-returned" title="${esc(m.drive_error || '')}">دون Drive</span>` : '<span class="tag st-draft">قيد المزامنة</span>';
   $('#main').innerHTML = `<div class="head"><div><h1>فريق المشروع</h1><p class="muted">${esc(p.name)} · الاعتماد النهائي للمحتوى: <b>${p.approval_mode === 'project' ? 'مدير المشروع وسكاد' : 'سكاد فقط'}</b></p></div><button class="btn primary" id="addm">إضافة عضو</button></div>
-  <div class="card"><div class="list">${ms.map(m => `<div class="it" style="flex-wrap:wrap"><div><b>${esc(m.prof.full_name || m.prof.email || '')}</b>${m.prof.active === false ? ' <span class="tag st-returned">موقوف</span>' : ''}<div class="small muted" dir="ltr" style="text-align:right">${esc(m.prof.email || '')}</div>${m.drive_status === 'failed' ? `<div class="small" style="color:var(--warn)">${esc(m.drive_error || '')}</div>` : ''}</div>
+  <div class="card"><div class="list">${ms.map(m => `<div class="it" style="flex-wrap:wrap"><div><b>${esc(m.prof.full_name || m.prof.email || '')}</b>${m.prof.active === false ? ' <span class="tag st-returned">موقوف</span>' : ''}<div class="small muted" dir="ltr" style="text-align:right">${esc(loginLabel(m.prof))}</div>${DRIVE_ON && m.drive_status === 'failed' ? `<div class="small" style="color:var(--warn)">${esc(m.drive_error || '')}</div>` : ''}</div>
     <div class="row">${dStat(m)}<select data-mrole="${m.user_id}" aria-label="دور ${esc(m.prof.email || '')}" ${!c.staff && m.role === 'manager' ? 'disabled' : ''}>${roleOptions(m.role, c.staff, allowReviewer)}</select>
-    <button class="btn" data-mdel="${m.user_id}" ${!c.staff && m.role === 'manager' ? 'disabled' : ''}>إزالة</button></div></div>`).join('') || '<p class="muted">لا يوجد أعضاء بعد. أضف مدير المشروع أولاً.</p>'}</div>
+    <button class="btn" data-mpw="${m.user_id}" ${(!c.staff && m.role === 'manager') || m.prof.global_role ? 'hidden' : ''}>كلمة المرور</button><button class="btn" data-mdel="${m.user_id}" ${!c.staff && m.role === 'manager' ? 'disabled' : ''}>إزالة</button></div></div>`).join('') || '<p class="muted">لا يوجد أعضاء بعد. أضف مدير المشروع أولاً.</p>'}</div>
   <div class="grid g2" style="margin-top:14px">${Object.entries(ROLE_HINT).map(([k, h]) => `<p class="small"><b>${ROLE_LABEL[k]}:</b> <span class="muted">${h}</span></p>`).join('')}</div>
-  <p class="note">يُمنح كل عضو وصولاً إلى مجلد المشروع في Google Drive بحسب دوره، ويُسحب الوصول عند إزالته أو إيقاف حسابه. من لا يملك حساب Google يصل إلى الملفات من صفحة الأرشيف داخل المنصة.</p></div>`;
-  const after = async (msg) => { try { await callFn('drive', {action:'sync', project_id:p.id}); } catch {} await loadAll(); renderTeam(); toast(msg); };
+  <p class="note">${DRIVE_ON ? 'يُمنح كل عضو وصولاً إلى مجلد المشروع في Google Drive بحسب دوره، ويُسحب الوصول عند إزالته أو إيقاف حسابه.' : 'تنشئ أنت اسم المستخدم وكلمة المرور الأولية، ويُطلب من العضو تغييرها عند أول دخول. لا تُرسل أي رسائل بريد.'}</p></div>`;
+  const after = async (msg) => { await driveSync(p.id); await loadAll(); renderTeam(); toast(msg); };
+  document.querySelectorAll('[data-mpw]').forEach(b => b.onclick = () => resetPassword(profileOf(b.dataset.mpw) || {id:b.dataset.mpw}));
   document.querySelectorAll('[data-mrole]').forEach(s => s.onchange = async () => { const {error} = await sb.from('project_members').update({role:s.value}).eq('project_id', p.id).eq('user_id', s.dataset.mrole); if (error) { toast(arErr(error)); return renderTeam(); } after('حُدّث الدور ووصول Drive.'); });
   document.querySelectorAll('[data-mdel]').forEach(b => b.onclick = () => dialog('إزالة العضو', '<p>سيفقد هذا العضو الوصول إلى المشروع وإلى مجلد أرشيفه في Google Drive. يبقى حسابه قائماً لمشاريعه الأخرى.</p>', [
     ['إزالة', 'primary', () => { (async () => { const {error} = await sb.from('project_members').delete().eq('project_id', p.id).eq('user_id', b.dataset.mdel); if (error) return toast(arErr(error)); after('أُزيل العضو وسُحب وصوله.'); })(); }], ['إلغاء', '', () => {}]]));
-  $('#addm').onclick = () => dialog('إضافة عضو إلى ' + p.name, `<div class="grid"><label class="f">البريد الإلكتروني<input id="am-email" type="email" dir="ltr" placeholder="name@organization.org"></label>
-    <label class="f">الاسم<input id="am-name"></label><label class="f">الدور<select id="am-role">${roleOptions('editor', c.staff, allowReviewer)}</select></label>
-    <p class="small muted">إن لم يكن له حساب، تصله دعوة بالبريد. يُفضَّل بريد مرتبط بحساب Google ليصل إلى مجلد الأرشيف مباشرة.</p></div>`, [
-    ['إضافة وإرسال الدعوة', 'primary', () => { (async () => { const email = $('#am-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('اكتب بريداً صحيحاً.');
-      try { const r = await callFn('admin-users', {action:'invite', email, full_name:$('#am-name').value.trim(), project_id:p.id, role:$('#am-role').value}); $('#dlg').hidden = true; after(r.invited ? 'أُرسلت الدعوة وأضيف العضو.' : 'أضيف صاحب الحساب القائم إلى المشروع.'); }
-      catch (e) { toast(arErr(e)); } })(); return false; }], ['إلغاء', '', () => {}]]);
+  $('#addm').onclick = () => { dialog('إضافة عضو إلى ' + p.name, credentialFields('editor', roleOptions('editor', c.staff, allowReviewer)), [
+    ['إنشاء الحساب وإضافته', 'primary', () => { (async () => { const r = await createAccount({project:p.id, role:$('#cu-role').value, partner:p.partner_id}); if (!r) return;
+      await driveSync(p.id); await loadAll(); renderTeam();
+      if (r.existed) toast('الحساب موجود مسبقاً؛ أضيف إلى المشروع بدوره الجديد، وكلمة مروره لم تتغير.'); else showCredentials('أُنشئ الحساب', r.login, r.password); })(); return false; }], ['إلغاء', '', () => {}]]); bindCredentialFields(); };
 }
 
 /* users (staff) */
 function renderUsers(){
   const owner = S.user.owner;
   const projectsOf = uid => (S.memberships || []).filter(m => m.user_id === uid).map(m => `<span class="tag st-draft">${esc(S.projects.find(p => p.id === m.project_id)?.name || '')} · ${ROLE_LABEL[m.role]}</span>`).join(' ');
-  $('#main').innerHTML = `<div class="head"><div><h1>المستخدمون والصلاحيات</h1><p class="muted">الصلاحية العامة لموظفي سكاد فقط، وكل وصول آخر يأتي من عضوية المشاريع. ${owner ? '' : 'منح صلاحيات الإدارة العامة للمالك وحده.'}</p></div><button class="btn primary" id="invu">دعوة مستخدم</button></div>
+  $('#main').innerHTML = `<div class="head"><div><h1>المستخدمون والصلاحيات</h1><p class="muted">الصلاحية العامة لموظفي سكاد فقط، وكل وصول آخر يأتي من عضوية المشاريع. ${owner ? '' : 'منح صلاحيات الإدارة العامة للمالك وحده.'}</p></div><button class="btn primary" id="invu">إنشاء حساب</button></div>
   <div class="card"><div class="row" style="margin-bottom:8px"><label class="f" style="flex:1">بحث<input id="uq" placeholder="الاسم أو البريد"></label><label class="f">الحالة<select id="us"><option value="">الكل</option><option value="active">نشط</option><option value="off">موقوف</option><option value="none">بلا مشروع</option></select></label></div><div class="list" id="ul"></div></div>`;
   const paint = () => { const q = $('#uq').value.trim().toLowerCase(), st = $('#us').value;
     const list = (S.profiles || []).filter(u => (!q || (u.email || '').includes(q) || (u.full_name || '').toLowerCase().includes(q)) && (!st || (st === 'active' && u.active) || (st === 'off' && !u.active) || (st === 'none' && !u.global_role && !(S.memberships || []).some(m => m.user_id === u.id))));
     $('#ul').innerHTML = list.map(u => { const self = u.id === S.user.id, lockedOwner = u.global_role === 'owner';
-      return `<div class="it" style="flex-wrap:wrap;align-items:flex-start"><div style="flex:1;min-width:220px"><b>${esc(u.full_name || '')}</b> ${u.active ? '' : '<span class="tag st-returned">موقوف</span>'}<div class="small muted" dir="ltr" style="text-align:right">${esc(u.email || '')}</div>
+      return `<div class="it" style="flex-wrap:wrap;align-items:flex-start"><div style="flex:1;min-width:220px"><b>${esc(u.full_name || '')}</b> ${u.active ? '' : '<span class="tag st-returned">موقوف</span>'}<div class="small muted" dir="ltr" style="text-align:right">${esc(loginLabel(u))}</div>
         <div class="small muted">${esc(partnerName(u.partner_id) === '—' ? '' : partnerName(u.partner_id))}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">${projectsOf(u.id) || (u.global_role ? '' : '<span class="small muted">لم يُضَف إلى مشروع</span>')}</div></div>
         <div class="row"><label class="f" style="font-weight:400">الصلاحية العامة<select data-grole="${u.id}" ${!owner || self || lockedOwner ? 'disabled' : ''}><option value="">عضو مشاريع</option><option value="admin" ${u.global_role === 'admin' ? 'selected' : ''}>إدارة سكاد</option>${lockedOwner ? '<option value="owner" selected>مالك المنصة</option>' : ''}</select></label>
-        <button class="btn" data-act="${u.id}" data-on="${u.active ? '0' : '1'}" ${self || lockedOwner ? 'disabled' : ''}>${u.active ? 'إيقاف' : 'إعادة تفعيل'}</button></div></div>`; }).join('') || '<p class="muted" style="padding:12px 0">لا نتائج.</p>';
+        <button class="btn" data-upw="${u.id}" ${self || lockedOwner ? 'hidden' : ''}>كلمة المرور</button><button class="btn" data-act="${u.id}" data-on="${u.active ? '0' : '1'}" ${self || lockedOwner ? 'disabled' : ''}>${u.active ? 'إيقاف' : 'إعادة تفعيل'}</button></div></div>`; }).join('') || '<p class="muted" style="padding:12px 0">لا نتائج.</p>';
     document.querySelectorAll('[data-grole]').forEach(s => s.onchange = async () => { const {error} = await sb.from('profiles').update({global_role:s.value || null}).eq('id', s.dataset.grole); if (error) { toast(arErr(error)); return paint(); } await loadAll(); toast('حُدّثت الصلاحية العامة.'); paint(); });
     document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => { const on = b.dataset.on === '1';
       dialog(on ? 'إعادة تفعيل الحساب' : 'إيقاف الحساب', on ? '<p>يستعيد المستخدم الدخول ووصول Drive لمشاريعه.</p>' : '<p>يُمنع المستخدم من الدخول، ويُسحب وصوله إلى مجلدات Drive في كل مشاريعه. يمكن إعادة تفعيله لاحقاً.</p>', [
-        [on ? 'إعادة التفعيل' : 'إيقاف الحساب', 'primary', () => { (async () => { try { await callFn('admin-users', {action:'set_active', user_id:b.dataset.act, active:on}); try { await callFn('drive', {action:'sync'}); } catch {} await loadAll(); paint(); toast(on ? 'أُعيد تفعيل الحساب.' : 'أُوقف الحساب وسُحب وصوله.'); } catch (e) { toast(arErr(e)); } })(); }], ['إلغاء', '', () => {}]]); }); };
+        [on ? 'إعادة التفعيل' : 'إيقاف الحساب', 'primary', () => { (async () => { const {error} = await sb.rpc('admin_set_active', {p_user:b.dataset.act, p_active:on}); if (error) return toast(arErr(error)); await driveSync(); await loadAll(); paint(); toast(on ? 'أُعيد تفعيل الحساب.' : 'أُوقف الحساب، ولم يعد يستطيع الدخول.'); })(); }], ['إلغاء', '', () => {}]]); }); };
   $('#uq').oninput = paint; $('#us').onchange = paint; paint();
-  $('#invu').onclick = () => dialog('دعوة مستخدم', `<div class="grid"><label class="f">البريد الإلكتروني<input id="iu-email" type="email" dir="ltr"></label><label class="f">الاسم<input id="iu-name"></label>
+  $('#ul').addEventListener('click', e => { const b = e.target.closest('[data-upw]'); if (b) resetPassword(profileOf(b.dataset.upw)); });
+  $('#invu').onclick = () => { dialog('إنشاء حساب', credentialFields(null, null, `
     <label class="f">الجهة<select id="iu-partner"><option value="">سكاد</option>${S.partners.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select></label>
     ${owner ? '<label class="f">الصلاحية العامة<select id="iu-g"><option value="">عضو مشاريع</option><option value="admin">إدارة سكاد</option></select></label>' : ''}
-    <div class="grid g2"><label class="f">المشروع<select id="iu-p"><option value="">—</option>${S.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label><label class="f">الدور في المشروع<select id="iu-r">${roleOptions('editor', true, true)}</select></label></div></div>`, [
-    ['إرسال الدعوة', 'primary', () => { (async () => { const email = $('#iu-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('اكتب بريداً صحيحاً.');
-      const pid = $('#iu-p').value; try { const r = await callFn('admin-users', {action:'invite', email, full_name:$('#iu-name').value.trim(), partner_id:$('#iu-partner').value || null, global_role:$('#iu-g')?.value || undefined, project_id:pid || undefined, role:pid ? $('#iu-r').value : undefined});
-        $('#dlg').hidden = true; if (pid) { try { await callFn('drive', {action:'sync', project_id:pid}); } catch {} } await loadAll(); paint(); toast(r.invited ? 'أُرسلت الدعوة.' : 'الحساب موجود؛ حُدّثت عضويته.'); } catch (e) { toast(arErr(e)); } })(); return false; }], ['إلغاء', '', () => {}]]);
+    <div class="grid g2"><label class="f">المشروع<select id="iu-p"><option value="">—</option>${S.projects.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></label><label class="f">الدور في المشروع<select id="iu-r">${roleOptions('editor', true, true)}</select></label></div>`), [
+    ['إنشاء الحساب', 'primary', () => { (async () => { const pid = $('#iu-p').value;
+      const r = await createAccount({project:pid || null, role:pid ? $('#iu-r').value : null, partner:$('#iu-partner').value || null, globalRole:$('#iu-g')?.value || null}); if (!r) return;
+      await driveSync(pid || null); await loadAll(); paint();
+      if (r.existed) toast('الحساب موجود مسبقاً؛ حُدّثت عضويته، وكلمة مروره لم تتغير.'); else showCredentials('أُنشئ الحساب', r.login, r.password); })(); return false; }], ['إلغاء', '', () => {}]]); bindCredentialFields(); };
 }
 
 /* archive (Google Drive) */
 async function renderArchive(){
   const p = currentProject(), c = caps(); if (!p) { $('#main').innerHTML = '<div class="card muted">اختر مشروعاً أولاً.</div>'; return; }
+  if (!DRIVE_ON) { $('#main').innerHTML = `<div class="head"><div><h1>الأرشيف</h1><p class="muted">${esc(p.name)}</p></div></div><div class="card grid"><div class="chk warn"><b>قريباً</b><span>أرشيف Google Drive لكل مشروع غير مفعّل بعد. يُفعَّل بعد ربط حساب Google Workspace الخاص بسكاد، ويعمل حينها تلقائياً: مجلد لكل مشروع، ووصول بحسب الدور، وحفظ التصاميم المعتمدة لحظة اعتمادها.</span></div><p class="small muted">إلى ذلك الحين يمكن تصدير التصاميم المعتمدة من الاستوديو مباشرة.</p></div>`; return; }
   $('#main').innerHTML = `<div class="head"><div><h1>الأرشيف</h1><p class="muted">${esc(p.name)} · ملفات المشروع في Google Drive، ويصل إليها كل عضو بحسب دوره.</p></div><div class="row">${p.drive_folder_url ? `<a class="btn" href="${esc(p.drive_folder_url)}" target="_blank" rel="noopener">فتح المجلد في Drive</a>` : ''}${c.edit ? '<label class="btn primary" for="arch-up">رفع ملف</label><input type="file" id="arch-up" hidden>' : ''}</div></div>
   <div class="card"><div class="list" id="al"><p class="muted">جارٍ تحميل الملفات من Google Drive…</p></div>
   <p class="note">تُؤرشف التصاميم المعتمدة هنا تلقائياً لحظة اعتمادها. زر «تنزيل» يعمل لكل أعضاء المشروع حتى دون حساب Google؛ «فتح في Drive» لمن مُنح الوصول بحساب Google.</p></div>`;
@@ -1140,7 +1211,7 @@ async function exportBlob(d){
   return {blob:await zip(files), ext:'zip', mime:'application/zip'};
 }
 async function archiveApproved(d){
-  if (!ONLINE) return;
+  if (!ONLINE || !DRIVE_ON) return;
   try {
     const {blob, ext, mime} = await exportBlob(d);
     const name = `${(d.fields.title || TEMPLATES[d.template].name).replace(/[\\/:*?"<>|]+/g, '-')} — ${FORMATS[d.format].name} — الإصدار ${d.version}.${ext}`;
