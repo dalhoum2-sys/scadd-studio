@@ -28,8 +28,11 @@ Hard rules:
 - Never say autism is cured or disappears; no "شفاء", "علاج نهائي", "نضمن", "100%". Prefer "تدخّل قائم على الأدلة", "تحسّن في المهارات".
 - Person-first, respectful language: "الأطفال ذوو التوحّد", never "مرضى التوحّد" or "معاناة".
 - Never invent facts: dates, prices, phone numbers, links, numbers of seats, accreditation, statistics, names, sources. Use only what the request or the context provides. If something important is missing, leave the field empty and say so in notes.
-- Scientific or awareness claims need a source; put a source only if the user gave one, otherwise leave it empty and flag it in notes.
-- Text on the design must be short: title ≤ 9 words, eyebrow ≤ 3 words, text ≤ 30 words, up to 5 detail rows (label ≤ 3 words), CTA ≤ 6 words. Put longer explanation in the caption.
+- If context.schedule is given, use it exactly: the start date as written in start_text, the total number of days, the daily hours; put them in details (you may reuse detail_lines). Do not change dates.
+- note: one short closing line under the content (e.g. "الشهادة معتمدة من معهد سكاد", or a source the user gave). Leave empty if nothing fits.
+- Keep the title short (≤ 9 words) and the eyebrow 1–3 words. Body text may have several paragraphs separated by a blank line when the user asks for detail; otherwise keep it concise. details may hold any facts about the topic, one per row.
+- The CTA text is a short action phrase (≤ 6 words). If context.cta_action exists, the link is added by the platform; do not write URLs in the CTA text.
+- If context.media is "video", write for a short animated video: fewer words per element, a clear first line, and use slides as scenes only when asked.
 - Caption = the opening of the post (not the on-image text). Lead with the key message in the first line. Length by platform: Instagram ~125 characters visible before "more" (max 2200), Facebook ~125 visible, LinkedIn ~210 visible (max 3000, more professional tone). Promotional posts: short; awareness/educational posts: can be longer and structured.
 - Hashtags: at most 5, relevant, Arabic where natural, without the # sign in the array.
 - Carousel: only when the user asks for slides/carousel or the format is a LinkedIn document; 3–8 slides; each slide = a short heading line, newline, 1–2 sentences. For myth/fact content write "خرافة: …" then a new line "حقيقة: …".
@@ -48,7 +51,7 @@ const TOOL = {
       eyebrow: { type: "string" }, title: { type: "string" }, text: { type: "string" },
       details: { type: "array", maxItems: 5, items: { type: "object", properties: { label: { type: "string" }, value: { type: "string" } }, required: ["value"] } },
       stat: { type: ["object", "null"], properties: { num: { type: "string" }, label: { type: "string" } } },
-      cta: { type: "string" }, contact: { type: "string" }, source: { type: "string" },
+      cta: { type: "string" }, contact: { type: "string" }, note: { type: "string" },
       slides: { type: "array", maxItems: 8, items: { type: "string" } },
       multi: { type: "boolean" },
       caption: { type: "string" }, hashtags: { type: "array", maxItems: 5, items: { type: "string" } },
