@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>دخول · Sign in</title>
+<style>
+@font-face{font-family:'Thmanyah Sans';src:url(fonts/sans.ttf)}
+@font-face{font-family:'Inter';src:url(fonts/inter.woff2) format('woff2');font-weight:100 900}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#000;color:#f5f5f7;font-family:'Thmanyah Sans','Inter',-apple-system,system-ui,sans-serif;display:grid;place-items:center;padding:24px;-webkit-font-smoothing:antialiased}
+.card{width:min(100%,420px);text-align:center}
+h1{font-size:34px;line-height:1.25;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+p.sub{font-size:18px;line-height:1.6;color:#a1a1a6;margin:0 0 28px}
+form{display:grid;gap:12px;text-align:start}
+label{display:grid;gap:6px;font-size:16px;color:#d2d2d7}
+input{font:inherit;font-size:19px;min-height:52px;border-radius:14px;border:1px solid #3a3a3c;background:#1c1c1e;color:#fff;padding:0 16px;direction:ltr;text-align:start}
+input:focus-visible,button:focus-visible{outline:3px solid #5ac8fa;outline-offset:2px}
+button.go{font:inherit;font-size:19px;font-weight:600;min-height:52px;border-radius:980px;border:0;background:#fff;color:#000;cursor:pointer;margin-top:6px}
+button.go[disabled]{opacity:.6;cursor:wait}
+#err{min-height:24px;font-size:16px;color:#ff8a80;text-align:center;margin-top:4px}
+.lg{margin-top:22px;display:flex;gap:8px;justify-content:center}
+.lg button{font:inherit;font-size:16px;min-height:44px;padding:0 18px;border-radius:980px;border:1px solid #3a3a3c;background:transparent;color:#d2d2d7;cursor:pointer}
+.lg button[aria-pressed=true]{background:#2c2c2e;color:#fff}
+.load{font-size:18px;color:#a1a1a6}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="card" id="box">
+  <h1 id="t"></h1>
+  <p class="sub" id="s"></p>
+  <form id="f" autocomplete="on" novalidate>
+    <label><span id="lu"></span><input id="u" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+    <label><span id="lp"></span><input id="p" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="go" id="b" type="submit"></button>
+    <div id="err" role="alert" aria-live="polite"></div>
+  </form>
+  <p class="load" id="ld" hidden></p>
+  <div class="lg" role="group" aria-label="Language"><button type="button" data-l="ar">العربية</button><button type="button" data-l="en">English</button></div>
+</main>
+<script src="../vendor/supabase.js"></script>
+<script src="../config.js"></script>
+<script>
+(function(){
+var T={ar:{t:'جولة مقترح العيادات',s:'هذا العرض خاص. أدخل اسم المستخدم وكلمة المرور.',u:'اسم المستخدم',p:'كلمة المرور',b:'دخول',bad:'اسم المستخدم أو كلمة المرور غير صحيحة.',net:'تعذر الاتصال. تحقق من الإنترنت وأعد المحاولة.',ld:'جارٍ تحميل العرض…',nop:'هذا الحساب غير مخوّل بالاطلاع على العرض.',empty:'أدخل اسم المستخدم وكلمة المرور.'},
+ en:{t:'Clinics proposal tour',s:'This presentation is private. Enter your username and password.',u:'Username',p:'Password',b:'Sign in',bad:'Incorrect username or password.',net:'Could not connect. Check your internet and try again.',ld:'Loading the presentation…',nop:'This account is not authorised to view the presentation.',empty:'Enter your username and password.'}};
+var lang='ar';try{lang=localStorage.getItem('rh_lang')||new URLSearchParams(location.search).get('lang')||'ar'}catch(e){}if(lang!=='en')lang='ar';
+var $=function(i){return document.getElementById(i)};
+function paint(){var x=T[lang];document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+ $('t').textContent=x.t;$('s').textContent=x.s;$('lu').textContent=x.u;$('lp').textContent=x.p;$('b').textContent=x.b;$('ld').textContent=x.ld;
+ document.querySelectorAll('.lg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.l===lang))});}
+document.querySelectorAll('.lg button').forEach(function(b){b.onclick=function(){lang=b.dataset.l;try{localStorage.setItem('rh_lang',lang)}catch(e){}paint()}});
+paint();
+var cfg=window.SCADD_CONFIG,sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true}});
+var BUCKET='riyadh-proposal';
+function toEmail(l){l=String(l||'').trim().toLowerCase();return l.indexOf('@')>-1?l:l+'@team.scadd.jo'}
+function fail(m){$('err').textContent=T[lang][m]||m;$('b').disabled=false;$('f').hidden=false;$('ld').hidden=true}
+async function openApp(){
+  $('f').hidden=true;$('ld').hidden=false;$('err').textContent='';
+  var st=sb.storage.from(BUCKET);
+  var r=await st.download('app.html');
+  if(r.error||!r.data){ // لا صلاحية أو انقطاع
+    var msg=(r.error&&/not.?found|unauthori|row-level|denied|403|400/i.test(JSON.stringify(r.error)))?'nop':'net';
+    if(msg==='nop'){await sb.auth.signOut()}
+    return fail(msg)}
+  var html=await r.data.text();
+  var a=await st.createSignedUrl('academy_film.mp4',14400),h=await st.createSignedUrl('hospital.mp4',14400);
+  if(a.error||h.error)return fail('net');
+  html=html.replace('__FILM__',a.data.signedUrl).replace('__HOSP__',h.data.signedUrl);
+  try{var lg=localStorage.getItem('rh_lang');if(lg)history.replaceState(null,'',location.pathname+'?lang='+lg+location.hash)}catch(e){}
+  document.open();document.write(html);document.close();
+}
+$('f').onsubmit=async function(e){
+  e.preventDefault();var u=$('u').value.trim(),p=$('p').value;
+  if(!u||!p){$('err').textContent=T[lang].empty;return}
+  $('b').disabled=true;$('err').textContent='';
+  try{var r=await sb.auth.signInWithPassword({email:toEmail(u),password:p});
+    if(r.error){return fail(/network|fetch/i.test(r.error.message)?'net':'bad')}
+    await openApp();
+  }catch(x){fail('net')}
+};
+sb.auth.getSession().then(function(r){if(r.data&&r.data.session)openApp().catch(function(){fail('net')})});
+})();
+</script>
+</body>
+</html>
